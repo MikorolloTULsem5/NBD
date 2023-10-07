@@ -1,4 +1,4 @@
-package nbd.gV;
+package nbd.gV.clientstype;
 
 public abstract class ClientType {
     public abstract double applyDiscount(double price);
