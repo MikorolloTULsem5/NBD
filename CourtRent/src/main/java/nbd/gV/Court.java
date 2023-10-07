@@ -52,7 +52,7 @@ public abstract class Court {
     public abstract double getActualReservationPrice();
 
     public String getCourtInfo() {
-        return "Boisko nr %d przeznaczone do [-] o powierzchni %.2f i koszcie za rezerwację: %.2f PLN%n"
+        return "Boisko nr %d przeznaczone do [-] o powierzchni %.2f i koszcie za rezerwację: %.2f PLN\n"
                 .formatted(getCourtNumber(), getArea(), getActualReservationPrice());
     }
 

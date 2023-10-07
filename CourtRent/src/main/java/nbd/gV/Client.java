@@ -12,7 +12,7 @@ public class Client {
     private ClientType clientType;
 
     public Client(String firstName, String lastName, String personalID, ClientType clientType) throws MainException {
-        if (!firstName.isEmpty() || !lastName.isEmpty() || !personalID.isEmpty() || clientType == null)
+        if (firstName.isEmpty() || lastName.isEmpty() || personalID.isEmpty() || clientType == null)
             throw new MainException("Brakujacy parametr przy tworzeniu obiektu klienta!");
 
         this.firstName = firstName;
@@ -64,14 +64,14 @@ public class Client {
     }
 
     public String getClientInfo() {
-        return "Klient - %s %s o numerze PESEL %s%n".formatted(firstName, lastName, personalID);
+        return "Klient - %s %s o numerze PESEL %s\n".formatted(firstName, lastName, personalID);
     }
 
     public double applyDiscount(double price) {
         return clientType.applyDiscount(price);
     }
 
-    public int getMaxClientHours() {
+    public int getClientMaxHours() {
         return clientType.getMaxHours();
     }
 }
