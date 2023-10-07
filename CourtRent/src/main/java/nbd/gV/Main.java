@@ -1,18 +1,19 @@
 package nbd.gV;
 
-import nbd.gV.clientstype.Athlete;
-import nbd.gV.clientstype.ClientType;
-import nbd.gV.clientstype.Coach;
-import nbd.gV.clientstype.Normal;
-
 public class Main {
     public static void main(String[] args) {
-        ClientType clientType = new Athlete();
-        ClientType clientType2 = new Coach();
-        ClientType clientType3 = new Normal();
+        try {
+            Court type1 = new BasketballCourt(10, 100, 1);
+            Court type2 = new FootballCourt(10, 100, 2);
+            Court type3 = new TennisCourt(10, 100, 3);
+            Court type4 = new VolleyballCourt(10, 100, 4);
 
-        System.out.print(clientType.getTypeInfo());
-        System.out.print(clientType2.getTypeInfo());
-        System.out.print(clientType3.getTypeInfo());
+            System.out.print(type1.getCourtInfo());
+            System.out.print(type2.getCourtInfo());
+            System.out.print(type3.getCourtInfo());
+            System.out.print(type4.getCourtInfo());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

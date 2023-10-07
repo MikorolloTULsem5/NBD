@@ -6,7 +6,7 @@ import nbd.gV.clientstype.ClientType;
 public class Client {
     private String firstName;
     private String lastName;
-    private String personalID;
+    private final String personalID;
     private boolean archive = false;
 
     private ClientType clientType;
@@ -25,8 +25,20 @@ public class Client {
         return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        if (!firstName.isEmpty()) {
+            this.firstName = firstName;
+        }
+    }
+
     public String getLastName() {
         return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        if (!lastName.isEmpty()) {
+            this.lastName = lastName;
+        }
     }
 
     public String getPersonalID() {
@@ -37,24 +49,12 @@ public class Client {
         return archive;
     }
 
-    public ClientType getClientType() {
-        return clientType;
-    }
-
-    public void setFirstName(String firstName) {
-        if (!firstName.isEmpty()) {
-            this.firstName = firstName;
-        }
-    }
-
-    public void setLastName(String lastName) {
-        if (!lastName.isEmpty()) {
-            this.lastName = lastName;
-        }
-    }
-
     public void setArchive(boolean archive) {
         this.archive = archive;
+    }
+
+    public ClientType getClientType() {
+        return clientType;
     }
 
     public void setClientType(ClientType clientType) {
