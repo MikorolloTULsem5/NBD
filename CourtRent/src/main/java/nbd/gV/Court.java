@@ -8,7 +8,7 @@ public abstract class Court {
     private final int courtNumber;
     private boolean archive = false;
 
-    public Court(double area, int baseCost, int courtNumber) throws MainException {
+    public Court(double area, int baseCost, int courtNumber) {
         if (area <= 0.0 || baseCost < 0 || courtNumber < 1) {
             throw new MainException("Niepoprawny parametr przy tworzeniu obiektu boiska!");
         }

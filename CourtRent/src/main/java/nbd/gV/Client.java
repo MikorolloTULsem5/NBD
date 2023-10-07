@@ -11,7 +11,7 @@ public class Client {
 
     private ClientType clientType;
 
-    public Client(String firstName, String lastName, String personalID, ClientType clientType) throws MainException {
+    public Client(String firstName, String lastName, String personalID, ClientType clientType) {
         if (firstName.isEmpty() || lastName.isEmpty() || personalID.isEmpty() || clientType == null)
             throw new MainException("Brakujacy parametr przy tworzeniu obiektu klienta!");
 

@@ -17,7 +17,7 @@ public class Reservation {
     private LocalDateTime endTime = null;
     private double reservationCost;
 
-    public Reservation(int id, Client client, Court court, LocalDateTime beginTime) throws MainException {
+    public Reservation(int id, Client client, Court court, LocalDateTime beginTime) {
         if (id <= 0 || client == null || court == null)
             throw new MainException("Niepoprawny parametr przy tworzeniu obiektu rezerwacji!");
 
@@ -70,7 +70,7 @@ public class Reservation {
         return hours;
     }
 
-    public void endReservation(LocalDateTime endingDate) throws ReservationException {
+    public void endReservation(LocalDateTime endingDate) {
         if (endTime == null) {
             endTime = (endingDate == null) ? LocalDateTime.now() : endingDate;
             if (Duration.between(beginTime, endTime).isNegative()) {
