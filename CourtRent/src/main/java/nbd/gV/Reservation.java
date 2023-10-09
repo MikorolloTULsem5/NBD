@@ -90,9 +90,11 @@ public class Reservation {
     }
 
     public String getReservationInfo() {
-        return "Rezerwacja nr %d przez '%s' boiska: '%s', od godziny [%s]%n".formatted(id,
+        return "Rezerwacja nr %d przez '%s' boiska: '%s', od godziny [%s]%s%n".formatted(id,
                 client.getClientInfo().replace("\n", ""),
                 court.getCourtInfo().replace("\n", ""),
-                beginTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)));
+                beginTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)),
+                (endTime == null) ? "." : (" do godziny [%s].".formatted(
+                        endTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))));
     }
 }

@@ -1,25 +1,21 @@
 package nbd.gV;
 
-import nbd.gV.clientstype.Athlete;
+import nbd.gV.clientstype.ClientType;
+import nbd.gV.clientstype.Normal;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Month;
 
 public class Main {
     public static void main(String[] args) {
+        ClientType testClientType = new Normal();
+        Client testClient = new Client("John", "Smith", "123456789", testClientType);
+        Court testCourt = new FootballCourt(1, 100, 1);
+        LocalDateTime now = LocalDateTime.of(2023, Month.JUNE, 3, 22, 15);
+        LocalDateTime then = LocalDateTime.of(2023, Month.JUNE, 3, 20, 7);
+        Reservation reservation = new Reservation(1, testClient, testCourt, then);
+        reservation.endReservation(now);
 
-        Court court = new BasketballCourt(10, 100, 1);
-        Client client = new Client("John", "Smith", "643534534", new Athlete());
-
-        System.out.print(court.getCourtInfo());
-        System.out.print(client.getClientInfo());
-
-        Reservation reservation = new Reservation(1, client, court, LocalDateTime.now());
-        System.out.print(reservation.getReservationInfo());
-
-        List<String> list = new ArrayList<>();
-        System.out.println(list.add("aaa"));
-        System.out.println(list.add(null));
+        System.out.println(reservation.getReservationInfo());
     }
 }
