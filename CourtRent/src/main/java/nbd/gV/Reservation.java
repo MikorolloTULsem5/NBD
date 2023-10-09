@@ -7,13 +7,12 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Formatter;
 
 public class Reservation {
     private final int id;
-    private Client client;
-    private Court court;
-    private LocalDateTime beginTime;
+    private final Client client;
+    private final Court court;
+    private final LocalDateTime beginTime;
     private LocalDateTime endTime = null;
     private double reservationCost;
 
@@ -24,12 +23,7 @@ public class Reservation {
         this.id = id;
         this.client = client;
         this.court = court;
-
-        if (beginTime == null) {
-            this.beginTime = LocalDateTime.now();
-        } else {
-            this.beginTime = beginTime;
-        }
+        this.beginTime = (beginTime == null) ? LocalDateTime.now() : beginTime;
     }
 
     public int getId() {
@@ -59,12 +53,14 @@ public class Reservation {
     public int getReservationHours() {
         int hours = 0;
 
-        long duration = Duration.between(beginTime, endTime).getSeconds();
-        int hoursDur = (int) (duration / 3600);
-        int minutesDur = (int) ((duration / 60) % 60);
+        if (endTime != null) {
+            long duration = Duration.between(beginTime, endTime).getSeconds();
+            int hoursDur = (int) (duration / 3600);
+            int minutesDur = (int) ((duration / 60) % 60);
 
-        if (endTime != null && !(hoursDur == 0 && minutesDur == 0)) {
-            hours = (minutesDur == 0) ? hoursDur : (hoursDur + 1);
+            if (!(hoursDur == 0 && minutesDur == 0)) {
+                hours = (minutesDur == 0) ? hoursDur : (hoursDur + 1);
+            }
         }
 
         return hours;

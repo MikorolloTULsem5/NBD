@@ -7,6 +7,7 @@ public abstract class Court {
     private int baseCost;
     private final int courtNumber;
     private boolean archive = false;
+    private boolean rented = false;
 
     public Court(double area, int baseCost, int courtNumber) {
         if (area <= 0.0 || baseCost < 0 || courtNumber < 1) {
