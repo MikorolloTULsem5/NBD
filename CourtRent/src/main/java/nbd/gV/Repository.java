@@ -14,7 +14,7 @@ public class Repository<T> {
     }
 
     public Repository() {
-        this.elements = new ArrayList<>();
+        this(new ArrayList<>());
     }
 
     public T get(int index) {
