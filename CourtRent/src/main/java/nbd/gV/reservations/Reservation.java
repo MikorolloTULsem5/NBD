@@ -27,6 +27,7 @@ public class Reservation {
         this.client = client;
         this.court = court;
         this.beginTime = (beginTime == null) ? LocalDateTime.now() : beginTime;
+        court.setRented(true);///TODO czy niepowinien odbpowiadac za to manager?
     }
 
     public UUID getId() {
@@ -78,6 +79,7 @@ public class Reservation {
 
             client.setArchive(true);
             court.setArchive(true);
+            court.setRented(false);///TODO czy niepowinien odbpowiadac za to manager?
 
             if (getReservationHours() <= client.getClientMaxHours()) {
                 reservationCost = getReservationHours() * court.getActualReservationPrice() -

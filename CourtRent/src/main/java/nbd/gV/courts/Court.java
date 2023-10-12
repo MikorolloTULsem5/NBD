@@ -7,6 +7,7 @@ public abstract class Court {
     private int baseCost;
     private final int courtNumber;
     private boolean archive = false;
+    private boolean rented = false;
 
     public Court(double area, int baseCost, int courtNumber) {
         if (area <= 0.0 || baseCost < 0 || courtNumber < 1) {
@@ -47,6 +48,14 @@ public abstract class Court {
 
     public void setArchive(boolean archive) {
         this.archive = archive;
+    }
+
+    public boolean isRented() {
+        return rented;
+    }
+
+    public void setRented(boolean rented) {
+        this.rented = rented;
     }
 
     public abstract double getActualReservationPrice();
