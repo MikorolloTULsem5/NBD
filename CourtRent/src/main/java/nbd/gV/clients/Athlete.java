@@ -1,13 +1,13 @@
-package nbd.gV.clientstype;
+package nbd.gV.clients;
 
-public class Coach extends ClientType {
+public class Athlete extends ClientType {
     @Override
     public double applyDiscount(double price) {
-        return 10 + 0.05 * price;
+        return 10;
     }
 
     @Override
     public int getMaxHours() {
-        return 12;
+        return 6;
     }
 }

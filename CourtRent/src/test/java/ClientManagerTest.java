@@ -1,8 +1,8 @@
-import nbd.gV.Client;
-import nbd.gV.ClientManager;
+import nbd.gV.clients.Client;
+import nbd.gV.clients.ClientManager;
 import nbd.gV.Repository;
-import nbd.gV.clientstype.ClientType;
-import nbd.gV.clientstype.Normal;
+import nbd.gV.clients.ClientType;
+import nbd.gV.clients.Normal;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.MainException;
 import org.junit.jupiter.api.BeforeEach;

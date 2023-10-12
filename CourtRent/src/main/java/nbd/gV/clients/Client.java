@@ -1,7 +1,6 @@
-package nbd.gV;
+package nbd.gV.clients;
 
 import nbd.gV.exceptions.MainException;
-import nbd.gV.clientstype.ClientType;
 
 public class Client {
     private String firstName;

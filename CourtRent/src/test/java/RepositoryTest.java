@@ -1,8 +1,8 @@
-import nbd.gV.Court;
-import nbd.gV.FootballCourt;
+import nbd.gV.courts.Court;
+import nbd.gV.courts.FootballCourt;
 import nbd.gV.Repository;
-import nbd.gV.TennisCourt;
-import nbd.gV.VolleyballCourt;
+import nbd.gV.courts.TennisCourt;
+import nbd.gV.courts.VolleyballCourt;
 import nbd.gV.exceptions.RepositoryException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

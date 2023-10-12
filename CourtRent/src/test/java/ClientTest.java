@@ -1,8 +1,8 @@
-import nbd.gV.Client;
-import nbd.gV.clientstype.Athlete;
-import nbd.gV.clientstype.ClientType;
-import nbd.gV.clientstype.Coach;
-import nbd.gV.clientstype.Normal;
+import nbd.gV.clients.Client;
+import nbd.gV.clients.Athlete;
+import nbd.gV.clients.ClientType;
+import nbd.gV.clients.Coach;
+import nbd.gV.clients.Normal;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

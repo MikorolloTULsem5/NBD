@@ -1,9 +1,9 @@
-import nbd.gV.Client;
-import nbd.gV.Court;
-import nbd.gV.FootballCourt;
-import nbd.gV.Reservation;
-import nbd.gV.clientstype.ClientType;
-import nbd.gV.clientstype.Normal;
+import nbd.gV.clients.Client;
+import nbd.gV.courts.Court;
+import nbd.gV.courts.FootballCourt;
+import nbd.gV.reservations.Reservation;
+import nbd.gV.clients.ClientType;
+import nbd.gV.clients.Normal;
 import nbd.gV.exceptions.MainException;
 import nbd.gV.exceptions.ReservationException;
 import org.junit.jupiter.api.BeforeEach;

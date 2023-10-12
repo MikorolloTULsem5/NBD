@@ -1,5 +1,7 @@
-package nbd.gV;
+package nbd.gV.reservations;
 
+import nbd.gV.clients.Client;
+import nbd.gV.courts.Court;
 import nbd.gV.exceptions.MainException;
 import nbd.gV.exceptions.ReservationException;
 

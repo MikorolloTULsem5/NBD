@@ -1,4 +1,4 @@
-package nbd.gV;
+package nbd.gV.courts;
 
 import nbd.gV.exceptions.MainException;
 

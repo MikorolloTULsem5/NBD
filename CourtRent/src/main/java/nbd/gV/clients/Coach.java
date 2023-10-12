@@ -1,13 +1,13 @@
-package nbd.gV.clientstype;
+package nbd.gV.clients;
 
-public class Normal extends ClientType {
+public class Coach extends ClientType {
     @Override
     public double applyDiscount(double price) {
-        return 0;
+        return 10 + 0.05 * price;
     }
 
     @Override
     public int getMaxHours() {
-        return 3;
+        return 12;
     }
 }

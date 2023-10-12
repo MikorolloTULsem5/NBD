@@ -1,6 +1,6 @@
-package nbd.gV;
+package nbd.gV.clients;
 
-import nbd.gV.clientstype.ClientType;
+import nbd.gV.Repository;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.MainException;
 

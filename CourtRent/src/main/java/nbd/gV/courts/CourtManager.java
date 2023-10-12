@@ -1,5 +1,6 @@
-package nbd.gV;
+package nbd.gV.courts;
 
+import nbd.gV.Repository;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.MainException;
 

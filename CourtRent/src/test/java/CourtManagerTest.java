@@ -1,10 +1,10 @@
-import nbd.gV.BasketballCourt;
-import nbd.gV.Court;
-import nbd.gV.CourtManager;
-import nbd.gV.FootballCourt;
+import nbd.gV.courts.BasketballCourt;
+import nbd.gV.courts.Court;
+import nbd.gV.courts.CourtManager;
+import nbd.gV.courts.FootballCourt;
 import nbd.gV.Repository;
-import nbd.gV.TennisCourt;
-import nbd.gV.VolleyballCourt;
+import nbd.gV.courts.TennisCourt;
+import nbd.gV.courts.VolleyballCourt;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.MainException;
 import org.junit.jupiter.api.BeforeEach;
