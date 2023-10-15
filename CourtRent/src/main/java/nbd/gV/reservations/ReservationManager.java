@@ -4,7 +4,6 @@ import nbd.gV.Repository;
 import nbd.gV.clients.Athlete;
 import nbd.gV.clients.Client;
 import nbd.gV.clients.Coach;
-import nbd.gV.clients.Normal;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;

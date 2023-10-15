@@ -5,7 +5,6 @@ import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Coach;
 import nbd.gV.clients.Normal;
 import nbd.gV.courts.Court;
-import nbd.gV.courts.CourtManager;
 import nbd.gV.courts.FootballCourt;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;
@@ -16,11 +15,9 @@ import nbd.gV.reservations.ReservationManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 

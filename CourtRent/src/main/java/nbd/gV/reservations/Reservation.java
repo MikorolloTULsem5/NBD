@@ -78,7 +78,7 @@ public class Reservation {
             }
 
             client.setArchive(true);
-            court.setArchive(true);
+            court.setArchive(true); /// TODO to chyba nie powinno tu byc?
             court.setRented(false);///TODO czy niepowinien odbpowiadac za to manager?
 
             if (getReservationHours() <= client.getClientMaxHours()) {

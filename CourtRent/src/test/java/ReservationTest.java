@@ -122,6 +122,57 @@ public class ReservationTest {
 
         assertThrows(ReservationException.class, () ->
                 reservation.endReservation(LocalDateTime.of(2023, Month.JUNE, 3, 20, 8)));
+
+        Court testCourt1 = new FootballCourt(1, 100, 2);
+        LocalDateTime earlier = LocalDateTime.of(2023, Month.JUNE, 2, 21, 10);
+        Reservation reservation2 = new Reservation(UUID.randomUUID(), testClient, testCourt1, then);
+        assertNotNull(reservation2);
+
+        reservation2.endReservation(earlier);
+        assertEquals(reservation2.getBeginTime(), reservation2.getEndTime());
+    }
+
+    @Test
+    void testGettingReservationHours() {
+        LocalDateTime beginTime = LocalDateTime.of(2023, Month.JUNE, 3, 20, 7);
+        LocalDateTime endTimeSecs = LocalDateTime.of(2023, Month.JUNE, 3, 20, 7, 30);
+        LocalDateTime endTimeOneMinute = LocalDateTime.of(2023, Month.JUNE, 3, 20, 8);
+        LocalDateTime endTimeFullHours = LocalDateTime.of(2023, Month.JUNE, 3, 22, 7);
+        LocalDateTime endTimeMixHoursMinutes = LocalDateTime.of(2023, Month.JUNE, 3, 22, 8);
+        Court testCourt1 = new FootballCourt(1, 100, 2);
+        Court testCourt2 = new FootballCourt(1, 100, 3);
+        Court testCourt3 = new FootballCourt(1, 100, 4);
+        Court testCourt4 = new FootballCourt(1, 100, 4);
+        Reservation reservation1 = new Reservation(UUID.randomUUID(), testClient, testCourt, beginTime);
+        assertNotNull(reservation1);
+        Reservation reservation2 = new Reservation(UUID.randomUUID(), testClient, testCourt1, beginTime);
+        assertNotNull(reservation2);
+        Reservation reservation3 = new Reservation(UUID.randomUUID(), testClient, testCourt2, beginTime);
+        assertNotNull(reservation3);
+        Reservation reservation4 = new Reservation(UUID.randomUUID(), testClient, testCourt3, beginTime);
+        assertNotNull(reservation4);
+        Reservation reservation5 = new Reservation(UUID.randomUUID(), testClient, testCourt4, beginTime);
+        assertNotNull(reservation5);
+
+        assertEquals(0, reservation1.getReservationHours());
+        assertEquals(0, reservation2.getReservationHours());
+        assertEquals(0, reservation3.getReservationHours());
+        assertEquals(0, reservation4.getReservationHours());
+
+        reservation1.endReservation(beginTime);
+        assertEquals(0, reservation1.getReservationHours());
+
+        reservation2.endReservation(endTimeSecs);
+        assertEquals(0, reservation2.getReservationHours());
+
+        reservation3.endReservation(endTimeOneMinute);
+        assertEquals(1, reservation3.getReservationHours());
+
+        reservation4.endReservation(endTimeFullHours);
+        assertEquals(2, reservation4.getReservationHours());
+
+        reservation5.endReservation(endTimeMixHoursMinutes);
+        assertEquals(3, reservation5.getReservationHours());
     }
 
     @Test
@@ -147,7 +198,7 @@ public class ReservationTest {
 
         String str = "Rezerwacja nr " + testUUID +
                 " przez 'Klient - John Smith o numerze PESEL 123456789' boiska: 'Boisko nr 1 " +
-                "przeznaczone do pilki noznej o powierzchni 1,00 i koszcie za rezerwację: 150,00 PLN', " +
+                "przeznaczone do pilki noznej o powierzchni 1,00 i koszcie za rezerwacje: 150,00 PLN', " +
                 "od godziny [03.06.2023, 20:07].%n".formatted();
         assertEquals(str, reservation.getReservationInfo());
 
@@ -155,7 +206,7 @@ public class ReservationTest {
 
         str = ("Rezerwacja nr " + testUUID +
                 " przez 'Klient - John Smith o numerze PESEL 123456789' boiska: 'Boisko nr 1 " +
-                "przeznaczone do pilki noznej o powierzchni 1,00 i koszcie za rezerwację: 150,00 PLN', " +
+                "przeznaczone do pilki noznej o powierzchni 1,00 i koszcie za rezerwacje: 150,00 PLN', " +
                 "od godziny [03.06.2023, 20:07] do godziny [03.06.2023, 22:15].%n").formatted();
         assertEquals(str, reservation.getReservationInfo());
     }

@@ -22,9 +22,7 @@ public class ClientManager {
     public Client registerClient(String firstName, String lastName, String personalID, ClientType clientType) {
         if (clients.findByUID((c) -> c.getPersonalID().equals(personalID)) == null) {
             Client newClient = new Client(firstName, lastName, personalID, clientType);
-            if (!(clients.add(newClient))) {
-                throw new ClientException("Nowy klient nie zostal zarejestrowany!");
-            } ///TODO czy taki przypadek jest wogole mozliwy
+            clients.add(newClient);
             return newClient;
         } else {
             throw new ClientException("Klient o tym numerze PESEL juz istnieje w repozytorium!");

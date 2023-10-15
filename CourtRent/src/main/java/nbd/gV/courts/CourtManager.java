@@ -29,9 +29,7 @@ public class CourtManager {
                 case T -> new TennisCourt(area, baseCost, courtNumber);
                 case V -> new VolleyballCourt(area, baseCost, courtNumber);
             };
-            if (!(courts.add(newCourt))) {
-                throw new CourtException("Nowe boisko nie zostalo zarejestrowane!");
-            } ///TODO czy taki przypadek jest wogole mozliwy
+            courts.add(newCourt);
             return newCourt;
         } else {
             throw new CourtException("Boisko o tym numerze juz istnieje w repozytorium!");

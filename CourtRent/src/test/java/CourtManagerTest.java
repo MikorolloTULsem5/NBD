@@ -70,7 +70,7 @@ public class CourtManagerTest {
     }
 
     @Test
-    void testRegisteringNewClient() {
+    void testRegisteringNewCourt() {
         CourtManager cm = new CourtManager(courtRepository);
         assertNotNull(cm);
         assertEquals(0, cm.getAllCourts().size());
@@ -81,6 +81,11 @@ public class CourtManagerTest {
         assertThrows(CourtException.class,
                 () -> cm.registerCourt(300, 300, 5, CourtManager.CourtType.T));
         assertEquals(1, cm.getAllCourts().size());
+
+        Court newCourt1 = cm.registerCourt(200, 200, 6, CourtManager.CourtType.B);
+        Court newCourt2 = cm.registerCourt(200, 200, 7, CourtManager.CourtType.T);
+        Court newCourt3 = cm.registerCourt(200, 200, 8, CourtManager.CourtType.V);
+        assertEquals(4, cm.getAllCourts().size());
     }
 
     @Test
