@@ -9,6 +9,7 @@ import nbd.gV.courts.Court;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.MainException;
+import nbd.gV.exceptions.ReservationException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +30,11 @@ public class ReservationManager {
     }
 
     public Reservation makeReservation(Client client, Court court, LocalDateTime beginTime) {
+        if (client == null || court == null) {
+            throw new MainException("Jeden z podanych parametrow [client/court] prowadzi do nieistniejacego obiektu!");
+        }
+
+        ///TODO przy bazie danych warunek do wywalenia
         if (!court.isRented() && !client.isArchive() && !court.isArchive()) {
             Reservation newReservation = new Reservation(UUID.randomUUID(), client, court, beginTime);
             currentReservations.add(newReservation);
@@ -39,7 +45,7 @@ public class ReservationManager {
             throw new CourtException("Nie udalo sie utworzyc rezerwacji - boisko jest archiwalne!");
         }
         else {
-            throw new CourtException("To boisko jest aktualnie wypozyczone!");
+            throw new ReservationException("To boisko jest aktualnie wypozyczone!");
         }
     }
 
@@ -65,6 +71,9 @@ public class ReservationManager {
     }
 
     public List<Reservation> getAllClientReservations(Client client) {
+        if (client == null) {
+            throw new MainException("Nie istniejacy klient nie moze posiadac rezerwacji!");
+        }
         return currentReservations.find((r) -> r.getClient() == client);
     }
 
@@ -111,7 +120,7 @@ public class ReservationManager {
         }
     }
 
-    public List<Reservation> findReservation(Predicate<Reservation> reservationPredicate) {
+    public List<Reservation> findReservations(Predicate<Reservation> reservationPredicate) {
         return findReservations(reservationPredicate, false);
     }
 
