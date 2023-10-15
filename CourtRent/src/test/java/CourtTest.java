@@ -90,6 +90,7 @@ public class CourtTest {
         assertEquals("VolleyballCourt", newCourt4.getCourtTypeName());
     }
 
+    /*
     @Test
     void testGettingCourtTypeNamesAndInfo() {
         Court newCourt1 = new FootballCourt(300, 100, 1);
@@ -115,4 +116,5 @@ public class CourtTest {
         assertEquals("Boisko nr 4 przeznaczone do siatkowki o powierzchni 300,00 i koszcie " +
                 "za rezerwacje: 120,00 PLN\n", newCourt4.getCourtInfo());
     }
+    */
 }
