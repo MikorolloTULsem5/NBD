@@ -15,7 +15,6 @@ import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -82,18 +81,12 @@ public class ReservationTest {
         assertEquals(0, reservation.getReservationCost());
         assertNull(reservation.getEndTime());
 
-        assertFalse(testClient.isArchive());
-        assertFalse(testCourt.isArchive());
-
         reservation.endReservation(now);
 
         assertEquals(3, reservation.getReservationHours());
         assertEquals(450, reservation.getReservationCost());
         assertNotNull(reservation.getEndTime());
         assertEquals(now, reservation.getEndTime());
-
-        assertTrue(testClient.isArchive());
-        assertTrue(testCourt.isArchive());
 
         assertThrows(ReservationException.class, () ->
                 reservation.endReservation(LocalDateTime.of(2023, Month.JUNE, 3, 20, 8)));
@@ -107,18 +100,12 @@ public class ReservationTest {
 
         assertNull(reservation.getEndTime());
 
-        assertFalse(testClient.isArchive());
-        assertFalse(testCourt.isArchive());
-
         reservation.endReservation(null);
         LocalDateTime now = LocalDateTime.now();
         assertNotNull(reservation.getEndTime());
 
         assertNotNull(reservation.getEndTime());
         assertEquals(0, Duration.between(reservation.getEndTime(), now).getSeconds());
-
-        assertTrue(testClient.isArchive());
-        assertTrue(testCourt.isArchive());
 
         assertThrows(ReservationException.class, () ->
                 reservation.endReservation(LocalDateTime.of(2023, Month.JUNE, 3, 20, 8)));
