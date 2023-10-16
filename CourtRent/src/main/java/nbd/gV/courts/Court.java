@@ -12,18 +12,22 @@ import java.util.UUID;
 @Table(name="court")
 @Access(value = AccessType.FIELD)
 public class Court {
+
     @Id
     private UUID courtId;
-    @NotEmpty
+    @Column(nullable = false)
     private double area;
-    @NotEmpty
+    @Column(nullable = false)
     private int baseCost;
     @Column(nullable = false, unique = true)
     private int courtNumber;
-    @NotEmpty
+    @Column(nullable = false)
     private boolean archive = false;
-    @NotEmpty
+    @Column(nullable = false)
     private boolean rented = false;
+    public UUID getCourtId() {
+        return courtId;
+    }
 
     public Court(double area, int baseCost, int courtNumber) {
         if (area <= 0.0 || baseCost < 0 || courtNumber < 1) {

@@ -24,4 +24,25 @@
       <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
     </properties>
   </persistence-unit>
+  <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>nbd.gV.clients.Client</class>
+    <class>nbd.gV.clients.ClientType</class>
+    <class>nbd.gV.clients.Athlete</class>
+    <class>nbd.gV.clients.Normal</class>
+    <class>nbd.gV.clients.Coach</class>
+    <class>nbd.gV.courts.Court</class>
+    <class>nbd.gV.reservations.Reservation</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <shared-cache-mode>NONE</shared-cache-mode>
+    <validation-mode>CALLBACK</validation-mode>
+    <properties>
+      <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/nbddb;create=true"/>
+      <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="jakarta.persistence.jdbc.user" value="nbd"/>
+      <property name="jakarta.persistence.jdbc.password" value="nbdpassword"/>
+      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+    </properties>
+  </persistence-unit>
 </persistence>

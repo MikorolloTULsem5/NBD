@@ -142,7 +142,7 @@
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
             <version>10.14.2.0</version>
-            <scope>test</scope>
+            <!--<scope>test</scope>!-->
         </dependency>
         <dependency>
             <groupId>org.hibernate.validator</groupId>
@@ -153,6 +153,11 @@
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.el</artifactId>
             <version>4.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.6.0</version>
         </dependency>
     </dependencies>
 

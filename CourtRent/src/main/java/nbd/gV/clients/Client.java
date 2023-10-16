@@ -13,18 +13,22 @@ public class Client {
 
     @Id
     private UUID clientID;
-    @NotEmpty
+    @Column(nullable = false)
     private String firstName;
-    @NotEmpty
+    @Column(nullable = false)
     private String lastName;
     @Column(nullable = false, unique = true)
     private String personalID;
-    @NotEmpty
+    @Column(nullable = false)
     private boolean archive = false;
     @Embedded
     @AttributeOverride(name = "clientType", column = @Column(name="client_type"))
-    @NotEmpty
+    @Column(nullable = false)
     private ClientType clientType;
+
+    public UUID getClientID() {
+        return clientID;
+    }
 
     public Client(String firstName, String lastName, String personalID, ClientType clientType) {
         if (firstName.isEmpty() || lastName.isEmpty() || personalID.isEmpty() || clientType == null)
