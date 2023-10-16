@@ -11,8 +11,6 @@ public class CourtManager {
 
     private Repository<Court> courts;
 
-    public enum CourtType {B, F, T, V} ///TODO hermetyzacja???
-
     public CourtManager(Repository<Court> courts) {
         this.courts = courts;
     }
@@ -21,14 +19,9 @@ public class CourtManager {
         this(new Repository<>());
     }
 
-    public Court registerCourt(double area, int baseCost, int courtNumber, CourtType type) {
+    public Court registerCourt(double area, int baseCost, int courtNumber) {
         if (courts.findByUID((c) -> c.getCourtNumber() == courtNumber) == null) {
-            Court newCourt = switch (type) {
-                case B -> new BasketballCourt(area, baseCost, courtNumber);
-                case F -> new FootballCourt(area, baseCost, courtNumber);
-                case T -> new TennisCourt(area, baseCost, courtNumber);
-                case V -> new VolleyballCourt(area, baseCost, courtNumber);
-            };
+            Court newCourt = new Court(area, baseCost, courtNumber);
             courts.add(newCourt);
             return newCourt;
         } else {

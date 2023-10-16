@@ -1,6 +1,5 @@
 import nbd.gV.clients.Client;
 import nbd.gV.courts.Court;
-import nbd.gV.courts.FootballCourt;
 import nbd.gV.reservations.Reservation;
 import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;
@@ -30,7 +29,7 @@ public class ReservationTest {
     void setUp() {
         testClientType = new Normal();
         testClient = new Client("John", "Smith", "123456789", testClientType);
-        testCourt = new FootballCourt(1, 100, 1);
+        testCourt = new Court(1, 100, 1);
         testUUID = UUID.randomUUID();
     }
 
@@ -84,7 +83,7 @@ public class ReservationTest {
         reservation.endReservation(now);
 
         assertEquals(3, reservation.getReservationHours());
-        assertEquals(450, reservation.getReservationCost());
+        assertEquals(300, reservation.getReservationCost());
         assertNotNull(reservation.getEndTime());
         assertEquals(now, reservation.getEndTime());
 
@@ -110,7 +109,7 @@ public class ReservationTest {
         assertThrows(ReservationException.class, () ->
                 reservation.endReservation(LocalDateTime.of(2023, Month.JUNE, 3, 20, 8)));
 
-        Court testCourt1 = new FootballCourt(1, 100, 2);
+        Court testCourt1 = new Court(1, 100, 2);
         LocalDateTime earlier = LocalDateTime.of(2023, Month.JUNE, 2, 21, 10);
         Reservation reservation2 = new Reservation(UUID.randomUUID(), testClient, testCourt1, then);
         assertNotNull(reservation2);
@@ -126,10 +125,10 @@ public class ReservationTest {
         LocalDateTime endTimeOneMinute = LocalDateTime.of(2023, Month.JUNE, 3, 20, 8);
         LocalDateTime endTimeFullHours = LocalDateTime.of(2023, Month.JUNE, 3, 22, 7);
         LocalDateTime endTimeMixHoursMinutes = LocalDateTime.of(2023, Month.JUNE, 3, 22, 8);
-        Court testCourt1 = new FootballCourt(1, 100, 2);
-        Court testCourt2 = new FootballCourt(1, 100, 3);
-        Court testCourt3 = new FootballCourt(1, 100, 4);
-        Court testCourt4 = new FootballCourt(1, 100, 4);
+        Court testCourt1 = new Court(1, 100, 2);
+        Court testCourt2 = new Court(1, 100, 3);
+        Court testCourt3 = new Court(1, 100, 4);
+        Court testCourt4 = new Court(1, 100, 4);
         Reservation reservation1 = new Reservation(UUID.randomUUID(), testClient, testCourt, beginTime);
         assertNotNull(reservation1);
         Reservation reservation2 = new Reservation(UUID.randomUUID(), testClient, testCourt1, beginTime);
@@ -172,11 +171,9 @@ public class ReservationTest {
         reservation.endReservation(now);
 
         assertTrue(reservation.getReservationHours() > testClient.getClientMaxHours());
-        assertEquals(900, reservation.getReservationCost());
+        assertEquals(600, reservation.getReservationCost());
     }
-
-
-    /*
+    
     @Test
     void testGettingReservationInfo() {
         LocalDateTime now = LocalDateTime.of(2023, Month.JUNE, 3, 22, 15);
@@ -186,18 +183,16 @@ public class ReservationTest {
         assertNotNull(reservation);
 
         String str = "Rezerwacja nr " + testUUID +
-                " przez 'Klient - John Smith o numerze PESEL 123456789' boiska: 'Boisko nr 1 " +
-                "przeznaczone do pilki noznej o powierzchni 1,00 i koszcie za rezerwacje: 150,00 PLN', " +
-                "od godziny [03.06.2023, 20:07].%n".formatted();
+                " przez 'Klient - John Smith o numerze PESEL 123456789' boiska: 'Boisko nr 1 o powierzchni 1,00 " +
+                "i koszcie za rezerwacje: 100,00 PLN', od godziny [03.06.2023, 20:07].%n".formatted();
         assertEquals(str, reservation.getReservationInfo());
 
         reservation.endReservation(now);
 
         str = ("Rezerwacja nr " + testUUID +
-                " przez 'Klient - John Smith o numerze PESEL 123456789' boiska: 'Boisko nr 1 " +
-                "przeznaczone do pilki noznej o powierzchni 1,00 i koszcie za rezerwacje: 150,00 PLN', " +
-                "od godziny [03.06.2023, 20:07] do godziny [03.06.2023, 22:15].%n").formatted();
+                " przez 'Klient - John Smith o numerze PESEL 123456789' boiska: 'Boisko nr 1 o powierzchni 1,00 " +
+                "i koszcie za rezerwacje: 100,00 PLN', od godziny [03.06.2023, 20:07] " +
+                "do godziny [03.06.2023, 22:15].%n").formatted();
         assertEquals(str, reservation.getReservationInfo());
     }
-    */
 }

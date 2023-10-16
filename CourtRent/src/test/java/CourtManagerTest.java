@@ -1,10 +1,6 @@
-import nbd.gV.courts.BasketballCourt;
 import nbd.gV.courts.Court;
 import nbd.gV.courts.CourtManager;
-import nbd.gV.courts.FootballCourt;
 import nbd.gV.Repository;
-import nbd.gV.courts.TennisCourt;
-import nbd.gV.courts.VolleyballCourt;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.MainException;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,19 +16,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CourtManagerTest {
-    Court testCourt_F;
-    Court testCourt_B;
-    Court testCourt_V;
-    Court testCourt_T;
+    Court testCourt1;
+    Court testCourt2;
+    Court testCourt3;
 
     Repository<Court> courtRepository;
 
     @BeforeEach
     void setUp() {
-        testCourt_F = new FootballCourt(100, 100, 1);
-        testCourt_B = new BasketballCourt(120, 100, 2);
-        testCourt_V = new VolleyballCourt(130, 100, 3);
-        testCourt_T = new TennisCourt(120, 100, 4);
+        testCourt1 = new Court(100, 100, 1);
+        testCourt2 = new Court(120, 100, 2);
+        testCourt3 = new Court(120, 100, 3);
         courtRepository = new Repository<>();
     }
 
@@ -42,29 +36,23 @@ public class CourtManagerTest {
         assertNotNull(cm);
         assertEquals(0, cm.getAllCourts().size());
 
-        courtRepository.add(testCourt_F);
+        courtRepository.add(testCourt1);
         assertEquals(1, cm.getAllCourts().size());
 
-        courtRepository.add(testCourt_B);
+        courtRepository.add(testCourt2);
         assertEquals(2, cm.getAllCourts().size());
-
-        courtRepository.add(testCourt_V);
-        assertEquals(3, cm.getAllCourts().size());
-
-        courtRepository.add(testCourt_T);
-        assertEquals(4, cm.getAllCourts().size());
     }
 
     @Test
     void testGettingClient() {
-        courtRepository.add(testCourt_F);
-        courtRepository.add(testCourt_T);
+        courtRepository.add(testCourt1);
+        courtRepository.add(testCourt2);
         CourtManager cm = new CourtManager(courtRepository);
         assertNotNull(cm);
 
         assertEquals(2, cm.getAllCourts().size());
-        assertEquals(testCourt_F, cm.getCourt(1));
-        assertEquals(testCourt_T, cm.getCourt(4));
+        assertEquals(testCourt1, cm.getCourt(1));
+        assertEquals(testCourt2, cm.getCourt(2));
         assertNull(cm.getCourt(8));
         assertThrows(MainException.class, () -> cm.getCourt(0));
     }
@@ -75,16 +63,16 @@ public class CourtManagerTest {
         assertNotNull(cm);
         assertEquals(0, cm.getAllCourts().size());
 
-        Court newCourt = cm.registerCourt(200, 200, 5, CourtManager.CourtType.F);
+        Court newCourt = cm.registerCourt(200, 200, 5);
         assertEquals(1, cm.getAllCourts().size());
         assertEquals(newCourt, cm.getCourt(5));
         assertThrows(CourtException.class,
-                () -> cm.registerCourt(300, 300, 5, CourtManager.CourtType.T));
+                () -> cm.registerCourt(300, 300, 5));
         assertEquals(1, cm.getAllCourts().size());
 
-        Court newCourt1 = cm.registerCourt(200, 200, 6, CourtManager.CourtType.B);
-        Court newCourt2 = cm.registerCourt(200, 200, 7, CourtManager.CourtType.T);
-        Court newCourt3 = cm.registerCourt(200, 200, 8, CourtManager.CourtType.V);
+        cm.registerCourt(200, 200, 6);
+        cm.registerCourt(200, 200, 7);
+        cm.registerCourt(200, 200, 8);
         assertEquals(4, cm.getAllCourts().size());
     }
 
@@ -93,34 +81,34 @@ public class CourtManagerTest {
         CourtManager cm = new CourtManager();
         assertNotNull(cm);
 
-        Court newCourt = cm.registerCourt(100, 100, 1, CourtManager.CourtType.B);
+        Court newCourt = cm.registerCourt(100, 100, 1);
         assertEquals(1, cm.getAllCourts().size());
         assertEquals(newCourt, cm.getCourt(1));
     }
 
     @Test
     void testUnregisteringClient() {
-        courtRepository.add(testCourt_F);
-        courtRepository.add(testCourt_B);
+        courtRepository.add(testCourt1);
+        courtRepository.add(testCourt2);
         CourtManager cm = new CourtManager(courtRepository);
         assertNotNull(cm);
 
         assertEquals(2, cm.getAllCourts().size());
-        assertEquals(testCourt_F, cm.getCourt(1));
-        assertFalse(testCourt_F.isArchive());
+        assertEquals(testCourt1, cm.getCourt(1));
+        assertFalse(testCourt1.isArchive());
 
-        cm.unregisterCourt(testCourt_F);
+        cm.unregisterCourt(testCourt1);
 
         assertEquals(1, cm.getAllCourts().size());
         assertNull(cm.getCourt(1));
-        assertTrue(testCourt_F.isArchive());
+        assertTrue(testCourt1.isArchive());
 
         // Testujemy wyrejestrowanie klienta który nie nalezy do repozytorium
         assertNull(cm.getCourt(3));
-        assertFalse(testCourt_V.isArchive());
+        assertFalse(testCourt3.isArchive());
 
-        assertThrows(CourtException.class, () -> cm.unregisterCourt(testCourt_V));
-        assertFalse(testCourt_V.isArchive());
+        assertThrows(CourtException.class, () -> cm.unregisterCourt(testCourt3));
+        assertFalse(testCourt3.isArchive());
         assertEquals(1, cm.getAllCourts().size());
 
         // Testujemy wyrejestrowanie null'a
@@ -130,22 +118,22 @@ public class CourtManagerTest {
 
     @Test
     void testFindingClients() {
-        courtRepository.add(testCourt_F);
-        courtRepository.add(testCourt_B);
-        courtRepository.add(testCourt_T);
+        courtRepository.add(testCourt1);
+        courtRepository.add(testCourt2);
+        courtRepository.add(testCourt3);
         CourtManager cm = new CourtManager(courtRepository);
         assertNotNull(cm);
 
         List<Court> courts1 = cm.findCourts((c) -> c.getArea() == 120);
         assertEquals(2, courts1.size());
-        assertEquals(testCourt_B, courts1.get(0));
-        assertEquals(testCourt_T, courts1.get(1));
+        assertEquals(testCourt2, courts1.get(0));
+        assertEquals(testCourt3, courts1.get(1));
 
         List<Court> courts2 = cm.findCourts((c) -> c.getBaseCost() == 100);
         assertEquals(3, courts2.size());
-        assertEquals(testCourt_F, courts2.get(0));
-        assertEquals(testCourt_B, courts2.get(1));
-        assertEquals(testCourt_T, courts2.get(2));
+        assertEquals(testCourt1, courts2.get(0));
+        assertEquals(testCourt2, courts2.get(1));
+        assertEquals(testCourt3, courts2.get(2));
 
         assertEquals(0, cm.findCourts((c) -> c.getBaseCost() == 200).size());
     }

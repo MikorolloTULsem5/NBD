@@ -5,7 +5,6 @@ import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Coach;
 import nbd.gV.clients.Normal;
 import nbd.gV.courts.Court;
-import nbd.gV.courts.FootballCourt;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.MainException;
@@ -58,11 +57,11 @@ public class ReservationManagerTest {
         testClient2 = new Client("Eva", "Brown", "41565646", testClientType);
         testClient3 = new Client("Adam", "Long", "81657664", testClientType);
 
-        testCourt1 = new FootballCourt(1000, 100, 1);
-        testCourt2 = new FootballCourt(1000, 100, 2);
-        testCourt3 = new FootballCourt(1000, 100, 3);
-        testCourt4 = new FootballCourt(1000, 100, 4);
-        testCourt5 = new FootballCourt(1000, 100, 5);
+        testCourt1 = new Court(1000, 100, 1);
+        testCourt2 = new Court(1000, 100, 2);
+        testCourt3 = new Court(1000, 100, 3);
+        testCourt4 = new Court(1000, 100, 4);
+        testCourt5 = new Court(1000, 100, 5);
 
 
         testCurrentReservation = new Repository<>();
@@ -216,6 +215,7 @@ public class ReservationManagerTest {
     @Test
     void testCheckingClientBalanceAndChangingType() {
         var testSuperTimeEnd = LocalDateTime.of(2023, Month.JUNE, 5, 12, 0);
+        var testSuperTimeEnd2 = LocalDateTime.of(2023, Month.JUNE, 6, 12, 0);
         testReservation1 = new Reservation(UUID.randomUUID(), testClient1, testCourt1, testTimeStart);
         testReservation2 = new Reservation(UUID.randomUUID(), testClient1, testCourt2, testTimeStart);
         testReservation3 = new Reservation(UUID.randomUUID(), testClient1, testCourt3, testTimeStart);
@@ -225,9 +225,9 @@ public class ReservationManagerTest {
         ReservationManager rm = new ReservationManager(testCurrentReservation, testArchiveReservation);
         assertNotNull(rm);
 
-        assertEquals(rm.checkClientReservationBalance(testClient1), 0);
+        assertEquals(0, rm.checkClientReservationBalance(testClient1));
         rm.returnCourt(testCourt1, testTimeEnd);
-        assertEquals(rm.checkClientReservationBalance(testClient1), 450);
+        assertEquals(300, rm.checkClientReservationBalance(testClient1));
 
         assertTrue(testClient1.getClientType() instanceof Normal);
         rm.changeClientType(testClient1);
@@ -235,13 +235,13 @@ public class ReservationManagerTest {
 
 
         rm.returnCourt(testCourt2, testSuperTimeEnd);
-        assertEquals(rm.checkClientReservationBalance(testClient1), 5625);
+        assertEquals(3750, rm.checkClientReservationBalance(testClient1));
 
         rm.changeClientType(testClient1);
         assertTrue(testClient1.getClientType() instanceof Athlete);
 
-        rm.returnCourt(testCourt3, testSuperTimeEnd);
-        assertEquals(rm.checkClientReservationBalance(testClient1), 10565);
+        rm.returnCourt(testCourt3, testSuperTimeEnd2);
+        assertEquals(10640, rm.checkClientReservationBalance(testClient1));
 
         rm.changeClientType(testClient1);
         assertTrue(testClient1.getClientType() instanceof Coach);

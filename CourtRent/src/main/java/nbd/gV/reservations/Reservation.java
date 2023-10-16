@@ -8,7 +8,8 @@ import nbd.gV.exceptions.ReservationException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+import java.util.Formatter;
+import java.util.Locale;
 import java.util.UUID;
 
 public class Reservation {
@@ -80,12 +81,12 @@ public class Reservation {
             court.setRented(false);
 
             if (getReservationHours() <= client.getClientMaxHours()) {
-                reservationCost = getReservationHours() * court.getActualReservationPrice() -
-                        client.applyDiscount(getReservationHours() * court.getActualReservationPrice());
+                reservationCost = getReservationHours() * court.getBaseCost() -
+                        client.applyDiscount(getReservationHours() * court.getBaseCost());
             } else {
-                reservationCost = court.getActualReservationPrice() *
+                reservationCost = court.getBaseCost() *
                         (client.getClientMaxHours() + (getReservationHours() - client.getClientMaxHours()) * 1.5) -
-                        client.applyDiscount(client.getClientMaxHours() * court.getActualReservationPrice());
+                        client.applyDiscount(client.getClientMaxHours() * court.getBaseCost());
             }
         } else {
             throw new ReservationException("Ta rezerwacja juz sie zakonczyla i nie mozna zmienic jej daty!");
@@ -93,11 +94,11 @@ public class Reservation {
     }
 
     public String getReservationInfo() {
-        return "Rezerwacja nr %s przez '%s' boiska: '%s', od godziny [%s]%s%n".formatted(id,
+        return new Formatter(Locale.GERMAN).format("Rezerwacja nr %s przez '%s' boiska: '%s', od godziny [%s]%s%n", id,
                 client.getClientInfo().replace("\n", ""),
                 court.getCourtInfo().replace("\n", ""),
-                beginTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)),
+                beginTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")),
                 (endTime == null) ? "." : (" do godziny [%s].".formatted(
-                        endTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))));
+                        endTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"))))).toString();
     }
 }

@@ -1,8 +1,5 @@
 import nbd.gV.courts.Court;
-import nbd.gV.courts.FootballCourt;
 import nbd.gV.Repository;
-import nbd.gV.courts.TennisCourt;
-import nbd.gV.courts.VolleyballCourt;
 import nbd.gV.exceptions.RepositoryException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,8 +19,8 @@ public class RepositoryTest {
 
     @BeforeEach
     void setUp() {
-        c1 = new VolleyballCourt(1000, 100, 1);
-        c2 = new FootballCourt(1000, 100, 2);
+        c1 = new Court(1000, 100, 1);
+        c2 = new Court(1000, 100, 2);
         c3 = null;
     }
 
@@ -86,7 +83,7 @@ public class RepositoryTest {
 
     @Test
     void testFinding() {
-        Court c4 = new TennisCourt(1000, 120, 4);
+        Court c4 = new Court(1000, 120, 4);
         assertNotNull(c4);
         Repository<Court> repo = new Repository<>(Arrays.asList(c1, c2, c4));
         assertNotNull(repo);
@@ -102,7 +99,7 @@ public class RepositoryTest {
         assertEquals(c2, list2.get(1));
         assertEquals(c4, list2.get(2));
 
-        List<Court> list3 = repo.find((c) -> c.getCourtTypeName().equals("BasketballCourt"));
+        List<Court> list3 = repo.find((c) -> c.getBaseCost() == 58123);
         assertEquals(0, list3.size());
     }
 

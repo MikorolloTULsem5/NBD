@@ -2,7 +2,10 @@ package nbd.gV.courts;
 
 import nbd.gV.exceptions.MainException;
 
-public abstract class Court {
+import java.util.Formatter;
+import java.util.Locale;
+
+public class Court {
     private double area;
     private int baseCost;
     private final int courtNumber;
@@ -58,14 +61,8 @@ public abstract class Court {
         this.rented = rented;
     }
 
-    public abstract double getActualReservationPrice();
-
     public String getCourtInfo() {
-        return "Boisko nr %d przeznaczone do [-] o powierzchni %.2f i koszcie za rezerwacje: %.2f PLN\n"
-                .formatted(getCourtNumber(), getArea(), getActualReservationPrice());
-    }
-
-    public String getCourtTypeName() {
-        return this.getClass().getSimpleName();
+        return new Formatter(Locale.GERMAN).format("Boisko nr %d o powierzchni %.2f i koszcie za " +
+                        "rezerwacje: %.2f PLN\n", getCourtNumber(), getArea(), (double) getBaseCost()).toString();
     }
 }
