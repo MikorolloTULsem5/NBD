@@ -1,15 +1,28 @@
 package nbd.gV.courts;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import nbd.gV.exceptions.MainException;
 
 import java.util.Formatter;
 import java.util.Locale;
+import java.util.UUID;
 
+@Entity
+@Table(name="court")
+@Access(value = AccessType.FIELD)
 public class Court {
+    @Id
+    private UUID courtId;
+    @NotEmpty
     private double area;
+    @NotEmpty
     private int baseCost;
-    private final int courtNumber;
+    @Column(nullable = false, unique = true)
+    private int courtNumber;
+    @NotEmpty
     private boolean archive = false;
+    @NotEmpty
     private boolean rented = false;
 
     public Court(double area, int baseCost, int courtNumber) {
@@ -19,6 +32,10 @@ public class Court {
         this.area = area;
         this.baseCost = baseCost;
         this.courtNumber = courtNumber;
+        courtId = UUID.randomUUID();
+    }
+
+    public Court() {
     }
 
     public double getArea() {

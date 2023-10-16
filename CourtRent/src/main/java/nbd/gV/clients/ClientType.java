@@ -1,5 +1,9 @@
 package nbd.gV.clients;
 
+import jakarta.persistence.*;
+
+@Embeddable
+@MappedSuperclass
 public abstract class ClientType {
     public abstract double applyDiscount(double price);
 

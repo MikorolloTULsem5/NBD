@@ -1,13 +1,29 @@
 package nbd.gV.clients;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import nbd.gV.exceptions.MainException;
 
-public class Client {
-    private String firstName;
-    private String lastName;
-    private final String personalID;
-    private boolean archive = false;
+import java.util.UUID;
 
+@Entity
+@Table(name="client")
+@Access(value = AccessType.FIELD)
+public class Client {
+
+    @Id
+    private UUID clientID;
+    @NotEmpty
+    private String firstName;
+    @NotEmpty
+    private String lastName;
+    @Column(nullable = false, unique = true)
+    private String personalID;
+    @NotEmpty
+    private boolean archive = false;
+    @Embedded
+    @AttributeOverride(name = "clientType", column = @Column(name="client_type"))
+    @NotEmpty
     private ClientType clientType;
 
     public Client(String firstName, String lastName, String personalID, ClientType clientType) {
@@ -18,6 +34,10 @@ public class Client {
         this.lastName = lastName;
         this.personalID = personalID;
         this.clientType = clientType;
+        clientID = UUID.randomUUID();
+    }
+
+    public Client() {
     }
 
     public String getFirstName() {

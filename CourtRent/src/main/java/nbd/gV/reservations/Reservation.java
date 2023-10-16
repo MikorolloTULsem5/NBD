@@ -1,5 +1,7 @@
 package nbd.gV.reservations;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import nbd.gV.clients.Client;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.MainException;
@@ -12,11 +14,22 @@ import java.util.Formatter;
 import java.util.Locale;
 import java.util.UUID;
 
+@Entity
+@Table(name = "reservation")
+@Access(value = AccessType.FIELD)
 public class Reservation {
-    private final UUID id;
-    private final Client client;
-    private final Court court;
-    private final LocalDateTime beginTime;
+    @Id
+    private UUID id;
+    @NotEmpty
+    @ManyToOne
+    @JoinColumn
+    private Client client;
+    @NotEmpty
+    @ManyToOne
+    @JoinColumn
+    private Court court;
+    @NotEmpty
+    private LocalDateTime beginTime;
     private LocalDateTime endTime = null;
     private double reservationCost;
 
@@ -29,6 +42,9 @@ public class Reservation {
         this.court = court;
         this.beginTime = (beginTime == null) ? LocalDateTime.now() : beginTime;
         court.setRented(true);
+    }
+
+    public Reservation() {
     }
 
     public UUID getId() {
