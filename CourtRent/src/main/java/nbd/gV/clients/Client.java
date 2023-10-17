@@ -2,6 +2,7 @@ package nbd.gV.clients;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import nbd.gV.exceptions.MainException;
 
 import java.util.UUID;
@@ -21,9 +22,8 @@ public class Client {
     private String personalID;
     @Column(nullable = false)
     private boolean archive = false;
-    @Embedded
-    @AttributeOverride(name = "clientType", column = @Column(name="client_type"))
-    @Column(nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @NotNull
     private ClientType clientType;
 
     public UUID getClientID() {

@@ -37,7 +37,7 @@
     <shared-cache-mode>NONE</shared-cache-mode>
     <validation-mode>CALLBACK</validation-mode>
     <properties>
-      <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/nbddb;create=true"/>
+      <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/nbddb"/>
       <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
       <property name="jakarta.persistence.jdbc.user" value="nbd"/>
       <property name="jakarta.persistence.jdbc.password" value="nbdpassword"/>

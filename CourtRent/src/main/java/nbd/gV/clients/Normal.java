@@ -1,8 +1,10 @@
 package nbd.gV.clients;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Entity;
 
-@Embeddable
+@Entity
 public class Normal extends ClientType {
     @Override
     public double applyDiscount(double price) {

@@ -2,9 +2,16 @@ package nbd.gV.clients;
 
 import jakarta.persistence.*;
 
-@Embeddable
-@MappedSuperclass
+import java.util.UUID;
+
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class ClientType {
+    @Id
+    private UUID clientTypeUUID;
+    public ClientType(){
+        clientTypeUUID = UUID.randomUUID();
+    }
     public abstract double applyDiscount(double price);
 
     public abstract int getMaxHours();
