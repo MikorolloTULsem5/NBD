@@ -1,6 +1,6 @@
 import nbd.gV.courts.Court;
 import nbd.gV.courts.CourtManager;
-import nbd.gV.Repository;
+import nbd.gV.old.OldRepository;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.MainException;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,34 +20,34 @@ public class CourtManagerTest {
     Court testCourt2;
     Court testCourt3;
 
-    Repository<Court> courtRepository;
+    OldRepository<Court> courtOldRepository;
 
     @BeforeEach
     void setUp() {
         testCourt1 = new Court(100, 100, 1);
         testCourt2 = new Court(120, 100, 2);
         testCourt3 = new Court(120, 100, 3);
-        courtRepository = new Repository<>();
+        courtOldRepository = new OldRepository<>();
     }
 
     @Test
     void testCreatingCourtManager() {
-        CourtManager cm = new CourtManager(courtRepository);
+        CourtManager cm = new CourtManager(courtOldRepository);
         assertNotNull(cm);
         assertEquals(0, cm.getAllCourts().size());
 
-        courtRepository.add(testCourt1);
+        courtOldRepository.add(testCourt1);
         assertEquals(1, cm.getAllCourts().size());
 
-        courtRepository.add(testCourt2);
+        courtOldRepository.add(testCourt2);
         assertEquals(2, cm.getAllCourts().size());
     }
 
     @Test
     void testGettingClient() {
-        courtRepository.add(testCourt1);
-        courtRepository.add(testCourt2);
-        CourtManager cm = new CourtManager(courtRepository);
+        courtOldRepository.add(testCourt1);
+        courtOldRepository.add(testCourt2);
+        CourtManager cm = new CourtManager(courtOldRepository);
         assertNotNull(cm);
 
         assertEquals(2, cm.getAllCourts().size());
@@ -59,7 +59,7 @@ public class CourtManagerTest {
 
     @Test
     void testRegisteringNewCourt() {
-        CourtManager cm = new CourtManager(courtRepository);
+        CourtManager cm = new CourtManager(courtOldRepository);
         assertNotNull(cm);
         assertEquals(0, cm.getAllCourts().size());
 
@@ -88,9 +88,9 @@ public class CourtManagerTest {
 
     @Test
     void testUnregisteringClient() {
-        courtRepository.add(testCourt1);
-        courtRepository.add(testCourt2);
-        CourtManager cm = new CourtManager(courtRepository);
+        courtOldRepository.add(testCourt1);
+        courtOldRepository.add(testCourt2);
+        CourtManager cm = new CourtManager(courtOldRepository);
         assertNotNull(cm);
 
         assertEquals(2, cm.getAllCourts().size());
@@ -118,10 +118,10 @@ public class CourtManagerTest {
 
     @Test
     void testFindingClients() {
-        courtRepository.add(testCourt1);
-        courtRepository.add(testCourt2);
-        courtRepository.add(testCourt3);
-        CourtManager cm = new CourtManager(courtRepository);
+        courtOldRepository.add(testCourt1);
+        courtOldRepository.add(testCourt2);
+        courtOldRepository.add(testCourt3);
+        CourtManager cm = new CourtManager(courtOldRepository);
         assertNotNull(cm);
 
         List<Court> courts1 = cm.findCourts((c) -> c.getArea() == 120);

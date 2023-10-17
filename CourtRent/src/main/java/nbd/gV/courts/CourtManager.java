@@ -1,6 +1,6 @@
 package nbd.gV.courts;
 
-import nbd.gV.Repository;
+import nbd.gV.old.OldRepository;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.MainException;
 
@@ -9,14 +9,14 @@ import java.util.function.Predicate;
 
 public class CourtManager {
 
-    private Repository<Court> courts;
+    private OldRepository<Court> courts;
 
-    public CourtManager(Repository<Court> courts) {
+    public CourtManager(OldRepository<Court> courts) {
         this.courts = courts;
     }
 
     public CourtManager() {
-        this(new Repository<>());
+        this(new OldRepository<>());
     }
 
     public Court registerCourt(double area, int baseCost, int courtNumber) {

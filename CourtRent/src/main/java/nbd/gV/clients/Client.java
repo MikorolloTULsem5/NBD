@@ -14,21 +14,19 @@ public class Client {
 
     @Id
     private UUID clientID;
-    @Column(nullable = false)
+    @NotEmpty
     private String firstName;
-    @Column(nullable = false)
+    @NotEmpty
     private String lastName;
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
+    @NotEmpty
+//    @Size(min = 11, max = 11)
     private String personalID;
     @Column(nullable = false)
     private boolean archive = false;
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @NotNull
     private ClientType clientType;
-
-    public UUID getClientID() {
-        return clientID;
-    }
 
     public Client(String firstName, String lastName, String personalID, ClientType clientType) {
         if (firstName.isEmpty() || lastName.isEmpty() || personalID.isEmpty() || clientType == null)
@@ -42,6 +40,10 @@ public class Client {
     }
 
     public Client() {
+    }
+
+    public UUID getClientID() {
+        return clientID;
     }
 
     public String getFirstName() {

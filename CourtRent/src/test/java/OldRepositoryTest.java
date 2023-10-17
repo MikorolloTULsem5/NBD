@@ -1,5 +1,5 @@
 import nbd.gV.courts.Court;
-import nbd.gV.Repository;
+import nbd.gV.old.OldRepository;
 import nbd.gV.exceptions.RepositoryException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class RepositoryTest {
+public class OldRepositoryTest {
     Court c1, c2, c3;
 
     @BeforeEach
@@ -26,7 +26,7 @@ public class RepositoryTest {
 
     @Test
     void testCreatingRepository() {
-        Repository<Court> repo = new Repository<>(Arrays.asList(c1, c2));
+        OldRepository<Court> repo = new OldRepository<>(Arrays.asList(c1, c2));
         assertNotNull(repo);
 
         assertEquals(2, repo.size());
@@ -36,7 +36,7 @@ public class RepositoryTest {
 
     @Test
     void testAdding() {
-        Repository<Court> repo = new Repository<>();
+        OldRepository<Court> repo = new OldRepository<>();
         assertNotNull(repo);
         assertEquals(repo.size(), 0);
 
@@ -55,7 +55,7 @@ public class RepositoryTest {
 
     @Test
     void testRemoving() {
-        Repository<Court> repo = new Repository<>();
+        OldRepository<Court> repo = new OldRepository<>();
         assertNotNull(repo);
 
         assertTrue(repo.add(c1));
@@ -74,7 +74,7 @@ public class RepositoryTest {
 
     @Test
     void testReporting() {
-        Repository<Court> repo = new Repository<>(Arrays.asList(c1, c2));
+        OldRepository<Court> repo = new OldRepository<>(Arrays.asList(c1, c2));
         assertNotNull(repo);
         assertEquals(2, repo.size());
 
@@ -85,7 +85,7 @@ public class RepositoryTest {
     void testFinding() {
         Court c4 = new Court(1000, 120, 4);
         assertNotNull(c4);
-        Repository<Court> repo = new Repository<>(Arrays.asList(c1, c2, c4));
+        OldRepository<Court> repo = new OldRepository<>(Arrays.asList(c1, c2, c4));
         assertNotNull(repo);
 
         List<Court> list = repo.find((c) -> c.getBaseCost() == 100);
@@ -105,7 +105,7 @@ public class RepositoryTest {
 
     @Test
     void testFindingByUID() {
-        Repository<Court> repo = new Repository<>(Arrays.asList(c1, c2));
+        OldRepository<Court> repo = new OldRepository<>(Arrays.asList(c1, c2));
         assertNotNull(repo);
 
         assertEquals(c1, repo.findByUID((c) -> c.getCourtNumber() == 1));

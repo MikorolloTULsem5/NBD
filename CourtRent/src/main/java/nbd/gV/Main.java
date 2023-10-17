@@ -1,16 +1,16 @@
 package nbd.gV;
 
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.Persistence;
 import nbd.gV.clients.Athlete;
 import nbd.gV.clients.Client;
-import nbd.gV.courts.Court;
+import nbd.gV.clients.Normal;
+import nbd.gV.clients.ClientManager;
 
 import java.util.UUID;
-
-import static nbd.gV.reservations.Reservation_.court;
 
 public class Main {
     public static void main(String[] args) {
