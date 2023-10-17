@@ -1,6 +1,6 @@
 import nbd.gV.clients.Client;
-import nbd.gV.clients.ClientManager;
-import nbd.gV.Repository;
+import nbd.gV.old.OldClientManager;
+import nbd.gV.old.OldRepository;
 import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;
 import nbd.gV.exceptions.ClientException;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ClientManagerTest {
+public class OldClientManagerTest {
     String testFirstName1;
     String testFirstName2;
     String testLastName1;
@@ -28,7 +28,7 @@ public class ClientManagerTest {
     Client testClient1;
     Client testClient2;
     Client testClient3;
-    Repository<Client> clientRepository;
+    OldRepository<Client> clientOldRepository;
 
     @BeforeEach
     void setUp() {
@@ -41,24 +41,24 @@ public class ClientManagerTest {
         testClient1 = new Client("Adam", "Smith", "54564211", testClientType);
         testClient2 = new Client("Eva", "Brown", "41565646", testClientType);
         testClient3 = new Client("Adam", "Long", "81657664", testClientType);
-        clientRepository = new Repository<>();
+        clientOldRepository = new OldRepository<>();
     }
 
     @Test
     void testCreatingClientManager() {
-        ClientManager cm = new ClientManager(clientRepository);
+        OldClientManager cm = new OldClientManager(clientOldRepository);
         assertNotNull(cm);
         assertEquals(0, cm.getAllClients().size());
 
-        clientRepository.add(testClient1);
+        clientOldRepository.add(testClient1);
         assertEquals(1, cm.getAllClients().size());
     }
 
     @Test
     void testGettingClient() {
-        clientRepository.add(testClient1);
-        clientRepository.add(testClient2);
-        ClientManager cm = new ClientManager(clientRepository);
+        clientOldRepository.add(testClient1);
+        clientOldRepository.add(testClient2);
+        OldClientManager cm = new OldClientManager(clientOldRepository);
         assertNotNull(cm);
 
         assertEquals(2, cm.getAllClients().size());
@@ -69,7 +69,7 @@ public class ClientManagerTest {
     }
     @Test
     void testRegisteringNewClient() {
-        ClientManager cm = new ClientManager(clientRepository);
+        OldClientManager cm = new OldClientManager(clientOldRepository);
         assertNotNull(cm);
         assertEquals(0, cm.getAllClients().size());
 
@@ -83,7 +83,7 @@ public class ClientManagerTest {
 
     @Test
     void testCreatingClientManagerWithNullDate() {
-        ClientManager cm = new ClientManager();
+        OldClientManager cm = new OldClientManager();
         assertNotNull(cm);
 
         Client newClient = cm.registerClient(testFirstName1, testLastName1, testPersonalID, testClientType);
@@ -93,9 +93,9 @@ public class ClientManagerTest {
 
     @Test
     void testUnregisteringClient() {
-        clientRepository.add(testClient1);
-        clientRepository.add(testClient2);
-        ClientManager cm = new ClientManager(clientRepository);
+        clientOldRepository.add(testClient1);
+        clientOldRepository.add(testClient2);
+        OldClientManager cm = new OldClientManager(clientOldRepository);
         assertNotNull(cm);
 
         assertEquals(2, cm.getAllClients().size());
@@ -123,10 +123,10 @@ public class ClientManagerTest {
 
     @Test
     void testFindingClients() {
-        clientRepository.add(testClient1);
-        clientRepository.add(testClient2);
-        clientRepository.add(testClient3);
-        ClientManager cm = new ClientManager(clientRepository);
+        clientOldRepository.add(testClient1);
+        clientOldRepository.add(testClient2);
+        clientOldRepository.add(testClient3);
+        OldClientManager cm = new OldClientManager(clientOldRepository);
         assertNotNull(cm);
 
         List<Client> clients1 = cm.findClients((c) -> c.getFirstName().equals("Adam"));

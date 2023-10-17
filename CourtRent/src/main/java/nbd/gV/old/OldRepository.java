@@ -1,4 +1,4 @@
-package nbd.gV;
+package nbd.gV.old;
 
 import nbd.gV.exceptions.RepositoryException;
 
@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class Repository<T> {
+public class OldRepository<T> {
     List<T> elements;
 
-    public Repository(List<T> elements) {
+    public OldRepository(List<T> elements) {
         this.elements = elements;
     }
 
-    public Repository() {
+    public OldRepository() {
         this(new ArrayList<>());
     }
 

@@ -2,6 +2,7 @@ package nbd.gV.reservations;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import nbd.gV.clients.Client;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.MainException;
@@ -20,15 +21,15 @@ import java.util.UUID;
 public class Reservation {
     @Id
     private UUID id;
-    @NotEmpty
+    @NotNull
     @ManyToOne
     @JoinColumn
     private Client client;
-    @NotEmpty
+    @NotNull
     @ManyToOne
     @JoinColumn
     private Court court;
-    @NotEmpty
+    @NotNull
     private LocalDateTime beginTime;
     private LocalDateTime endTime = null;
     private double reservationCost;

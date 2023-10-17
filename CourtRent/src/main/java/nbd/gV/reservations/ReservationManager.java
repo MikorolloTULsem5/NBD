@@ -1,6 +1,6 @@
 package nbd.gV.reservations;
 
-import nbd.gV.Repository;
+import nbd.gV.old.OldRepository;
 import nbd.gV.clients.Athlete;
 import nbd.gV.clients.Client;
 import nbd.gV.clients.Coach;
@@ -16,16 +16,16 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 public class ReservationManager {
-    private Repository<Reservation> currentReservations;
-    private Repository<Reservation> archiveReservations;
+    private OldRepository<Reservation> currentReservations;
+    private OldRepository<Reservation> archiveReservations;
 
-    public ReservationManager(Repository<Reservation> currentReservations, Repository<Reservation> archiveReservations) {
+    public ReservationManager(OldRepository<Reservation> currentReservations, OldRepository<Reservation> archiveReservations) {
         this.currentReservations = currentReservations;
         this.archiveReservations = archiveReservations;
     }
 
     public ReservationManager() {
-        this(new Repository<>(), new Repository<>());
+        this(new OldRepository<>(), new OldRepository<>());
     }
 
     public Reservation makeReservation(Client client, Court court, LocalDateTime beginTime) {

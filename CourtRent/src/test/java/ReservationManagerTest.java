@@ -1,4 +1,4 @@
-import nbd.gV.Repository;
+import nbd.gV.old.OldRepository;
 import nbd.gV.clients.Athlete;
 import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientType;
@@ -41,8 +41,8 @@ public class ReservationManagerTest {
     Reservation testReservation2;
     Reservation testReservation3;
 
-    Repository<Reservation> testCurrentReservation;
-    Repository<Reservation> testArchiveReservation;
+    OldRepository<Reservation> testCurrentReservation;
+    OldRepository<Reservation> testArchiveReservation;
 
     LocalDateTime testTimeStart;
     LocalDateTime testTimeEnd;
@@ -64,8 +64,8 @@ public class ReservationManagerTest {
         testCourt5 = new Court(1000, 100, 5);
 
 
-        testCurrentReservation = new Repository<>();
-        testArchiveReservation = new Repository<>();
+        testCurrentReservation = new OldRepository<>();
+        testArchiveReservation = new OldRepository<>();
 
         testTimeStart = LocalDateTime.of(2023, Month.JUNE, 4, 12, 0);
         testTimeEnd = LocalDateTime.of(2023, Month.JUNE, 4, 15, 0);
