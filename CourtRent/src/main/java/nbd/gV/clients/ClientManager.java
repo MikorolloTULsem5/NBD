@@ -1,8 +1,16 @@
 package nbd.gV.clients;
 
-
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import nbd.gV.exceptions.ClientException;
+import nbd.gV.exceptions.CourtException;
+import nbd.gV.exceptions.JakartaException;
 import nbd.gV.exceptions.MainException;
 import nbd.gV.repositories.ClientRepository;
+
+import java.util.List;
+import java.util.UUID;
 
 public class ClientManager {
 
@@ -18,7 +26,11 @@ public class ClientManager {
 
     public Client registerClient(String firstName, String lastName, String personalID, ClientType clientType) {
         Client newClient = new Client(firstName, lastName, personalID, clientType);
-        clientRepository.create(newClient);
+        try {
+            clientRepository.create(newClient);
+        } catch (JakartaException exception) {
+            throw new ClientException("Nie udalo sie zarejestrowac klienta w bazie!");
+        }
         return newClient;
     }
 
@@ -26,22 +38,36 @@ public class ClientManager {
         if (client == null) {
             throw new MainException("Nie mozna wyrejestrowac nieistniejacego klienta!");
         }
-        clientRepository.delete(client);
-        client.setArchive(true);
+        try {
+            client.setArchive(true);
+            clientRepository.update(client);
+        } catch (JakartaException exception) {
+            throw new JakartaException(("Nie udalo sie wyrejestrowac podanego klienta!"));
+        }
     }
 
-//    public Client getClient(String personalID) {
-//        if (personalID.isEmpty()) {
-//            throw new MainException("Podano niewlasciwy numer PESEL - pole jest puste");
-//        }
-//        return clients.findByUID((c) -> c.getPersonalID().equals(personalID));
-//    }
-//
-//    public List<Client> findClients(Predicate<Client> predicate) {
-//        return clients.find(predicate);
-//    }
-//
-//    public List<Client> getAllClients() {
-//        return clients.find((c) -> true);
-//    }
+    public Client getClient(UUID clientID) {
+        try {
+            return clientRepository.findByUUID(clientID);
+        } catch (JakartaException exception) {
+            throw new ClientException("Blad transakcji.");
+        }
+    }
+
+    public List<Client> getAllClients() {
+        try {
+            return clientRepository.findAll();
+        } catch (JakartaException exception) {
+            throw new CourtException("Nie udalo sie uzyskac clientow.");
+        }
+    }
+
+    public Client findCourtByPersonalId(String personalId) {
+        CriteriaBuilder cb = clientRepository.getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Client> query = cb.createQuery(Client.class);
+        Root<Client> clientRoot = query.from(Client.class);
+        query.select(clientRoot).where(cb.equal(clientRoot.get(Client_.PERSONAL_ID), personalId));
+        List<Client> result = clientRepository.find(query);
+        return result.isEmpty() ? null : result.get(0);
+    }
 }

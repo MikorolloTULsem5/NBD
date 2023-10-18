@@ -4,31 +4,29 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import nbd.gV.exceptions.JakartaException;
-import nbd.gV.old.OldRepository;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.MainException;
 import nbd.gV.repositories.CourtRepository;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 public class CourtManager {
 
-    private CourtRepository repository;
+    private final CourtRepository courtRepository;
 
     public CourtManager(String unitName) {
-        repository = new CourtRepository(unitName);
+        courtRepository = new CourtRepository(unitName);
     }
 
     public CourtManager() {
-        repository = new CourtRepository("default");
+        courtRepository = new CourtRepository("default");
     }
 
     public Court registerCourt(double area, int baseCost, int courtNumber) {
         Court court = new Court(area, baseCost, courtNumber);
         try {
-            repository.create(court);
+            courtRepository.create(court);
         } catch (JakartaException exception) {
             throw new CourtException("Nie udalo sie dodac boiska.");
         }
@@ -47,9 +45,10 @@ public class CourtManager {
             throw new MainException("Nie mozna wyrejestrowac nieistniejacego boiska!");
         }
         try {
-            repository.update(court);
             court.setArchive(true);
+            courtRepository.update(court);
         } catch (JakartaException exception) {
+            court.setArchive(false);
             throw new CourtException("Nie udalo sie wyrejestrowac podanego boiska.");
         }
 //        if (courts.findByUID((c) -> c.getCourtNumber() == court.getCourtNumber()) != null) {
@@ -63,31 +62,27 @@ public class CourtManager {
 
     public Court getCourt(UUID courtID) {
         try {
-            return repository.findByUUID(courtID);
+            return courtRepository.findByUUID(courtID);
         } catch (JakartaException exception) {
             throw new CourtException("Blad transakcji.");
         }
     }
 
-//    public List<Court> findCourts(Predicate<Court> predicate) {
-//        return courts.find(predicate);
-//    }
 
     public List<Court> getAllCourts() {
         try {
-            return repository.findAll();
+            return courtRepository.findAll();
         } catch (JakartaException exception) {
             throw new CourtException("Nie udalo sie uzyskac boisk.");
         }
     }
 
     public Court findCourtByCourtNumber(int courtNumber) {
-        Court returnCourt;
-        CriteriaBuilder cb = repository.getEntityManager().getCriteriaBuilder();
+        CriteriaBuilder cb = courtRepository.getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Court> query = cb.createQuery(Court.class);
         Root<Court> courtRoot = query.from(Court.class);
         query.select(courtRoot).where(cb.equal(courtRoot.get(Court_.COURT_NUMBER), courtNumber));
-        List<Court> result = repository.find(query);
+        List<Court> result = courtRepository.find(query);
         return result.isEmpty() ? null : result.get(0);
     }
 }

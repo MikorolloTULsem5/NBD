@@ -1,6 +1,7 @@
 package nbd.gV.repositories;
 
 import jakarta.persistence.*;
+import nbd.gV.courts.Court;
 import nbd.gV.exceptions.JakartaException;
 import jakarta.persistence.criteria.CriteriaQuery;
 
@@ -60,5 +61,17 @@ public abstract class Repository<T> {
 
     public abstract List<T> findAll();
 
-    public abstract List<T> find(CriteriaQuery<T> query);
+//    public abstract List<T> find(CriteriaQuery<T> query);
+
+    public List<T> find(CriteriaQuery<T> query) {
+        List<T> returnList;
+        try {
+            getEntityManager().getTransaction().begin();
+            returnList = getEntityManager().createQuery(query).setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
+            getEntityManager().getTransaction().commit();
+        } catch (IllegalStateException | IllegalArgumentException exception){
+            throw new JakartaException(exception.getMessage());
+        }
+        return returnList;
+    }
 }

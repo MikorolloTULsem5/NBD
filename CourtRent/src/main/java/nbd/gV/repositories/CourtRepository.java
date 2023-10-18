@@ -1,7 +1,9 @@
 package nbd.gV.repositories;
 
 import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockTimeoutException;
 import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PessimisticLockException;
 import jakarta.persistence.TransactionRequiredException;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -24,7 +26,8 @@ public class CourtRepository extends Repository<Court>{
             getEntityManager().getTransaction().begin();
             returnCourt = getEntityManager().find(Court.class, identifier, LockModeType.PESSIMISTIC_READ);
             getEntityManager().getTransaction().commit();
-        }catch (IllegalArgumentException | TransactionRequiredException | OptimisticLockException exception) {
+        }catch (IllegalArgumentException | TransactionRequiredException | PessimisticLockException
+                | LockTimeoutException exception) {
             getEntityManager().getTransaction().rollback();
             throw new JakartaException(exception.getMessage());
         }
@@ -45,20 +48,20 @@ public class CourtRepository extends Repository<Court>{
             getEntityManager().getTransaction().rollback();
             throw new JakartaException(exception.getMessage());
         }
-        CriteriaQuery<Court> query;
         return courtList;
     }
 
-    @Override
-    public List<Court> find(CriteriaQuery<Court> query) {
-        List<Court> returnList;
-        try {
-            getEntityManager().getTransaction().begin();
-            returnList = getEntityManager().createQuery(query).setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
-            getEntityManager().getTransaction().commit();
-        } catch (IllegalStateException | IllegalArgumentException exception){
-            throw new JakartaException(exception.getMessage());
-        }
-        return returnList;
-    }
+//    @Override
+//    public List<Court> find(CriteriaQuery<Court> query) {
+//        List<Court> returnList;
+//        try {
+//            getEntityManager().getTransaction().begin();
+//            returnList = getEntityManager().createQuery(query).setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
+//            getEntityManager().getTransaction().commit();
+//        } catch (IllegalStateException | IllegalArgumentException exception){
+//            getEntityManager().getTransaction().rollback();
+//            throw new JakartaException(exception.getMessage());
+//        }
+//        return returnList;
+//    }
 }
