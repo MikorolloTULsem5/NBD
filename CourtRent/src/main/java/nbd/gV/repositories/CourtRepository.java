@@ -37,8 +37,8 @@ public class CourtRepository extends Repository<Court>{
         try{
             getEntityManager().getTransaction().begin();
             CriteriaQuery<Court> findAllCourts = getEntityManager().getCriteriaBuilder().createQuery(Court.class);
-            Root<Court> screeningRoomRoot = findAllCourts.from(Court.class);
-            findAllCourts.select(screeningRoomRoot);
+            Root<Court> courtRoot = findAllCourts.from(Court.class);
+            findAllCourts.select(courtRoot);
             courtList = getEntityManager().createQuery(findAllCourts).setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
             getEntityManager().getTransaction().commit();
         } catch (IllegalStateException | IllegalArgumentException exception){
