@@ -1,55 +1,44 @@
 package nbd.gV.reservations;
 
-import nbd.gV.old.OldRepository;
-import nbd.gV.clients.Athlete;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import nbd.gV.exceptions.*;
 import nbd.gV.clients.Client;
-import nbd.gV.clients.Coach;
 import nbd.gV.courts.Court;
-import nbd.gV.exceptions.ClientException;
-import nbd.gV.exceptions.CourtException;
-import nbd.gV.exceptions.MainException;
-import nbd.gV.exceptions.ReservationException;
+import nbd.gV.repositories.ReservationRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 public class ReservationManager {
-    private OldRepository<Reservation> currentReservations;
-    private OldRepository<Reservation> archiveReservations;
+    private ReservationRepository reservationRepository;
 
-    public ReservationManager(OldRepository<Reservation> currentReservations, OldRepository<Reservation> archiveReservations) {
-        this.currentReservations = currentReservations;
-        this.archiveReservations = archiveReservations;
+    public ReservationManager(String unitName) {
+        reservationRepository = new ReservationRepository(unitName);
     }
 
     public ReservationManager() {
-        this(new OldRepository<>(), new OldRepository<>());
+        reservationRepository = new ReservationRepository("default");
     }
 
+    //Rezerwacji mozna dokonac tylko obiektami ktore juz znajduja sie w bazie danych
     public Reservation makeReservation(Client client, Court court, LocalDateTime beginTime) {
         if (client == null || court == null) {
             throw new MainException("Jeden z podanych parametrow [client/court] prowadzi do nieistniejacego obiektu!");
         }
-
-        ///TODO przy bazie danych warunek do wywalenia
-        if (!court.isRented() && !client.isArchive() && !court.isArchive()) {
-            Reservation newReservation = new Reservation(UUID.randomUUID(), client, court, beginTime);
-            currentReservations.add(newReservation);
-            return newReservation;
-        } else if (client.isArchive()) {
-            throw new ClientException("Nie udalo sie utworzyc rezerwacji - klient jest archiwalny!");
-        } else if (court.isArchive()) {
-            throw new CourtException("Nie udalo sie utworzyc rezerwacji - boisko jest archiwalne!");
-        }
-        else {
-            throw new ReservationException("To boisko jest aktualnie wypozyczone!");
+        try {
+            Reservation reservation = reservationRepository.create(client,court,beginTime);
+            return reservation;
+        } catch (JakartaException exception) {
+            throw new ReservationException("Blad transakcji.");
         }
     }
 
     public Reservation makeReservation(Client client, Court court) {
-        return makeReservation(client, court, null);
+        return makeReservation(client, court, LocalDateTime.now());
     }
 
     public void returnCourt(Court court, LocalDateTime endTime) {
@@ -58,33 +47,52 @@ public class ReservationManager {
         } else if (!court.isRented()) {
             throw new CourtException("Nie mozna zwrocic niewypozyczonego boiska!");
         } else {
-            Reservation reservation = getCourtReservation(court);
-            reservation.endReservation(endTime);
-            archiveReservations.add(reservation);
-            currentReservations.remove(reservation);
+            try {
+                reservationRepository.update(court,endTime);
+            } catch (JakartaException exception) {
+                throw new ReservationException("Blad transakcji.");
+            }
         }
     }
 
     public void returnCourt(Court court) {
-        returnCourt(court, null);
+        returnCourt(court, LocalDateTime.now());
     }
 
     public List<Reservation> getAllClientReservations(Client client) {
         if (client == null) {
             throw new MainException("Nie istniejacy klient nie moze posiadac rezerwacji!");
         }
-        return currentReservations.find((r) -> r.getClient() == client);
+        CriteriaBuilder cb = reservationRepository.getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Reservation> query = cb.createQuery(Reservation.class);
+        Root<Reservation> reservationRoot = query.from(Reservation.class);
+        query.select(reservationRoot).where(cb.equal(reservationRoot.get(Reservation_.CLIENT), client));
+        List<Reservation> result = reservationRepository.find(query);
+        return result.isEmpty() ? null : result;
+    }
+
+    public List<Reservation> getClientEndedReservations(Client client) {
+        if (client == null) {
+            throw new MainException("Nie istniejacy klient nie moze posiadac rezerwacji!");
+        }
+        CriteriaBuilder cb = reservationRepository.getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Reservation> query = cb.createQuery(Reservation.class);
+        Root<Reservation> reservationRoot = query.from(Reservation.class);
+        query.select(reservationRoot).where(cb.and(cb.equal(reservationRoot.get(Reservation_.CLIENT), client), cb.isNotNull(reservationRoot.get(Reservation_.END_TIME))));
+        List<Reservation> result = reservationRepository.find(query);
+        return result;
     }
 
     public Reservation getCourtReservation(Court court) {
         if (court == null) {
             throw new MainException("Nie istniejace boisko nie moze posiadac rezerwacji!");
         }
-        try {
-            return currentReservations.find((r) -> r.getCourt() == court).get(0);
-        } catch (IndexOutOfBoundsException ex) {
-            throw new CourtException("To boisko nie jest aktualnie zarezerwowane!");
-        }
+        CriteriaBuilder cb = reservationRepository.getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Reservation> query = cb.createQuery(Reservation.class);
+        Root<Reservation> reservationRoot = query.from(Reservation.class);
+        query.select(reservationRoot).where(cb.equal(reservationRoot.get(Reservation_.COURT), court));
+        List<Reservation> result = reservationRepository.find(query);
+        return result.isEmpty() ? null : result.get(0);
     }
 
     public double checkClientReservationBalance(Client client) {
@@ -92,42 +100,33 @@ public class ReservationManager {
             throw new MainException("Nie mozna obliczyc salda dla nieistniejacego klienta!");
         }
         double sum = 0;
-        for (var reservation : archiveReservations.find((r) -> r.getClient() == client)) {
+        List<Reservation> reservationList = getClientEndedReservations(client);
+        for (Reservation reservation : reservationList) {
             sum += reservation.getReservationCost();
         }
         return sum;
     }
 
-    public void changeClientType(Client client) {
-        if (client == null) {
-            throw new MainException("Nie mozna zmienic typu nieistniejacego klienta!");
-        }
-        double balance = checkClientReservationBalance(client);
-        if (balance > 10000) {
-            client.setClientType(new Coach());
-        } else if (balance > 3000) {
-            client.setClientType(new Athlete());
-        }
-    }
-
-    public List<Reservation> findReservations(Predicate<Reservation> reservationPredicate,
-                                              boolean searchArchiveReservation) {
-        if (searchArchiveReservation) {
-            return archiveReservations.find(reservationPredicate);
-        } else {
-            return currentReservations.find(reservationPredicate);
-        }
-    }
-
-    public List<Reservation> findReservations(Predicate<Reservation> reservationPredicate) {
-        return findReservations(reservationPredicate, false);
-    }
-
     public List<Reservation> getAllCurrentReservations() {
-        return currentReservations.find((r) -> true);
+        CriteriaBuilder cb = reservationRepository.getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Reservation> query = cb.createQuery(Reservation.class);
+        Root<Reservation> reservationRoot = query.from(Reservation.class);
+        query.select(reservationRoot).where(cb.isNull(reservationRoot.get(Reservation_.END_TIME)));
+        List<Reservation> result = reservationRepository.find(query);
+        return result;
     }
 
     public List<Reservation> getAllArchiveReservations() {
-        return archiveReservations.find((r) -> true);
+        CriteriaBuilder cb = reservationRepository.getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Reservation> query = cb.createQuery(Reservation.class);
+        Root<Reservation> reservationRoot = query.from(Reservation.class);
+        query.select(reservationRoot).where(cb.isNotNull(reservationRoot.get(Reservation_.END_TIME)));
+        List<Reservation> result = reservationRepository.find(query);
+        return result;
     }
+
+    public Reservation getReservationByID(UUID uuid){
+        return reservationRepository.findByUUID(uuid);
+    }
+
 }

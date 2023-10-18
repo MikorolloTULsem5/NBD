@@ -31,13 +31,6 @@ public class CourtManager {
             throw new CourtException("Nie udalo sie dodac boiska.");
         }
         return court;
-//        if (courts.findByUID((c) -> c.getCourtNumber() == courtNumber) == null) {
-//            Court newCourt = new Court(area, baseCost, courtNumber);
-//            courts.add(newCourt);
-//            return newCourt;
-//        } else {
-//            throw new CourtException("Boisko o tym numerze juz istnieje w repozytorium!");
-//        }
     }
 
     public void unregisterCourt(Court court) {
@@ -51,13 +44,6 @@ public class CourtManager {
             court.setArchive(false);
             throw new CourtException("Nie udalo sie wyrejestrowac podanego boiska.");
         }
-//        if (courts.findByUID((c) -> c.getCourtNumber() == court.getCourtNumber()) != null) {
-//            if (courts.remove(court)) {
-//                court.setArchive(true);
-//            }
-//        } else {
-//            throw new CourtException("Podane do wyrejestrowania boisko, nie znajduje sie w repozytorium!");
-//        }
     }
 
     public Court getCourt(UUID courtID) {

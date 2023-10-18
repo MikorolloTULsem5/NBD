@@ -16,12 +16,12 @@ public class ClientManager {
 
     private final ClientRepository clientRepository;
 
-    public ClientManager(ClientRepository clientRepository) {
-        this.clientRepository = clientRepository;
+    public ClientManager(String unitName) {
+        this.clientRepository = new ClientRepository(unitName);
     }
 
     public ClientManager() {
-        this(new ClientRepository("default"));
+        this.clientRepository = new ClientRepository("default");
     }
 
     public Client registerClient(String firstName, String lastName, String personalID, ClientType clientType) {
