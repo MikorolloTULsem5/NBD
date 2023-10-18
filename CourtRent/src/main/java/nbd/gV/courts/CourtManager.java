@@ -1,5 +1,8 @@
 package nbd.gV.courts;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import nbd.gV.exceptions.JakartaException;
 import nbd.gV.old.OldRepository;
 import nbd.gV.exceptions.CourtException;
@@ -23,10 +26,10 @@ public class CourtManager {
     }
 
     public Court registerCourt(double area, int baseCost, int courtNumber) {
-        Court court = new Court(area,baseCost,courtNumber);
+        Court court = new Court(area, baseCost, courtNumber);
         try {
             repository.create(court);
-        } catch (JakartaException exception){
+        } catch (JakartaException exception) {
             throw new CourtException("Nie udalo sie dodac boiska.");
         }
         return court;
@@ -61,7 +64,7 @@ public class CourtManager {
     public Court getCourt(UUID courtID) {
         try {
             return repository.findByUUID(courtID);
-        } catch (JakartaException exception){
+        } catch (JakartaException exception) {
             throw new CourtException("Blad transakcji.");
         }
     }
@@ -73,8 +76,18 @@ public class CourtManager {
     public List<Court> getAllCourts() {
         try {
             return repository.findAll();
-        } catch (JakartaException exception){
+        } catch (JakartaException exception) {
             throw new CourtException("Nie udalo sie uzyskac boisk.");
         }
+    }
+
+    public Court findCourtByCourtNumber(int courtNumber) {
+        Court returnCourt;
+        CriteriaBuilder cb = repository.getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Court> query = cb.createQuery(Court.class);
+        Root<Court> courtRoot = query.from(Court.class);
+        query.select(courtRoot).where(cb.equal(courtRoot.get(Court_.COURT_NUMBER), courtNumber));
+        List<Court> result = repository.find(query);
+        return result.isEmpty() ? null : result.get(0);
     }
 }

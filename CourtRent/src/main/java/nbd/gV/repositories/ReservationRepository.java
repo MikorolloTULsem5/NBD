@@ -46,4 +46,9 @@ public class ReservationRepository extends Repository<Reservation> {
         }
         return reservationList;
     }
+
+    @Override
+    public List<Reservation> find(CriteriaQuery<Reservation> query) {
+        return null;
+    }
 }

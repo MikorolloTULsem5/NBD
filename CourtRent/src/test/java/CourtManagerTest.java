@@ -105,4 +105,20 @@ public class CourtManagerTest {
         assertThrows(MainException.class, () -> cm.unregisterCourt(null));
         assertEquals(2, cm.getAllCourts().size());
     }
+
+    @Test
+    public void testFindByCourtNumber(){
+        CourtManager cm = new CourtManager("test");
+        assertNotNull(cm);
+
+        Court testCourt1 = cm.registerCourt(10,50,1);
+        assertEquals(1, cm.getAllCourts().size());
+        Court testCourt2 = cm.registerCourt(14,67,2);
+        assertEquals(2, cm.getAllCourts().size());
+
+        Court newCourt = cm.findCourtByCourtNumber(1);
+        assertEquals(testCourt1, newCourt);
+        Court newCourt2 = cm.findCourtByCourtNumber(4);
+        assertEquals(null, newCourt2);
+    }
 }

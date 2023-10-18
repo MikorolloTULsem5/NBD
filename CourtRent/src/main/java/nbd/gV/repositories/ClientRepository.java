@@ -1,5 +1,6 @@
 package nbd.gV.repositories;
 
+import jakarta.persistence.criteria.CriteriaQuery;
 import nbd.gV.clients.Client;
 
 import java.util.List;
@@ -18,6 +19,11 @@ public class ClientRepository extends Repository<Client> {
 
     @Override
     public List<Client> findAll() {
+        return null;
+    }
+
+    @Override
+    public List<Client> find(CriteriaQuery<Client> query) {
         return null;
     }
 }

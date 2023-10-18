@@ -45,6 +45,20 @@ public class CourtRepository extends Repository<Court>{
             getEntityManager().getTransaction().rollback();
             throw new JakartaException(exception.getMessage());
         }
+        CriteriaQuery<Court> query;
         return courtList;
+    }
+
+    @Override
+    public List<Court> find(CriteriaQuery<Court> query) {
+        List<Court> returnList;
+        try {
+            getEntityManager().getTransaction().begin();
+            returnList = getEntityManager().createQuery(query).setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
+            getEntityManager().getTransaction().commit();
+        } catch (IllegalStateException | IllegalArgumentException exception){
+            throw new JakartaException(exception.getMessage());
+        }
+        return returnList;
     }
 }

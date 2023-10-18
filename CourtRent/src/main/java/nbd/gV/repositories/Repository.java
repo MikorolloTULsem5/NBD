@@ -2,6 +2,7 @@ package nbd.gV.repositories;
 
 import jakarta.persistence.*;
 import nbd.gV.exceptions.JakartaException;
+import jakarta.persistence.criteria.CriteriaQuery;
 
 import java.util.List;
 import java.util.UUID;
@@ -58,4 +59,6 @@ public abstract class Repository<T> {
     public abstract T findByUUID(UUID identifier);
 
     public abstract List<T> findAll();
+
+    public abstract List<T> find(CriteriaQuery<T> query);
 }
