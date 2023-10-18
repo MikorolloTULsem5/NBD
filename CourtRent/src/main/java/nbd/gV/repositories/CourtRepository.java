@@ -20,7 +20,7 @@ public class CourtRepository extends Repository<Court> {
 
     @Override
     public Court findByUUID(UUID identifier) {
-        Court returnCourt = null;
+        Court returnCourt;
         try {
             getEntityManager().getTransaction().begin();
             returnCourt = getEntityManager().find(Court.class, identifier, LockModeType.PESSIMISTIC_READ);

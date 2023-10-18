@@ -21,11 +21,9 @@ public class CourtManagerTest {
     private final CourtRepository courtRepository = new CourtRepository("test");
 
     @AfterEach
-    public void cleanDataBase(){
+    void cleanDataBase(){
         List<Court> listOfCourts = courtRepository.findAll();
-        for (Court court : listOfCourts) {
-            courtRepository.delete(court);
-        }
+        listOfCourts.forEach(courtRepository::delete);
     }
 
     @Test
@@ -45,8 +43,7 @@ public class CourtManagerTest {
         assertNotNull(newCourt);
         assertEquals(1, cm.getAllCourts().size());
         assertEquals(newCourt, cm.getCourt(newCourt.getCourtId()));
-        assertThrows(CourtException.class,
-                () -> cm.registerCourt(300, 300, 5));
+        assertThrows(CourtException.class, () -> cm.registerCourt(300, 300, 5));
         assertEquals(1, cm.getAllCourts().size());
 
         cm.registerCourt(200, 200, 6);
@@ -96,7 +93,7 @@ public class CourtManagerTest {
         assertNotNull(dbCourt);
         assertTrue(dbCourt.isArchive());
 
-        // Testujemy wyrejestrowanie klienta który nie nalezy do repozytorium
+        // Testujemy wyrejestrowanie boiska ktore nie nalezy do repozytorium
         Court testCourt3 = new Court(41,11,3);
         assertNotNull(testCourt3);
         assertFalse(testCourt3.isArchive());

@@ -21,7 +21,7 @@ public class ClientRepository extends Repository<Client> {
 
     @Override
     public Client findByUUID(UUID identifier) {
-        Client returnClient = null;
+        Client returnClient;
         try{
             getEntityManager().getTransaction().begin();
             returnClient = getEntityManager().find(Client.class, identifier, LockModeType.PESSIMISTIC_READ);
@@ -36,20 +36,10 @@ public class ClientRepository extends Repository<Client> {
 
     @Override
     public List<Client> findAll() {
-        List<Client> clientList = null;
-        try{
-            getEntityManager().getTransaction().begin();
-            CriteriaQuery<Client> findAllClients = getEntityManager().getCriteriaBuilder().createQuery(Client.class);
-            Root<Client> clientRoot = findAllClients.from(Client.class);
-            findAllClients.select(clientRoot);
-            clientList = getEntityManager().createQuery(findAllClients).setLockMode(LockModeType.PESSIMISTIC_READ)
-                    .getResultList();
-            getEntityManager().getTransaction().commit();
-        } catch (IllegalStateException | IllegalArgumentException exception){
-            getEntityManager().getTransaction().rollback();
-            throw new JakartaException(exception.getMessage());
-        }
-        return clientList;
+        CriteriaQuery<Client> findAllClients = getEntityManager().getCriteriaBuilder().createQuery(Client.class);
+        Root<Client> courtClient = findAllClients.from(Client.class);
+        findAllClients.select(courtClient);
+        return find(findAllClients);
     }
 
 //    @Override

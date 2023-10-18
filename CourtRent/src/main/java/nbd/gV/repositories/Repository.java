@@ -22,7 +22,7 @@ public abstract class Repository<T> {
             entityManager.getTransaction().begin();
             entityManager.persist(element);
             entityManager.getTransaction().commit();
-        } catch (PersistenceException | IllegalStateException exception) {
+        } catch (PersistenceException | IllegalArgumentException | IllegalStateException exception) {
             entityManager.getTransaction().rollback();
             throw new JakartaException(exception.getMessage());
         }
@@ -34,7 +34,7 @@ public abstract class Repository<T> {
             entityManager.lock(element, LockModeType.PESSIMISTIC_WRITE);
             entityManager.remove(element);
             entityManager.getTransaction().commit();
-        } catch (PersistenceException | IllegalStateException exception) {
+        } catch (PersistenceException | IllegalArgumentException | IllegalStateException exception) {
             entityManager.getTransaction().rollback();
             throw new JakartaException(exception.getMessage());
         }
@@ -46,7 +46,7 @@ public abstract class Repository<T> {
             entityManager.lock(element, LockModeType.PESSIMISTIC_WRITE);
             entityManager.merge(element);
             entityManager.getTransaction().commit();
-        } catch (PersistenceException | IllegalArgumentException |IllegalStateException exception) {
+        } catch (PersistenceException | IllegalArgumentException | IllegalStateException exception) {
             entityManager.getTransaction().rollback();
             throw new JakartaException(exception.getMessage());
         }
@@ -68,7 +68,7 @@ public abstract class Repository<T> {
             getEntityManager().getTransaction().begin();
             returnList = getEntityManager().createQuery(query).setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
             getEntityManager().getTransaction().commit();
-        } catch (IllegalStateException | IllegalArgumentException exception){
+        } catch (IllegalStateException | IllegalArgumentException exception) {
             throw new JakartaException(exception.getMessage());
         }
         return returnList;
