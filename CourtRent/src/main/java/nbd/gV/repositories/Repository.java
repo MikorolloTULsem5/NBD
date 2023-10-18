@@ -45,7 +45,7 @@ public abstract class Repository<T> {
             entityManager.lock(element, LockModeType.PESSIMISTIC_WRITE);
             entityManager.merge(element);
             entityManager.getTransaction().commit();
-        } catch (PersistenceException | IllegalStateException exception) {
+        } catch (PersistenceException | IllegalArgumentException |IllegalStateException exception) {
             entityManager.getTransaction().rollback();
             throw new JakartaException(exception.getMessage());
         }
