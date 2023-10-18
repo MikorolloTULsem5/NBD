@@ -57,6 +57,9 @@
                                     </limits>
                                 </rule>
                             </rules>
+<!--                            <excludes>-->
+<!--                                <exclude>old/**/*</exclude>-->
+<!--                            </excludes>-->
                         </configuration>
                     </execution>
                 </executions>

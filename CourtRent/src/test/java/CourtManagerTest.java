@@ -1,12 +1,9 @@
 import nbd.gV.courts.Court;
 import nbd.gV.courts.CourtManager;
-import nbd.gV.old.OldRepository;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.MainException;
 import nbd.gV.repositories.CourtRepository;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -45,6 +42,7 @@ public class CourtManagerTest {
         assertEquals(0, cm.getAllCourts().size());
 
         Court newCourt = cm.registerCourt(200, 200, 5);
+        assertNotNull(newCourt);
         assertEquals(1, cm.getAllCourts().size());
         assertEquals(newCourt, cm.getCourt(newCourt.getCourtId()));
         assertThrows(CourtException.class,
@@ -63,9 +61,11 @@ public class CourtManagerTest {
         assertNotNull(cm);
 
         Court testCourt1 = cm.registerCourt(10,50,1);
+        assertNotNull(testCourt1);
         assertEquals(1, cm.getAllCourts().size());
 
         Court testCourt2 = cm.registerCourt(14,67,2);
+        assertNotNull(testCourt2);
         assertEquals(2, cm.getAllCourts().size());
 
         assertEquals(testCourt1, cm.getCourt(testCourt1.getCourtId()));
@@ -79,8 +79,10 @@ public class CourtManagerTest {
         assertNotNull(cm);
 
         Court testCourt1 = cm.registerCourt(10,50,1);
+        assertNotNull(testCourt1);
         assertEquals(1, cm.getAllCourts().size());
         Court testCourt2 = cm.registerCourt(14,67,2);
+        assertNotNull(testCourt2);
         assertEquals(2, cm.getAllCourts().size());
 
         assertEquals(2, cm.getAllCourts().size());
@@ -91,10 +93,12 @@ public class CourtManagerTest {
 
         assertEquals(2, cm.getAllCourts().size());
         Court dbCourt = cm.getCourt(testCourt1.getCourtId());
+        assertNotNull(dbCourt);
         assertTrue(dbCourt.isArchive());
 
         // Testujemy wyrejestrowanie klienta który nie nalezy do repozytorium
         Court testCourt3 = new Court(41,11,3);
+        assertNotNull(testCourt3);
         assertFalse(testCourt3.isArchive());
 
         assertThrows(CourtException.class, () -> cm.unregisterCourt(testCourt3));
@@ -112,13 +116,16 @@ public class CourtManagerTest {
         assertNotNull(cm);
 
         Court testCourt1 = cm.registerCourt(10,50,1);
+        assertNotNull(testCourt1);
         assertEquals(1, cm.getAllCourts().size());
         Court testCourt2 = cm.registerCourt(14,67,2);
+        assertNotNull(testCourt2);
         assertEquals(2, cm.getAllCourts().size());
 
         Court newCourt = cm.findCourtByCourtNumber(1);
+        assertNotNull(newCourt);
         assertEquals(testCourt1, newCourt);
         Court newCourt2 = cm.findCourtByCourtNumber(4);
-        assertEquals(null, newCourt2);
+        assertNull(newCourt2);
     }
 }

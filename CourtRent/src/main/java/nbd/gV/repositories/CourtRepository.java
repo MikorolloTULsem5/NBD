@@ -2,7 +2,6 @@ package nbd.gV.repositories;
 
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.LockTimeoutException;
-import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.PessimisticLockException;
 import jakarta.persistence.TransactionRequiredException;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -13,7 +12,7 @@ import nbd.gV.exceptions.JakartaException;
 import java.util.List;
 import java.util.UUID;
 
-public class CourtRepository extends Repository<Court>{
+public class CourtRepository extends Repository<Court> {
 
     public CourtRepository(String unitName) {
         super(unitName);
@@ -22,12 +21,12 @@ public class CourtRepository extends Repository<Court>{
     @Override
     public Court findByUUID(UUID identifier) {
         Court returnCourt = null;
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             returnCourt = getEntityManager().find(Court.class, identifier, LockModeType.PESSIMISTIC_READ);
             getEntityManager().getTransaction().commit();
-        }catch (IllegalArgumentException | TransactionRequiredException | PessimisticLockException
-                | LockTimeoutException exception) {
+        } catch (IllegalArgumentException | TransactionRequiredException | PessimisticLockException
+                 | LockTimeoutException exception) {
             getEntityManager().getTransaction().rollback();
             throw new JakartaException(exception.getMessage());
         }
@@ -36,19 +35,10 @@ public class CourtRepository extends Repository<Court>{
 
     @Override
     public List<Court> findAll() {
-        List<Court> courtList = null;
-        try{
-            getEntityManager().getTransaction().begin();
-            CriteriaQuery<Court> findAllCourts = getEntityManager().getCriteriaBuilder().createQuery(Court.class);
-            Root<Court> courtRoot = findAllCourts.from(Court.class);
-            findAllCourts.select(courtRoot);
-            courtList = getEntityManager().createQuery(findAllCourts).setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
-            getEntityManager().getTransaction().commit();
-        } catch (IllegalStateException | IllegalArgumentException exception){
-            getEntityManager().getTransaction().rollback();
-            throw new JakartaException(exception.getMessage());
-        }
-        return courtList;
+        CriteriaQuery<Court> findAllCourts = getEntityManager().getCriteriaBuilder().createQuery(Court.class);
+        Root<Court> courtRoot = findAllCourts.from(Court.class);
+        findAllCourts.select(courtRoot);
+        return find(findAllCourts);
     }
 
 //    @Override

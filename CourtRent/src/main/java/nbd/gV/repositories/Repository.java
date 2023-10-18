@@ -1,7 +1,6 @@
 package nbd.gV.repositories;
 
 import jakarta.persistence.*;
-import nbd.gV.courts.Court;
 import nbd.gV.exceptions.JakartaException;
 import jakarta.persistence.criteria.CriteriaQuery;
 
