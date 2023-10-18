@@ -1,8 +1,8 @@
 package nbd.gV.clients;
 
 
-import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.MainException;
+import nbd.gV.repositories.ClientRepository;
 
 public class ClientManager {
 
@@ -18,7 +18,7 @@ public class ClientManager {
 
     public Client registerClient(String firstName, String lastName, String personalID, ClientType clientType) {
         Client newClient = new Client(firstName, lastName, personalID, clientType);
-        clientRepository.add(newClient);
+        clientRepository.create(newClient);
         return newClient;
     }
 
@@ -26,7 +26,7 @@ public class ClientManager {
         if (client == null) {
             throw new MainException("Nie mozna wyrejestrowac nieistniejacego klienta!");
         }
-        clientRepository.remove(client);
+        clientRepository.delete(client);
         client.setArchive(true);
     }
 

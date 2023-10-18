@@ -9,29 +9,25 @@ import nbd.gV.clients.Athlete;
 import nbd.gV.clients.Client;
 import nbd.gV.clients.Normal;
 import nbd.gV.clients.ClientManager;
+import nbd.gV.courts.Court;
+import nbd.gV.repositories.CourtRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Main {
     public static void main(String[] args) {
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        Client client = new Client("imie","nazwisko","123", new Athlete());
-        UUID uuid = client.getClientID();
-        entityManager.getTransaction().begin();
-        entityManager.persist(client);
-        entityManager.getTransaction().commit();
-        entityManager.getTransaction().begin();
-        Client client2= entityManager.find(Client.class, uuid, LockModeType.PESSIMISTIC_READ);
-        entityManager.getTransaction().commit();
-        Client client3 = new Client("imi123e","nazw123isko","1214233", new Athlete());
-        UUID uuid2 = client.getClientID();
-        entityManager.getTransaction().begin();
-        entityManager.persist(client3);
-        entityManager.getTransaction().commit();
-        entityManager.getTransaction().begin();
-        Client client4= entityManager.find(Client.class, uuid2, LockModeType.PESSIMISTIC_READ);
-        entityManager.getTransaction().commit();
-        System.out.println(client2.getClientInfo());
+        CourtRepository courtRepository = new CourtRepository("default");
+        Court court = new Court(10,12,12);
+        courtRepository.create(court);
+        courtRepository.create(new Court(9,53,11));
+        Court court1 = courtRepository.findByUUID(court.getCourtId());
+        System.out.println(court1.getCourtInfo());
+        List<Court> courtList = courtRepository.findAll();
+        System.out.println(courtList.get(1).getCourtInfo());
+        court.setArea(123);
+        courtRepository.update(court);
+        court1 = courtRepository.findByUUID(court.getCourtId());
+        System.out.println(court1.getCourtInfo());
     }
 }
