@@ -160,7 +160,6 @@ public class CourtRepositoryTest {
         courtRepository.create(court2);
         Court court3 = new Court(200, 100, 3);
         assertEquals(2, courtRepository.findAll().size());
-
         assertEquals(100, courtRepository.findByUUID(court2.getCourtId()).getBaseCost());
         court2.setBaseCost(9999);
         courtRepository.update(court2);
