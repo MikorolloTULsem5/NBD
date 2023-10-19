@@ -2,8 +2,6 @@ import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientManager;
 import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;
-import nbd.gV.courts.Court;
-import nbd.gV.courts.CourtManager;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.MainException;
 import nbd.gV.repositories.ClientRepository;

@@ -1,7 +1,13 @@
 package nbd.gV.courts;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.persistence.Access;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+import jakarta.persistence.AccessType;
+
 import nbd.gV.exceptions.MainException;
 
 import java.util.Formatter;

@@ -39,9 +39,6 @@ public class CourtRepositoryTest {
 
     @Test
     void testAddingNewRecordToDB() {
-//        Repository<Court> courtRepository = new CourtRepository("test");
-//        assertNotNull(courtRepository);
-
         CriteriaBuilder cb = courtRepository.getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Long> query = cb.createQuery(Long.class);
         From<Court, Court> from = query.from(Court.class);
@@ -58,9 +55,6 @@ public class CourtRepositoryTest {
 
     @Test
     void testFindingRecordsInDB() {
-//        Repository<Court> courtRepository = new CourtRepository("test");
-//        assertNotNull(courtRepository);
-
         Court court1 = new Court(100, 400, 1);
         courtRepository.create(court1);
         Court court2 = new Court(200, 100, 2);
@@ -104,9 +98,6 @@ public class CourtRepositoryTest {
 
     @Test
     void testFindingByUUID() {
-//        Repository<Court> courtRepository = new CourtRepository("test");
-//        assertNotNull(courtRepository);
-
         Court court1 = new Court(100, 400, 1);
         courtRepository.create(court1);
         Court court2 = new Court(200, 100, 2);
@@ -122,9 +113,6 @@ public class CourtRepositoryTest {
 
     @Test
     void testDeletingRecordsInDB() {
-//        Repository<Court> courtRepository = new CourtRepository("test");
-//        assertNotNull(courtRepository);
-
         Court court1 = new Court(100, 400, 1);
         courtRepository.create(court1);
         Court court2 = new Court(200, 100, 2);
@@ -151,9 +139,6 @@ public class CourtRepositoryTest {
 
     @Test
     void testUpdatingRecordsInDB() {
-//        Repository<Court> courtRepository = new CourtRepository("test");
-//        assertNotNull(courtRepository);
-
         Court court1 = new Court(100, 400, 1);
         courtRepository.create(court1);
         Court court2 = new Court(200, 100, 2);

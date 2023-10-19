@@ -3,6 +3,7 @@ package nbd.gV.courts;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+
 import nbd.gV.exceptions.JakartaException;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.MainException;

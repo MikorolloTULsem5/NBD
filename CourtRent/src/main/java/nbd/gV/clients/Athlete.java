@@ -1,8 +1,5 @@
 package nbd.gV.clients;
 
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
 
 @Entity

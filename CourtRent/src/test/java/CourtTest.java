@@ -43,7 +43,6 @@ public class CourtTest {
         newCourt.setBaseCost(10);
         assertEquals(10, newCourt.getBaseCost());
 
-
         assertFalse(newCourt.isArchive());
         newCourt.setArchive(true);
         assertTrue(newCourt.isArchive());

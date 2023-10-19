@@ -1,12 +1,15 @@
 package nbd.gV.reservations;
 
-import jakarta.persistence.LockModeType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import nbd.gV.exceptions.*;
+
+import nbd.gV.exceptions.CourtException;
+import nbd.gV.exceptions.JakartaException;
+import nbd.gV.exceptions.MainException;
 import nbd.gV.clients.Client;
 import nbd.gV.courts.Court;
+import nbd.gV.exceptions.ReservationException;
 import nbd.gV.repositories.ReservationRepository;
 
 import java.time.LocalDateTime;
@@ -14,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class ReservationManager {
-    private ReservationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
 
     public ReservationManager(String unitName) {
         reservationRepository = new ReservationRepository(unitName);
@@ -30,8 +33,7 @@ public class ReservationManager {
             throw new MainException("Jeden z podanych parametrow [client/court] prowadzi do nieistniejacego obiektu!");
         }
         try {
-            Reservation reservation = reservationRepository.create(client,court,beginTime);
-            return reservation;
+            return reservationRepository.create(client,court,beginTime);
         } catch (JakartaException exception) {
             throw new ReservationException("Blad transakcji.");
         }
@@ -79,8 +81,7 @@ public class ReservationManager {
         CriteriaQuery<Reservation> query = cb.createQuery(Reservation.class);
         Root<Reservation> reservationRoot = query.from(Reservation.class);
         query.select(reservationRoot).where(cb.and(cb.equal(reservationRoot.get(Reservation_.CLIENT), client), cb.isNotNull(reservationRoot.get(Reservation_.END_TIME))));
-        List<Reservation> result = reservationRepository.find(query);
-        return result;
+        return reservationRepository.find(query);
     }
 
     public Reservation getCourtReservation(Court court) {
@@ -112,8 +113,7 @@ public class ReservationManager {
         CriteriaQuery<Reservation> query = cb.createQuery(Reservation.class);
         Root<Reservation> reservationRoot = query.from(Reservation.class);
         query.select(reservationRoot).where(cb.isNull(reservationRoot.get(Reservation_.END_TIME)));
-        List<Reservation> result = reservationRepository.find(query);
-        return result;
+        return reservationRepository.find(query);
     }
 
     public List<Reservation> getAllArchiveReservations() {
@@ -121,8 +121,7 @@ public class ReservationManager {
         CriteriaQuery<Reservation> query = cb.createQuery(Reservation.class);
         Root<Reservation> reservationRoot = query.from(Reservation.class);
         query.select(reservationRoot).where(cb.isNotNull(reservationRoot.get(Reservation_.END_TIME)));
-        List<Reservation> result = reservationRepository.find(query);
-        return result;
+        return reservationRepository.find(query);
     }
 
     public Reservation getReservationByID(UUID uuid){

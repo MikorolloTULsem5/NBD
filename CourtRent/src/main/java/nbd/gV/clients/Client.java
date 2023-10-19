@@ -1,8 +1,19 @@
 package nbd.gV.clients;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Access;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import jakarta.persistence.AccessType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.CascadeType;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+
 import nbd.gV.exceptions.MainException;
 
 import java.util.UUID;

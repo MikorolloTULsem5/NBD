@@ -1,6 +1,10 @@
 package nbd.gV.repositories;
 
-import jakarta.persistence.*;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
 import nbd.gV.exceptions.JakartaException;
 import jakarta.persistence.criteria.CriteriaQuery;
 
@@ -59,8 +63,6 @@ public abstract class Repository<T> {
     public abstract T findByUUID(UUID identifier);
 
     public abstract List<T> findAll();
-
-//    public abstract List<T> find(CriteriaQuery<T> query);
 
     public List<T> find(CriteriaQuery<T> query) {
         List<T> returnList;

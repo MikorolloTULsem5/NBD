@@ -1,7 +1,6 @@
 package nbd.gV.reservations;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import nbd.gV.clients.Client;
 import nbd.gV.courts.Court;

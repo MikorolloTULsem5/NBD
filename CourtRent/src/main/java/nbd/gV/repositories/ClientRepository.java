@@ -7,7 +7,6 @@ import jakarta.persistence.TransactionRequiredException;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import nbd.gV.clients.Client;
-import nbd.gV.courts.Court;
 import nbd.gV.exceptions.JakartaException;
 
 import java.util.List;
