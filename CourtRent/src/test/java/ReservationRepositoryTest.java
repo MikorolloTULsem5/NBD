@@ -50,9 +50,9 @@ public class ReservationRepositoryTest {
     void setUp() {
         testClientType = new Normal();
 
-        testClient1 = new Client("John", "Smith", "123456789", testClientType);
-        testClient2 = new Client("Eva", "Brown", "41565646", testClientType);
-        testClient3 = new Client("Adam", "Long", "81657664", testClientType);
+        testClient1 = new Client("John", "Smith", "12345678901", testClientType);
+        testClient2 = new Client("Eva", "Brown", "12345678902", testClientType);
+        testClient3 = new Client("Adam", "Long", "12345678903", testClientType);
         clientRepository.create(testClient1);
         clientRepository.create(testClient2);
         clientRepository.create(testClient3);

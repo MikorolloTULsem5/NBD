@@ -37,9 +37,6 @@ public class ClientRepository extends Repository<Client> {
     public void create(Client newClient) {
         EntityManager entityManager = getEntityManager();
         try {
-//            entityManager.getTransaction().begin();
-//            entityManager.persist(newClient);
-
             ClientType clientTypeFromDB = returnClientTypeFromDB(newClient.getClientType());
 
             entityManager.getTransaction().begin();
@@ -79,18 +76,4 @@ public class ClientRepository extends Repository<Client> {
         findAllClients.select(courtClient);
         return find(findAllClients);
     }
-
-//    @Override
-//    public List<Client> find(CriteriaQuery<Client> query) {
-//        List<Client> returnList;
-//        try {
-//            getEntityManager().getTransaction().begin();
-//            returnList = getEntityManager().createQuery(query).setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
-//            getEntityManager().getTransaction().commit();
-//        } catch (IllegalStateException | IllegalArgumentException exception){
-//            getEntityManager().getTransaction().rollback();
-//            throw new JakartaException(exception.getMessage());
-//        }
-//        return returnList;
-//    }
 }

@@ -27,7 +27,7 @@ public class ClientTest {
 
         assertEquals(testFirstName, client.getFirstName());
         assertEquals(testLastName, client.getLastName());
-        assertEquals(testPersonalID, client.getPersonalID());
+        assertEquals(testPersonalID, client.getPersonalId());
         assertEquals(testTypeNormal, client.getClientType());
         assertFalse(client.isArchive());
 

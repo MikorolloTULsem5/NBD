@@ -14,6 +14,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import jakarta.validation.constraints.Size;
 import nbd.gV.exceptions.MainException;
 
 import java.util.UUID;
@@ -31,21 +32,21 @@ public class Client {
     private String lastName;
     @Column(unique = true)
     @NotEmpty
-//    @Size(min = 11, max = 11)
-    private String personalID;
+    @Size(min = 11, max = 11)
+    private String personalId;
     @Column(nullable = false)
     private boolean archive = false;
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @NotNull
     private ClientType clientType;
 
-    public Client(String firstName, String lastName, String personalID, ClientType clientType) {
-        if (firstName.isEmpty() || lastName.isEmpty() || personalID.isEmpty() || clientType == null)
+    public Client(String firstName, String lastName, String personalId, ClientType clientType) {
+        if (firstName.isEmpty() || lastName.isEmpty() || personalId.isEmpty() || clientType == null)
             throw new MainException("Brakujacy parametr przy tworzeniu obiektu klienta!");
 
         this.firstName = firstName;
         this.lastName = lastName;
-        this.personalID = personalID;
+        this.personalId = personalId;
         this.clientType = clientType;
         clientID = UUID.randomUUID();
     }
@@ -77,8 +78,8 @@ public class Client {
         }
     }
 
-    public String getPersonalID() {
-        return personalID;
+    public String getPersonalId() {
+        return personalId;
     }
 
     public boolean isArchive() {
@@ -100,7 +101,7 @@ public class Client {
     }
 
     public String getClientInfo() {
-        return "Klient - %s %s o numerze PESEL %s\n".formatted(firstName, lastName, personalID);
+        return "Klient - %s %s o numerze PESEL %s\n".formatted(firstName, lastName, personalId);
     }
 
     public double applyDiscount(double price) {
