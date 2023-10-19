@@ -1,6 +1,4 @@
 import nbd.gV.clients.*;
-import nbd.gV.courts.CourtManager;
-import nbd.gV.old.OldRepository;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;
@@ -11,18 +9,13 @@ import nbd.gV.repositories.CourtRepository;
 import nbd.gV.repositories.ReservationRepository;
 import nbd.gV.reservations.Reservation;
 import nbd.gV.reservations.ReservationManager;
-import org.hibernate.Session;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
-import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
