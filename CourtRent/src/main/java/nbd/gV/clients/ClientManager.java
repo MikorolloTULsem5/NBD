@@ -42,7 +42,8 @@ public class ClientManager {
             client.setArchive(true);
             clientRepository.update(client);
         } catch (JakartaException exception) {
-            throw new JakartaException(("Nie udalo sie wyrejestrowac podanego klienta!"));
+            client.setArchive(false);
+            throw new ClientException("Nie udalo sie wyrejestrowac podanego boiska.");
         }
     }
 
