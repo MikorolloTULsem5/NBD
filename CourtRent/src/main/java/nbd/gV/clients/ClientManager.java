@@ -9,12 +9,15 @@ import nbd.gV.exceptions.JakartaException;
 import nbd.gV.exceptions.MainException;
 import nbd.gV.repositories.ClientRepository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 public class ClientManager {
 
     private final ClientRepository clientRepository;
+
+    private List<ClientType> listOfTypes = Arrays.asList(new Normal(), new Athlete(), new Coach());
 
     public ClientManager(String unitName) {
         this.clientRepository = new ClientRepository(unitName);
@@ -24,9 +27,27 @@ public class ClientManager {
         this.clientRepository = new ClientRepository("default");
     }
 
+//    private ClientType returnClientTypeFromDB(ClientType clientType) {
+//        CriteriaBuilder cb = clientRepository.getEntityManager().getCriteriaBuilder();
+//        CriteriaQuery<Client> query = cb.createQuery(Client.class);
+//        Root<Client> clientRoot = query.from(Client.class);
+//        query.select(clientRoot).where(cb.equal(clientRoot.get(Client_.CLIENT_TYPE), clientType));
+//        List<Client> result = clientRepository.find(query);
+//
+//        return result.isEmpty() ? null : result.get(0).getClientType();
+//    }
+
     public Client registerClient(String firstName, String lastName, String personalID, ClientType clientType) {
         Client newClient = new Client(firstName, lastName, personalID, clientType);
         try {
+//            ClientType clientTypeFromDB = returnClientTypeFromDB(clientType);
+//
+//            if (clientTypeFromDB == null) {
+//                clientRepository.create(newClient);
+//            } else {
+//                newClient.setClientType(clientTypeFromDB);
+//                clientRepository.create(newClient);
+//            }
             clientRepository.create(newClient);
         } catch (JakartaException exception) {
             throw new ClientException("Nie udalo sie zarejestrowac klienta w bazie!");

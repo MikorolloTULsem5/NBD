@@ -4,7 +4,9 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Root;
 import nbd.gV.clients.Client;
+import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Client_;
+import nbd.gV.clients.Coach;
 import nbd.gV.clients.Normal;
 import nbd.gV.exceptions.JakartaException;
 import nbd.gV.repositories.ClientRepository;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -52,6 +55,55 @@ public class ClientRepositoryTest {
         count = clientRepository.getEntityManager().createQuery(query).getSingleResult();
         assertEquals(1, count);
         assertThrows(JakartaException.class, () -> clientRepository.create(null));
+    }
+
+    @Test
+    void testAddingNewRecordToDBWithSameClientType() {
+        CriteriaBuilder cb = clientRepository.getEntityManager().getCriteriaBuilder();
+
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        From<Client, Client> from = query.from(Client.class);
+        query.select(cb.count(from));
+        long count = clientRepository.getEntityManager().createQuery(query).getSingleResult();
+
+        assertEquals(0, count);
+
+        /*--------------------------------------------------------------------------------------------------------*/
+
+        Repository<ClientType> clientTypeRepository = new Repository<>("test") {
+            @Override
+            public ClientType findByUUID(UUID identifier) {
+                return null;
+            }
+
+            @Override
+            public List<ClientType> findAll() {
+                return null;
+            }
+        };
+
+        CriteriaQuery<Long> queryClientType = cb.createQuery(Long.class);
+        From<ClientType, ClientType> fromClientType = queryClientType.from(ClientType.class);
+        queryClientType.select(cb.count(fromClientType));
+        long countClientType = clientTypeRepository.getEntityManager().createQuery(queryClientType).getSingleResult();
+
+        assertEquals(0, countClientType);
+
+        /*--------------------------------------------------------------------------------------------------------*/
+        Client client1 = new Client("John", "Smith", "12345678911", new Normal());
+        clientRepository.create(client1);
+        Client client2 = new Client("Adam", "Red", "12345678912", new Coach());
+        clientRepository.create(client2);
+        Client client3 = new Client("Adam", "Black", "12345678913", new Normal());
+        clientRepository.create(client3);
+        Client client4 = new Client("Jan", "Smith", "12345678914", new Coach());
+        clientRepository.create(client4);
+
+        count = clientRepository.getEntityManager().createQuery(query).getSingleResult();
+        assertEquals(4, count);
+
+        countClientType = clientTypeRepository.getEntityManager().createQuery(queryClientType).getSingleResult();
+        assertEquals(2, countClientType);
     }
 
     @Test
