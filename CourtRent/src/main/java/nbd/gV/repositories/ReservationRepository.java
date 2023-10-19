@@ -1,7 +1,6 @@
 package nbd.gV.repositories;
 
 import jakarta.persistence.LockModeType;
-import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.PessimisticLockException;
 import jakarta.persistence.TransactionRequiredException;
 import jakarta.persistence.criteria.CriteriaBuilder;

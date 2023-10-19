@@ -3,167 +3,264 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Root;
+import nbd.gV.clients.Client;
+import nbd.gV.clients.ClientType;
+import nbd.gV.clients.Normal;
 import nbd.gV.courts.Court;
-import nbd.gV.courts.Court_;
+import nbd.gV.exceptions.ClientException;
+import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.JakartaException;
+import nbd.gV.exceptions.ReservationException;
+import nbd.gV.repositories.ClientRepository;
 import nbd.gV.repositories.CourtRepository;
 import nbd.gV.repositories.Repository;
+import nbd.gV.repositories.ReservationRepository;
+import nbd.gV.reservations.Reservation;
+import nbd.gV.reservations.Reservation_;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ReservationRepositoryTest {
-    private final Repository<Court> courtRepository = new CourtRepository("test");
+    private final ReservationRepository reservationRepository = new ReservationRepository("test");
+
+    private final CourtRepository courtRepository = new CourtRepository("test");
+    private final ClientRepository clientRepository = new ClientRepository("test");
+    ClientType testClientType;
+
+    Client testClient1;
+    Client testClient2;
+    Client testClient3;
+    Court testCourt1;
+    Court testCourt2;
+    Court testCourt3;
+    Court testCourt4;
+    LocalDateTime testTimeStart;
+    LocalDateTime testTimeEnd;
+
+    @BeforeEach
+    void setUp() {
+        testClientType = new Normal();
+
+        testClient1 = new Client("John", "Smith", "123456789", testClientType);
+        testClient2 = new Client("Eva", "Brown", "41565646", testClientType);
+        testClient3 = new Client("Adam", "Long", "81657664", testClientType);
+        clientRepository.create(testClient1);
+        clientRepository.create(testClient2);
+        clientRepository.create(testClient3);
+
+        testCourt1 = new Court(1000, 100, 1);
+        testCourt2 = new Court(1000, 100, 2);
+        testCourt3 = new Court(1000, 100, 3);
+        testCourt4 = new Court(1000, 100, 4);
+
+        courtRepository.create(testCourt1);
+        courtRepository.create(testCourt2);
+        courtRepository.create(testCourt3);
+        courtRepository.create(testCourt4);
+
+        testTimeStart = LocalDateTime.of(2023, Month.JUNE, 4, 12, 0);
+        testTimeEnd = LocalDateTime.of(2023, Month.JUNE, 4, 15, 0);
+    }
 
     @AfterEach
-    void cleanDataBase() {
+    void cleanDataBase(){
+        List<Reservation> listOfReservations = reservationRepository.findAll();
+        listOfReservations.forEach(reservationRepository::delete);
+
         List<Court> listOfCourts = courtRepository.findAll();
         listOfCourts.forEach(courtRepository::delete);
+
+        List<Client> listOfClients = clientRepository.findAll();
+        listOfClients.forEach(clientRepository::delete);
     }
 
     @Test
     void testCreatingRepository() {
-        Repository<Court> courtRepository = new CourtRepository("test");
-        assertNotNull(courtRepository);
-        EntityManager em = courtRepository.getEntityManager();
+        Repository<Reservation> reservationRepository = new ReservationRepository("test");
+        assertNotNull(reservationRepository);
+        EntityManager em = reservationRepository.getEntityManager();
         assertNotNull(em);
         assertTrue(em.isOpen());
     }
 
     @Test
     void testAddingNewRecordToDB() {
-//        Repository<Court> courtRepository = new CourtRepository("test");
-//        assertNotNull(courtRepository);
+        ReservationRepository reservationRepository = new ReservationRepository("test");
+        assertNotNull(reservationRepository);
 
-        CriteriaBuilder cb = courtRepository.getEntityManager().getCriteriaBuilder();
+        CriteriaBuilder cb = reservationRepository.getEntityManager().getCriteriaBuilder();
         CriteriaQuery<Long> query = cb.createQuery(Long.class);
-        From<Court, Court> from = query.from(Court.class);
+        From<Reservation, Reservation> from = query.from(Reservation.class);
         query.select(cb.count(from));
-        long count = courtRepository.getEntityManager().createQuery(query).getSingleResult();
+        long count = reservationRepository.getEntityManager().createQuery(query).getSingleResult();
 
         assertEquals(0, count);
-        Court court = new Court(100, 100, 1);
-        courtRepository.create(court);
-        count = courtRepository.getEntityManager().createQuery(query).getSingleResult();
+        Reservation reservation = new Reservation(UUID.randomUUID(),testClient1,testCourt1,null);
+        reservationRepository.create(reservation);
+        count = reservationRepository.getEntityManager().createQuery(query).getSingleResult();
         assertEquals(1, count);
-        assertThrows(JakartaException.class, () -> courtRepository.create(null));
+        assertThrows(JakartaException.class, () -> reservationRepository.create(null));
+    }
+
+    @Test
+    void testAddingNewRecordWithLogicBasicToDB() {
+        ReservationRepository reservationRepository = new ReservationRepository("test");
+        assertNotNull(reservationRepository);
+
+        CriteriaBuilder cb = reservationRepository.getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        From<Reservation, Reservation> from = query.from(Reservation.class);
+        query.select(cb.count(from));
+        long count = reservationRepository.getEntityManager().createQuery(query).getSingleResult();
+
+        assertEquals(0, count);
+        Reservation reservation = reservationRepository.create(testClient1,testCourt1,testTimeStart);
+        assertEquals(testClient1, reservation.getClient());
+        assertEquals(testCourt1, reservation.getCourt());
+        assertEquals(testTimeStart, reservation.getBeginTime());
+        assertTrue(testCourt1.isRented());
+        count = reservationRepository.getEntityManager().createQuery(query).getSingleResult();
+        assertEquals(1, count);
+        assertThrows(JakartaException.class, () -> reservationRepository.create(null));
+    }
+
+    @Test
+    void testAddingNewRecordWithLogicViolationsToDB() {
+        ReservationRepository reservationRepository = new ReservationRepository("test");
+        assertNotNull(reservationRepository);
+
+        CriteriaBuilder cb = reservationRepository.getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        From<Reservation, Reservation> from = query.from(Reservation.class);
+        query.select(cb.count(from));
+        long count = reservationRepository.getEntityManager().createQuery(query).getSingleResult();
+        assertEquals(0, count);
+
+        testCourt1.setRented(true);
+        courtRepository.update(testCourt1);
+        assertThrows(ReservationException.class, () -> reservationRepository.create(testClient1,testCourt1,testTimeStart));
+        count = reservationRepository.getEntityManager().createQuery(query).getSingleResult();
+        assertEquals(0, count);
+
+        testCourt2.setArchive(true);
+        courtRepository.update(testCourt2);
+        assertThrows(CourtException.class, () -> reservationRepository.create(testClient1,testCourt2,testTimeStart));
+        count = reservationRepository.getEntityManager().createQuery(query).getSingleResult();
+        assertEquals(0, count);
+
+        testClient2.setArchive(true);
+        clientRepository.update(testClient2);
+        assertThrows(ClientException.class, () -> reservationRepository.create(testClient2,testCourt3,testTimeStart));
+        count = reservationRepository.getEntityManager().createQuery(query).getSingleResult();
+        assertEquals(0, count);
     }
 
     @Test
     void testFindingRecordsInDB() {
-//        Repository<Court> courtRepository = new CourtRepository("test");
-//        assertNotNull(courtRepository);
+        ReservationRepository reservationRepository = new ReservationRepository("test");
+        assertNotNull(reservationRepository);
 
-        Court court1 = new Court(100, 400, 1);
-        courtRepository.create(court1);
-        Court court2 = new Court(200, 100, 2);
-        courtRepository.create(court2);
-        Court court3 = new Court(200, 100, 3);
-        courtRepository.create(court3);
-        Court court4 = new Court(100, 400, 4);
-        courtRepository.create(court4);
+        Reservation reservation1 = reservationRepository.create(testClient1,testCourt1,testTimeStart);
+        Reservation reservation2 = reservationRepository.create(testClient1,testCourt2,testTimeStart);
+        Reservation reservation3 = reservationRepository.create(testClient2,testCourt3,testTimeStart);
 
-        //Tworzenie zapytania o boiska o powierzchnii 200.0
-        CriteriaBuilder cb = courtRepository.getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<Court> query = cb.createQuery(Court.class);
-        Root<Court> courtRoot = query.from(Court.class);
-        query.select(courtRoot).where(cb.equal(courtRoot.get(Court_.AREA), 200.0));
+        CriteriaBuilder cb = reservationRepository.getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<Reservation> query = cb.createQuery(Reservation.class);
+        Root<Reservation> courtRoot = query.from(Reservation.class);
+        query.select(courtRoot).where(cb.equal(courtRoot.get(Reservation_.CLIENT), testClient1));
 
-        List<Court> resultArea = courtRepository.find(query);
-        assertEquals(2, resultArea.size());
-        assertEquals(court2, resultArea.get(0));
-        assertEquals(court3, resultArea.get(1));
+        List<Reservation> reservations = reservationRepository.find(query);
+        assertEquals(2, reservations.size());
+        assertEquals(reservation1, reservations.get(0));
+        assertEquals(reservation2, reservations.get(1));
 
-        //Tworzenie zapytania o boiska o koszcie bazowym 400.0
-        query.select(courtRoot).where(cb.equal(courtRoot.get(Court_.baseCost), 400.0));
+        query.select(courtRoot).where(cb.equal(courtRoot.get(Reservation_.CLIENT), testClient3));
+        assertTrue(reservationRepository.find(query).isEmpty());
 
-        List<Court> resultBaseCost = courtRepository.find(query);
-        assertEquals(2, resultBaseCost.size());
-        assertEquals(court1, resultBaseCost.get(0));
-        assertEquals(court4, resultBaseCost.get(1));
-
-        //Tworzenie zapytania o boiska o koszcie bazowym 777.0 - takie boisko nie istnieje
-        query.select(courtRoot).where(cb.equal(courtRoot.get(Court_.baseCost), 777.0));
-        assertTrue(courtRepository.find(query).isEmpty());
-
-        //Pobranie wszystkich boisk z bazy
-        List<Court> resultAll = courtRepository.findAll();
-        assertEquals(4, resultAll.size());
-        assertEquals(court1, resultAll.get(0));
-        assertEquals(court2, resultAll.get(1));
-        assertEquals(court3, resultAll.get(2));
-        assertEquals(court4, resultAll.get(3));
+        List<Reservation> resultAll = reservationRepository.findAll();
+        assertEquals(3, resultAll.size());
+        assertEquals(reservation1, resultAll.get(0));
+        assertEquals(reservation2, resultAll.get(1));
+        assertEquals(reservation3, resultAll.get(2));
     }
 
     @Test
     void testFindingByUUID() {
-//        Repository<Court> courtRepository = new CourtRepository("test");
-//        assertNotNull(courtRepository);
+        ReservationRepository reservationRepository = new ReservationRepository("test");
+        assertNotNull(reservationRepository);
 
-        Court court1 = new Court(100, 400, 1);
-        courtRepository.create(court1);
-        Court court2 = new Court(200, 100, 2);
-        courtRepository.create(court2);
-        Court court3 = new Court(200, 100, 3);
+        Reservation reservation1 = reservationRepository.create(testClient1, testCourt1, testTimeStart);
+        Reservation reservation2 = reservationRepository.create(testClient2, testCourt2, testTimeStart);
 
-        assertEquals(court1, courtRepository.findByUUID(court1.getCourtId()));
-        assertEquals(court2, courtRepository.findByUUID(court2.getCourtId()));
+        assertEquals(reservation1, reservationRepository.findByUUID(reservation1.getId()));
+        assertEquals(reservation2, reservationRepository.findByUUID(reservation2.getId()));
 
-        assertNull(courtRepository.findByUUID(court3.getCourtId()));
-        assertThrows(JakartaException.class, () -> courtRepository.findByUUID(null));
+        assertNull(reservationRepository.findByUUID(UUID.randomUUID()));
+        assertThrows(JakartaException.class, () -> reservationRepository.findByUUID(null));
     }
 
     @Test
     void testDeletingRecordsInDB() {
-//        Repository<Court> courtRepository = new CourtRepository("test");
-//        assertNotNull(courtRepository);
+        ReservationRepository reservationRepository = new ReservationRepository("test");
+        assertNotNull(reservationRepository);
 
-        Court court1 = new Court(100, 400, 1);
-        courtRepository.create(court1);
-        Court court2 = new Court(200, 100, 2);
-        courtRepository.create(court2);
-        Court court3 = new Court(200, 100, 3);
-        courtRepository.create(court3);
-        Court court4 = new Court(100, 400, 4);
-        courtRepository.create(court4);
+        Reservation reservation1 = reservationRepository.create(testClient1, testCourt1, testTimeStart);
+        Reservation reservation2 = reservationRepository.create(testClient2, testCourt2, testTimeStart);
 
-        assertEquals(4, courtRepository.findAll().size());
-        courtRepository.delete(court2);
-        assertEquals(3, courtRepository.findAll().size());
+        assertEquals(2, reservationRepository.findAll().size());
+        reservationRepository.delete(reservation2);
+        assertEquals(1, reservationRepository.findAll().size());
 
-        courtRepository.delete(court4);
-        var courts = courtRepository.findAll();
-        assertEquals(2, courts.size());
-        assertEquals(court1, courts.get(0));
-        assertEquals(court3, courts.get(1));
+        reservationRepository.delete(reservation1);
+        var reservations = reservationRepository.findAll();
+        assertTrue(reservations.isEmpty());
 
-        assertThrows(JakartaException.class, () -> courtRepository.delete(null));
-        assertThrows(JakartaException.class, () -> courtRepository.delete(court4));
-        assertEquals(2, courtRepository.findAll().size());
+        assertThrows(JakartaException.class, () -> reservationRepository.delete(null));
+        assertThrows(JakartaException.class, () -> reservationRepository.delete(reservation1));
+        assertEquals(0, reservationRepository.findAll().size());
     }
 
     @Test
     void testUpdatingRecordsInDB() {
-//        Repository<Court> courtRepository = new CourtRepository("test");
-//        assertNotNull(courtRepository);
+        ReservationRepository reservationRepository = new ReservationRepository("test");
+        assertNotNull(reservationRepository);
 
-        Court court1 = new Court(100, 400, 1);
-        courtRepository.create(court1);
-        Court court2 = new Court(200, 100, 2);
-        courtRepository.create(court2);
-        Court court3 = new Court(200, 100, 3);
-        assertEquals(2, courtRepository.findAll().size());
+        Reservation reservation1 = reservationRepository.create(testClient1, testCourt1, testTimeStart);
+        Reservation reservation2 = reservationRepository.create(testClient2, testCourt2, testTimeStart);
+        Reservation reservation3 = new Reservation(UUID.randomUUID(),testClient3, testCourt3, testTimeStart);
 
-        assertEquals(100, courtRepository.findByUUID(court2.getCourtId()).getBaseCost());
-        court2.setBaseCost(9999);
-        courtRepository.update(court2);
-        assertEquals(9999, courtRepository.findByUUID(court2.getCourtId()).getBaseCost());
+        assertNull(reservationRepository.findByUUID(reservation1.getId()).getEndTime());
+        reservation1.endReservation(testTimeEnd);
+        reservationRepository.update(reservation1);
+        assertEquals(testTimeEnd, reservationRepository.findByUUID(reservation1.getId()).getEndTime());
 
-        assertThrows(JakartaException.class, () -> courtRepository.update(court3));
-        assertThrows(JakartaException.class, () -> courtRepository.update(null));
+        assertThrows(JakartaException.class, () -> reservationRepository.update(reservation3));
+        assertThrows(JakartaException.class, () -> reservationRepository.update(null));
+    }
+
+    @Test
+    void testUpdatingRecordsInWithLogicDB() {
+        ReservationRepository reservationRepository = new ReservationRepository("test");
+        assertNotNull(reservationRepository);
+
+        Reservation reservation1 = reservationRepository.create(testClient1, testCourt1, testTimeStart);
+        Reservation reservation2 = reservationRepository.create(testClient2, testCourt2, testTimeStart);
+
+        assertNull(reservationRepository.findByUUID(reservation1.getId()).getEndTime());
+        reservationRepository.update(testCourt1, testTimeEnd);
+        assertEquals(testTimeEnd, reservationRepository.findByUUID(reservation1.getId()).getEndTime());
+        assertFalse(testCourt1.isRented());
+
+        assertThrows(ReservationException.class, () -> reservationRepository.update(testCourt3, testTimeEnd));
+        assertThrows(JakartaException.class, () -> reservationRepository.update(null));
     }
 }

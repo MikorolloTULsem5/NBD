@@ -11,10 +11,12 @@ import nbd.gV.repositories.CourtRepository;
 import nbd.gV.repositories.ReservationRepository;
 import nbd.gV.reservations.Reservation;
 import nbd.gV.reservations.ReservationManager;
+import org.hibernate.Session;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
