@@ -42,11 +42,7 @@ public abstract class AbstractMongoRepository implements AutoCloseable {
                 .build();
 
         mongoClient = MongoClients.create(settings);
-        mongoDatabase = mongoClient.getDatabase("rentCourtDB");
-    }
-
-    public void testMethod() {
-        initDbConnection();
+        mongoDatabase = mongoClient.getDatabase("admin");
     }
 
     public MongoDatabase getDatabase() {

@@ -19,7 +19,7 @@ public class Main {
 
             repo.add(clientMapper);
         } catch (Exception e) {
-            System.out.println("test");
+            e.printStackTrace();
         }
     }
 }
