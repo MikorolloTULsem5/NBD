@@ -17,7 +17,7 @@ public class Main {
                     client.getClientType().getClientTypeName()
             );
 
-            repo.add(clientMapper);
+            repo.create(clientMapper);
         } catch (Exception e) {
             e.printStackTrace();
         }
