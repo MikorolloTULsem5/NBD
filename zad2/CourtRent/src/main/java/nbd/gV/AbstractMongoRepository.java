@@ -14,7 +14,7 @@ import org.bson.codecs.pojo.PojoCodecProvider;
 
 import java.util.List;
 
-public class AbstractMongoRepository implements AutoCloseable {
+public abstract class AbstractMongoRepository implements AutoCloseable {
 
     private ConnectionString connectionString = new ConnectionString(
             "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=replica_set_single"
@@ -29,7 +29,7 @@ public class AbstractMongoRepository implements AutoCloseable {
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
 
-    private void initDbConnection() {
+    protected void initDbConnection() {
         MongoClientSettings settings = MongoClientSettings.builder()
                 .credential(credential)
                 .applyConnectionString(connectionString)
@@ -47,6 +47,10 @@ public class AbstractMongoRepository implements AutoCloseable {
 
     public void testMethod() {
         initDbConnection();
+    }
+
+    public MongoDatabase getDatabase() {
+        return mongoDatabase;
     }
 
     @Override
