@@ -45,6 +45,10 @@ public class AbstractMongoRepository implements AutoCloseable {
         mongoDatabase = mongoClient.getDatabase("rentCourtDB");
     }
 
+    public void testMethod() {
+        initDbConnection();
+    }
+
     @Override
     public void close() throws Exception {
 
