@@ -39,6 +39,9 @@ public class ClientMongoRepository extends AbstractMongoRepository {
     }
 
     public boolean update(UUID uuid, String fieldName, Object value) {
+        if (fieldName.equals("_id")) {
+            throw new MyMongoException("Proba zmiany ID klienta!");
+        }
         Bson filter = Filters.eq("_id", uuid.toString());
         Bson setUpdate = Updates.set(fieldName, value);
         UpdateResult result = this.getCollection().updateOne(filter, setUpdate);

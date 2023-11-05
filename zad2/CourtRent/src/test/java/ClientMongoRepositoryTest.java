@@ -43,6 +43,7 @@ public class ClientMongoRepositoryTest {
 
     @BeforeEach
     void initData() {
+        getTestCollection().deleteMany(Filters.empty());
         client1 = new Client("Adam", "Smith", "12345678901", testClientType);
         clientMapper1 = ClientMapper.toMongoClient(client1);
 
@@ -239,11 +240,20 @@ public class ClientMongoRepositoryTest {
                 "firstname", "Chris"));
         assertEquals("Chris",
                 clientRepository.readByUUID(UUID.fromString(clientMapper1.getClientID())).getFirstName());
+    }
+    @Test
+    void testUpdatingRecordsInDBNegative() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(clientRepository.create(clientMapper1));
+        assertTrue(clientRepository.create(clientMapper2));
+        assertTrue(clientRepository.create(clientMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
 
-        /*------------------------------------------------------------------------------------------------*/
+        assertThrows(MyMongoException.class,
+                () -> clientRepository.update(UUID.fromString(clientMapper3.getClientID()),
+                        "_id", UUID.randomUUID().toString()));
 
-        assertTrue(clientRepository.update(UUID.fromString(clientMapper3.getClientID()),
-                "_id", "312312312"));
-        System.out.println(clientRepository.readByUUID(UUID.fromString(clientMapper1.getClientID())).getClientID());
+        assertFalse(clientRepository.update(UUID.fromString(clientMapper1.getClientID()),
+                "field", "dasca"));
     }
 }
