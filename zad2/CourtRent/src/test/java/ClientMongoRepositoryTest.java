@@ -6,6 +6,7 @@ import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;
 import nbd.gV.exceptions.MyMongoException;
+import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -240,6 +241,22 @@ public class ClientMongoRepositoryTest {
                 "firstname", "Chris"));
         assertEquals("Chris",
                 clientRepository.readByUUID(UUID.fromString(clientMapper1.getClientID())).getFirstName());
+
+        //Funny test
+        assertFalse(clientRepository.getDatabase().getCollection(clientRepository.getCollectionName(), Document.class)
+                .find(Filters.eq("_id", clientMapper2.getClientID().toString()))
+                .into(new ArrayList<>()).get(0).containsKey("field"));
+
+        assertTrue(clientRepository.update(UUID.fromString(clientMapper2.getClientID()),
+                "field", "newValue"));
+
+        assertTrue(clientRepository.getDatabase().getCollection(clientRepository.getCollectionName(), Document.class)
+                .find(Filters.eq("_id", clientMapper2.getClientID().toString()))
+                .into(new ArrayList<>()).get(0).containsKey("field"));
+
+//        assertEquals("newValue", clientRepository.getDatabase().getCollection(clientRepository.getCollectionName(), Document.class)
+//                .find(Filters.eq("_id", clientMapper2.getClientID().toString()))
+//                .into(new ArrayList<>()).get(0).getString("field"));
     }
     @Test
     void testUpdatingRecordsInDBNegative() {
@@ -253,7 +270,6 @@ public class ClientMongoRepositoryTest {
                 () -> clientRepository.update(UUID.fromString(clientMapper3.getClientID()),
                         "_id", UUID.randomUUID().toString()));
 
-        assertFalse(clientRepository.update(UUID.fromString(clientMapper1.getClientID()),
-                "field", "dasca"));
+        assertFalse(clientRepository.update(UUID.randomUUID(), "firstname", "Harry"));
     }
 }
