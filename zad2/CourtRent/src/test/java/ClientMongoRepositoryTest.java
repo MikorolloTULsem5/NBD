@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -185,32 +186,39 @@ public class ClientMongoRepositoryTest {
         assertNotNull(clMapper3);
         assertEquals(clientMapper3, clMapper3);
     }
-//
-//    @Test
-//    void testDeletingRecordsInDB() {
-//        Client client1 = new Client("John", "Smith", "12345678911", new Normal());
-//        clientRepository.create(client1);
-//        Client client2 = new Client("Adam", "Red", "12345678912", new Normal());
-//        clientRepository.create(client2);
-//        Client client3 = new Client("Adam", "Black", "12345678913", new Normal());
-//        clientRepository.create(client3);
-//        Client client4 = new Client("Jan", "Smith", "12345678914", new Normal());
-//        clientRepository.create(client4);
-//
-//        assertEquals(4, clientRepository.findAll().size());
-//        clientRepository.delete(client2);
-//        assertEquals(3, clientRepository.findAll().size());
-//
-//        clientRepository.delete(client4);
-//        var courts = clientRepository.findAll();
-//        assertEquals(2, courts.size());
-//        assertEquals(client1, courts.get(0));
-//        assertEquals(client3, courts.get(1));
-//
-//        assertThrows(JakartaException.class, () -> clientRepository.delete(null));
-//        assertThrows(JakartaException.class, () -> clientRepository.delete(client4));
-//        assertEquals(2, clientRepository.findAll().size());
-//    }
+
+    @Test
+    void testDeletingDocumentsInDB() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(clientRepository.create(clientMapper1));
+        assertTrue(clientRepository.create(clientMapper2));
+        assertTrue(clientRepository.create(clientMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        assertTrue(clientRepository.delete(UUID.fromString(clientMapper2.getClientID())));
+        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
+
+        //Check the rest
+        var clientsList = clientRepository.readAll();
+        assertEquals(2, clientsList.size());
+        assertEquals(clientMapper1, clientsList.get(0));
+        assertEquals(clientMapper3, clientsList.get(1));
+    }
+
+    @Test
+    void testDeletingDocumentsInDBNegative() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(clientRepository.create(clientMapper1));
+        assertTrue(clientRepository.create(clientMapper2));
+        assertTrue(clientRepository.create(clientMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        assertTrue(clientRepository.delete(UUID.fromString(clientMapper3.getClientID())));
+        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
+
+        assertFalse(clientRepository.delete(UUID.fromString(clientMapper3.getClientID())));
+        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
+    }
 //
 //    @Test
 //    void testUpdatingRecordsInDB() {
