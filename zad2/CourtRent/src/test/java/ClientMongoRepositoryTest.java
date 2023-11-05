@@ -1,60 +1,67 @@
-//import jakarta.persistence.EntityManager;
-//import jakarta.persistence.criteria.CriteriaBuilder;
-//import jakarta.persistence.criteria.CriteriaQuery;
-//import jakarta.persistence.criteria.From;
-//import jakarta.persistence.criteria.Root;
-//import nbd.gV.clients.Client;
-//import nbd.gV.clients.ClientType;
-//import nbd.gV.clients.Client_;
-//import nbd.gV.clients.Coach;
-//import nbd.gV.clients.Normal;
-//import nbd.gV.exceptions.JakartaException;
-//import nbd.gV.repositories.ClientRepository;
-//import nbd.gV.repositories.Repository;
-//import org.junit.jupiter.api.AfterEach;
-//import org.junit.jupiter.api.Test;
-//
-//import java.util.List;
-//import java.util.UUID;
-//
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertNotNull;
-//import static org.junit.jupiter.api.Assertions.assertNull;
-//import static org.junit.jupiter.api.Assertions.assertThrows;
-//import static org.junit.jupiter.api.Assertions.assertTrue;
-//
-//public class ClientRepositoryTest {
-//    private final Repository<Client> clientRepository = new ClientRepository("test");
-//
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Root;
+import nbd.gV.AbstractMongoRepository;
+import nbd.gV.ClientMapper;
+import nbd.gV.ClientMongoRepository;
+import nbd.gV.clients.Client;
+import nbd.gV.clients.ClientType;
+import nbd.gV.clients.Coach;
+import nbd.gV.clients.Normal;
+import nbd.gV.exceptions.JakartaException;
+import nbd.gV.repositories.Repository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class ClientMongoRepositoryTest {
+    private final ClientMongoRepository clientRepository = new ClientMongoRepository();
+
+    @BeforeAll
+    @AfterEach
+    void cleanDataBaseStart() {
+        Client client = new Client("Adam", "Szulc", "12345678901", new Normal());
+        ClientMapper clientMapper = new ClientMapper(
+                client.getClientID().toString(),
+                client.getFirstName(),
+                client.getLastName(),
+                client.getPersonalId(),
+                client.isArchive(),
+                client.getClientType().getClientTypeName()
+        );
+        clientRepository.getDatabase()
+                .getCollection(clientRepository.getCollectionName()).deleteMany(Filters.empty());
+        clientRepository.getDatabase()
+                .getCollection(clientRepository.getCollectionName()).insertOne(clientMapper);
+    }
+
 //    @AfterEach
 //    void cleanDataBase() {
-//        List<Client> listOfClients = clientRepository.findAll();
-//        listOfClients.forEach(clientRepository::delete);
+//
 //    }
-//
+
+    @Test
+    void testCreatingRepository() {
+        ClientMongoRepository clientRepository = new ClientMongoRepository();
+        assertNotNull(clientRepository);
+    }
+
 //    @Test
-//    void testCreatingRepository() {
-//        Repository<Client> clientRepository = new ClientRepository("test");
-//        assertNotNull(clientRepository);
-//        EntityManager em = clientRepository.getEntityManager();
-//        assertNotNull(em);
-//        assertTrue(em.isOpen());
-//    }
+//    void testAddingNewDocumentToDB() {
 //
-//    @Test
-//    void testAddingNewRecordToDB() {
-//        CriteriaBuilder cb = clientRepository.getEntityManager().getCriteriaBuilder();
-//        CriteriaQuery<Long> query = cb.createQuery(Long.class);
-//        From<Client, Client> from = query.from(Client.class);
-//        query.select(cb.count(from));
-//        long count = clientRepository.getEntityManager().createQuery(query).getSingleResult();
-//
-//        assertEquals(0, count);
-//        Client client = new Client("John", "Smith", "12345678911", new Normal());
-//        clientRepository.create(client);
-//        count = clientRepository.getEntityManager().createQuery(query).getSingleResult();
-//        assertEquals(1, count);
-//        assertThrows(JakartaException.class, () -> clientRepository.create(null));
 //    }
 //
 //    @Test
@@ -207,4 +214,4 @@
 //        assertThrows(JakartaException.class, () -> clientRepository.update(client3));
 //        assertThrows(JakartaException.class, () -> clientRepository.update(null));
 //    }
-//}
+}
