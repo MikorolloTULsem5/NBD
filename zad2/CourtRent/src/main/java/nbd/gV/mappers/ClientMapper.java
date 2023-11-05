@@ -1,4 +1,4 @@
-package nbd.gV;
+package nbd.gV.mappers;
 
 import nbd.gV.clients.Athlete;
 import nbd.gV.clients.Client;

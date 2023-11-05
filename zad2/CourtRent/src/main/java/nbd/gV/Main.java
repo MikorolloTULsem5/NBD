@@ -2,6 +2,8 @@ package nbd.gV;
 
 import nbd.gV.clients.Client;
 import nbd.gV.clients.Normal;
+import nbd.gV.mappers.ClientMapper;
+import nbd.gV.repositories.ClientMongoRepository;
 
 public class Main {
 

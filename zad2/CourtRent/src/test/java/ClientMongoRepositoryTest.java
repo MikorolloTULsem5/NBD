@@ -1,7 +1,7 @@
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import nbd.gV.ClientMapper;
-import nbd.gV.ClientMongoRepository;
+import nbd.gV.mappers.ClientMapper;
+import nbd.gV.repositories.ClientMongoRepository;
 import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;

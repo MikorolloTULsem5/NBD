@@ -1,4 +1,4 @@
-package nbd.gV.repositories;
+package nbd.gV.old;
 
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.EntityManager;
