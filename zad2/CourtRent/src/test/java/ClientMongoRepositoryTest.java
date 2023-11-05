@@ -1,5 +1,9 @@
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.InsertOneResult;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import nbd.gV.ClientMapper;
 import nbd.gV.ClientMongoRepository;
 import nbd.gV.clients.Client;
@@ -10,11 +14,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,22 +26,28 @@ public class ClientMongoRepositoryTest {
     ClientMapper clientMapper1;
     ClientMapper clientMapper2;
     ClientMapper clientMapper3;
+    Client client1;
+    Client client2;
+    Client client3;
     final ClientType testClientType = new Normal();
 
     private MongoCollection<ClientMapper> getTestCollection() {
         return clientRepository.getDatabase()
                 .getCollection(clientRepository.getCollectionName(), ClientMapper.class);
     }
+
     @BeforeEach
     void cleanDataBase() {
         getTestCollection().deleteMany(Filters.empty());
 
-        clientMapper1 = ClientMapper.toMongoClient(new Client("Adam", "Smith",
-                "12345678901", testClientType));
-        clientMapper2 = ClientMapper.toMongoClient(new Client("Eva", "Braun",
-                "12345678902", testClientType));
-        clientMapper3 = ClientMapper.toMongoClient(new Client("John", "Lenon",
-                "12345678903", testClientType));
+        client1 = new Client("Adam", "Smith", "12345678901", testClientType);
+        clientMapper1 = ClientMapper.toMongoClient(client1);
+
+        client2 = new Client("Eva", "Smith", "12345678902", testClientType);
+        clientMapper2 = ClientMapper.toMongoClient(client2);
+
+        client3 = new Client("John", "Lenon", "12345678903", testClientType);
+        clientMapper3 = ClientMapper.toMongoClient(client3);
     }
 
     @Test
@@ -64,7 +73,8 @@ public class ClientMongoRepositoryTest {
         assertThrows(MyMongoException.class, () -> clientRepository.create(clientMapper1));
         assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
     }
-//
+
+    //
 //    @Test
 //    void testAddingNewRecordToDBWithSameClientType() {
 //        CriteriaBuilder cb = clientRepository.getEntityManager().getCriteriaBuilder();
@@ -114,48 +124,18 @@ public class ClientMongoRepositoryTest {
 //        assertEquals(2, countClientType);
 //    }
 //
-//    @Test
-//    void testFindingRecordsInDB() {
-//        Client client1 = new Client("John", "Smith", "12345678911", new Normal());
-//        clientRepository.create(client1);
-//        Client client2 = new Client("Adam", "Red", "12345678912", new Normal());
-//        clientRepository.create(client2);
-//        Client client3 = new Client("Adam", "Black", "12345678913", new Normal());
-//        clientRepository.create(client3);
-//        Client client4 = new Client("Jan", "Smith", "12345678914", new Normal());
-//        clientRepository.create(client4);
-//
-//        //Tworzenie zapytania o klientow o imieniu Adam
-//        CriteriaBuilder cb = clientRepository.getEntityManager().getCriteriaBuilder();
-//        CriteriaQuery<Client> query = cb.createQuery(Client.class);
-//        Root<Client> clientRoot = query.from(Client.class);
-//        query.select(clientRoot).where(cb.equal(clientRoot.get(Client_.FIRST_NAME), "Adam"));
-//
-//        List<Client> resultFirstName = clientRepository.find(query);
-//        assertEquals(2, resultFirstName.size());
-//        assertEquals(client2, resultFirstName.get(0));
-//        assertEquals(client3, resultFirstName.get(1));
-//
-//        //Tworzenie zapytania o boiska o nazwisku Smith
-//        query.select(clientRoot).where(cb.equal(clientRoot.get(Client_.LAST_NAME), "Smith"));
-//
-//        List<Client> resultLastName = clientRepository.find(query);
-//        assertEquals(2, resultLastName.size());
-//        assertEquals(client1, resultLastName.get(0));
-//        assertEquals(client4, resultLastName.get(1));
-//
-//        //Tworzenie zapytania o klienta o nazwisku Yellow - taki klient nie istnieje
-//        query.select(clientRoot).where(cb.equal(clientRoot.get(Client_.LAST_NAME), "Yellow"));
-//        assertTrue(clientRepository.find(query).isEmpty());
-//
-//        //Pobranie wszystkich boisk z bazy
-//        List<Client> resultAll = clientRepository.findAll();
-//        assertEquals(4, resultAll.size());
-//        assertEquals(client1, resultAll.get(0));
-//        assertEquals(client2, resultAll.get(1));
-//        assertEquals(client3, resultAll.get(2));
-//        assertEquals(client4, resultAll.get(3));
-//    }
+    @Test
+    void testFindingDocumentInDB() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(clientRepository.create(clientMapper1));
+        assertTrue(clientRepository.create(clientMapper2));
+        assertTrue(clientRepository.create(clientMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        var clientsList1 = clientRepository.read(Filters.eq("firstname", "John"));
+        assertEquals(1, clientsList1.size());
+        assertEquals(clientMapper3, clientsList1.get(0));
+    }
 //
 //    @Test
 //    void testFindingByUUID() {
