@@ -5,6 +5,7 @@ import nbd.gV.ClientMongoRepository;
 import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;
+import nbd.gV.exceptions.MyMongoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -60,7 +61,7 @@ public class ClientMongoRepositoryTest {
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         assertTrue(clientRepository.create(clientMapper1));
         assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
-        assertFalse(clientRepository.create(clientMapper1));
+        assertThrows(MyMongoException.class, () -> clientRepository.create(clientMapper1));
         assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
     }
 //

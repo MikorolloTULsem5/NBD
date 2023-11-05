@@ -1,9 +1,12 @@
 package nbd.gV;
 
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
+import nbd.gV.exceptions.MyMongoException;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
@@ -13,7 +16,12 @@ import java.util.UUID;
 public class ClientMongoRepository extends AbstractMongoRepository {
 ///TODO zrobic normalna obsluge clientType jako embedded class
     public boolean create(ClientMapper clientMapper) {
-        var result = this.getCollection().insertOne(clientMapper);
+        InsertOneResult result;
+        try {
+            result = this.getCollection().insertOne(clientMapper);
+        } catch (MongoWriteException e) {
+            throw new MyMongoException(e.getMessage());
+        }
         return result.wasAcknowledged();
     }
 
