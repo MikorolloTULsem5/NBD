@@ -125,7 +125,7 @@ public class ClientMongoRepositoryTest {
 //    }
 //
     @Test
-    void testFindingDocumentInDB() {
+    void testFindingDocumentInDBPositive() {
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         assertTrue(clientRepository.create(clientMapper1));
         assertTrue(clientRepository.create(clientMapper2));
@@ -135,6 +135,21 @@ public class ClientMongoRepositoryTest {
         var clientsList1 = clientRepository.read(Filters.eq("firstname", "John"));
         assertEquals(1, clientsList1.size());
         assertEquals(clientMapper3, clientsList1.get(0));
+
+        var clientsList2 = clientRepository.read(Filters.eq("lastname", "Smith"));
+        assertEquals(2, clientsList1.size());
+        assertEquals(clientMapper1, clientsList1.get(0));
+        assertEquals(clientMapper2, clientsList1.get(1));
+    }
+
+    @Test
+    void testFindingDocumentInDBNegative() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(clientRepository.create(clientMapper1));
+        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
+
+        var clientsList1 = clientRepository.read(Filters.eq("firstname", "John"));
+        assertEquals(0, clientsList1.size());
     }
 //
 //    @Test

@@ -8,6 +8,7 @@ import nbd.gV.clients.Normal;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -82,5 +83,15 @@ public class ClientMapper {
                 clientMapper.getLastName(), clientMapper.getPersonalId(), type);
         clientModel.setArchive(clientMapper.isArchive());
         return clientModel;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClientMapper that = (ClientMapper) o;
+        return archive == that.archive && Objects.equals(clientID, that.clientID) && Objects.equals(firstName,
+                that.firstName) && Objects.equals(lastName, that.lastName)
+                && Objects.equals(personalId, that.personalId) && Objects.equals(clientType, that.clientType);
     }
 }
