@@ -9,12 +9,14 @@ import nbd.gV.ClientMongoRepository;
 import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;
+import nbd.gV.exceptions.JakartaException;
 import nbd.gV.exceptions.MyMongoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -125,7 +127,7 @@ public class ClientMongoRepositoryTest {
 //    }
 //
     @Test
-    void testFindingDocumentInDBPositive() {
+    void testFindingDocumentsInDBPositive() {
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         assertTrue(clientRepository.create(clientMapper1));
         assertTrue(clientRepository.create(clientMapper2));
@@ -137,35 +139,52 @@ public class ClientMongoRepositoryTest {
         assertEquals(clientMapper3, clientsList1.get(0));
 
         var clientsList2 = clientRepository.read(Filters.eq("lastname", "Smith"));
-        assertEquals(2, clientsList1.size());
-        assertEquals(clientMapper1, clientsList1.get(0));
-        assertEquals(clientMapper2, clientsList1.get(1));
+        assertEquals(2, clientsList2.size());
+        assertEquals(clientMapper1, clientsList2.get(0));
+        assertEquals(clientMapper2, clientsList2.get(1));
     }
 
     @Test
-    void testFindingDocumentInDBNegative() {
+    void testFindingDocumentsInDBNegative() {
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         assertTrue(clientRepository.create(clientMapper1));
         assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
 
-        var clientsList1 = clientRepository.read(Filters.eq("firstname", "John"));
-        assertEquals(0, clientsList1.size());
+        var clientsList = clientRepository.read(Filters.eq("firstname", "John"));
+        assertEquals(0, clientsList.size());
     }
-//
-//    @Test
-//    void testFindingByUUID() {
-//        Client client1 = new Client("John", "Smith", "12345678911", new Normal());
-//        clientRepository.create(client1);
-//        Client client2 = new Client("Adam", "Red", "12345678912", new Normal());
-//        clientRepository.create(client2);
-//        Client client3 = new Client("Adam", "Black", "12345678913", new Normal());
-//
-//        assertEquals(client1, clientRepository.findByUUID(client1.getClientID()));
-//        assertEquals(client2, clientRepository.findByUUID(client2.getClientID()));
-//
-//        assertNull(clientRepository.findByUUID(client3.getClientID()));
-//        assertThrows(JakartaException.class, () -> clientRepository.findByUUID(null));
-//    }
+
+    @Test
+    void testFindingAllDocumentsInDB() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(clientRepository.create(clientMapper1));
+        assertTrue(clientRepository.create(clientMapper2));
+        assertTrue(clientRepository.create(clientMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        var clientsList = clientRepository.readAll();
+        assertEquals(3, clientsList.size());
+        assertEquals(clientMapper1, clientsList.get(0));
+        assertEquals(clientMapper2, clientsList.get(1));
+        assertEquals(clientMapper3, clientsList.get(2));
+    }
+
+    @Test
+    void testFindingByUUID() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(clientRepository.create(clientMapper1));
+        assertTrue(clientRepository.create(clientMapper2));
+        assertTrue(clientRepository.create(clientMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        ClientMapper clMapper1 = clientRepository.readByUUID(UUID.fromString(clientMapper1.getClientID()));
+        assertNotNull(clMapper1);
+        assertEquals(clientMapper1, clMapper1);
+
+        ClientMapper clMapper3 = clientRepository.readByUUID(UUID.fromString(clientMapper3.getClientID()));
+        assertNotNull(clMapper3);
+        assertEquals(clientMapper3, clMapper3);
+    }
 //
 //    @Test
 //    void testDeletingRecordsInDB() {
