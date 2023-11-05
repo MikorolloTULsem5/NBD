@@ -5,14 +5,13 @@ import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Coach;
 import nbd.gV.clients.Normal;
-import org.bson.Document;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.util.UUID;
 
 
-public class ClientMapper extends Document {
+public class ClientMapper {
     @BsonProperty("_id")
     private String clientID;
     @BsonProperty("firstname")

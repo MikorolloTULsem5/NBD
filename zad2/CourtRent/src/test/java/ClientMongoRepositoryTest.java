@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -52,6 +53,15 @@ public class ClientMongoRepositoryTest {
         assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
         assertTrue(clientRepository.create(clientMapper2));
         assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
+    }
+
+    @Test
+    void testAddingNewDocumentToDBNegative() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(clientRepository.create(clientMapper1));
+        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
+        assertFalse(clientRepository.create(clientMapper1));
+        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
     }
 //
 //    @Test
