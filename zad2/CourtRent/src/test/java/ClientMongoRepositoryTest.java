@@ -242,7 +242,7 @@ public class ClientMongoRepositoryTest {
         assertEquals("Chris",
                 clientRepository.readByUUID(UUID.fromString(clientMapper1.getClientID())).getFirstName());
 
-        //Funny test
+        //Test adding new value to document
         assertFalse(clientRepository.getDatabase().getCollection(clientRepository.getCollectionName(), Document.class)
                 .find(Filters.eq("_id", clientMapper2.getClientID().toString()))
                 .into(new ArrayList<>()).get(0).containsKey("field"));
@@ -254,9 +254,10 @@ public class ClientMongoRepositoryTest {
                 .find(Filters.eq("_id", clientMapper2.getClientID().toString()))
                 .into(new ArrayList<>()).get(0).containsKey("field"));
 
-//        assertEquals("newValue", clientRepository.getDatabase().getCollection(clientRepository.getCollectionName(), Document.class)
-//                .find(Filters.eq("_id", clientMapper2.getClientID().toString()))
-//                .into(new ArrayList<>()).get(0).getString("field"));
+        assertEquals("newValue",
+                clientRepository.getDatabase().getCollection(clientRepository.getCollectionName(), Document.class)
+                .find(Filters.eq("_id", clientMapper2.getClientID().toString()))
+                .into(new ArrayList<>()).get(0).getString("field"));
     }
     @Test
     void testUpdatingRecordsInDBNegative() {
