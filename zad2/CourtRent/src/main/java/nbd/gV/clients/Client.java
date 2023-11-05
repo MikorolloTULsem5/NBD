@@ -30,6 +30,11 @@ public class Client {
         clientID = UUID.randomUUID();
     }
 
+    public Client(UUID uuid, String firstName, String lastName, String personalId, ClientType clientType) {
+        this(firstName, lastName, personalId, clientType);
+        clientID = uuid;
+    }
+
     public Client() {
     }
 

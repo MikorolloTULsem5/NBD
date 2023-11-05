@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class ClientMongoRepository extends AbstractMongoRepository {
-
+///TODO zrobic normalna obsluge clientType jako embedded class
     public boolean create(ClientMapper clientMapper) {
         var result = this.getCollection().insertOne(clientMapper);
         return result.wasAcknowledged();
