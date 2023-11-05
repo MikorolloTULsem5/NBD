@@ -58,7 +58,8 @@ public class ClientManager {
 
     public Client getClient(UUID clientID) {
         try {
-            return ClientMapper.fromMongoClient(clientRepository.readByUUID(clientID));
+            ClientMapper clientMapper = clientRepository.readByUUID(clientID);
+            return clientMapper != null ? ClientMapper.fromMongoClient(clientMapper) : null;
         } catch (Exception exception) {
             throw new ClientException("Blad transakcji.");
         }
