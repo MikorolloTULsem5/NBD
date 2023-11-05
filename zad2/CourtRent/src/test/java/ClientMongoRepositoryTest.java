@@ -1,25 +1,14 @@
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.From;
-import jakarta.persistence.criteria.Root;
-import nbd.gV.AbstractMongoRepository;
 import nbd.gV.ClientMapper;
 import nbd.gV.ClientMongoRepository;
 import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientType;
-import nbd.gV.clients.Coach;
 import nbd.gV.clients.Normal;
-import nbd.gV.exceptions.JakartaException;
-import nbd.gV.repositories.Repository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,30 +17,27 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClientMongoRepositoryTest {
-    private final ClientMongoRepository clientRepository = new ClientMongoRepository();
+    final ClientMongoRepository clientRepository = new ClientMongoRepository();
+    ClientMapper clientMapper1;
+    ClientMapper clientMapper2;
+    ClientMapper clientMapper3;
+    final ClientType testClientType = new Normal();
 
-    @BeforeAll
-    @AfterEach
-    void cleanDataBaseStart() {
-        Client client = new Client("Adam", "Szulc", "12345678901", new Normal());
-        ClientMapper clientMapper = new ClientMapper(
-                client.getClientID().toString(),
-                client.getFirstName(),
-                client.getLastName(),
-                client.getPersonalId(),
-                client.isArchive(),
-                client.getClientType().getClientTypeName()
-        );
-        clientRepository.getDatabase()
-                .getCollection(clientRepository.getCollectionName()).deleteMany(Filters.empty());
-        clientRepository.getDatabase()
-                .getCollection(clientRepository.getCollectionName()).insertOne(clientMapper);
+    private MongoCollection<ClientMapper> getTestCollection() {
+        return clientRepository.getDatabase()
+                .getCollection(clientRepository.getCollectionName(), ClientMapper.class);
     }
+    @BeforeEach
+    void cleanDataBase() {
+        getTestCollection().deleteMany(Filters.empty());
 
-//    @AfterEach
-//    void cleanDataBase() {
-//
-//    }
+        clientMapper1 = ClientMapper.toMongoClient(new Client("Adam", "Smith",
+                "12345678901", testClientType));
+        clientMapper2 = ClientMapper.toMongoClient(new Client("Eva", "Braun",
+                "12345678902", testClientType));
+        clientMapper3 = ClientMapper.toMongoClient(new Client("John", "Lenon",
+                "12345678903", testClientType));
+    }
 
     @Test
     void testCreatingRepository() {
@@ -59,10 +45,14 @@ public class ClientMongoRepositoryTest {
         assertNotNull(clientRepository);
     }
 
-//    @Test
-//    void testAddingNewDocumentToDB() {
-//
-//    }
+    @Test
+    void testAddingNewDocumentToDBPositive() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(clientRepository.create(clientMapper1));
+        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(clientRepository.create(clientMapper2));
+        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
+    }
 //
 //    @Test
 //    void testAddingNewRecordToDBWithSameClientType() {
