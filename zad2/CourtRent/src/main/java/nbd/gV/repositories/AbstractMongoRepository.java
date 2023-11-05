@@ -85,7 +85,8 @@ public abstract class AbstractMongoRepository<T> implements AutoCloseable {
 
     public T readByUUID(UUID uuid) {
         Bson filter = Filters.eq("_id", uuid.toString());
-        return this.read(filter).get(0);
+        var list = this.read(filter);
+        return !list.isEmpty() ? list.get(0) : null;
     }
 
     public boolean update(UUID uuid, String fieldName, Object value) {

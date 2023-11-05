@@ -2,6 +2,7 @@ package nbd.gV.clients;
 
 import nbd.gV.exceptions.MainException;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Client {
@@ -95,4 +96,22 @@ public class Client {
     public int getClientMaxHours() {
         return clientType.getMaxHours();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Client client = (Client) o;
+        return archive == client.archive &&
+                Objects.equals(clientID, client.clientID) &&
+                Objects.equals(firstName, client.firstName) &&
+                Objects.equals(lastName, client.lastName) &&
+                Objects.equals(personalId, client.personalId) &&
+        ///TODO przy zmianie implementacji zapisu clientType podmienic
+//                Objects.equals(clientType, client.clientType);
+                Objects.equals(clientType.getClientTypeName(), client.clientType.getClientTypeName());
+
+    }
+
+
 }

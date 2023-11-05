@@ -23,6 +23,14 @@ public class ClientManager {
     public Client registerClient(String firstName, String lastName, String personalID, ClientType clientType) {
         Client newClient = new Client(firstName, lastName, personalID, clientType);
         try {
+            ///TODO do zmiany, do validacji numeru pesel nalezy uzyc schematu
+            /*--------------------------------------------------------------------------------------*/
+            if (!clientRepository.read(Filters.eq("personalid", personalID)).isEmpty()) {
+                throw new ClientException("Nie udalo sie zarejestrowac klienta w bazie! - klient o tym numerze PESEL" +
+                        "znajduje sie juz w bazie");
+            }
+            /*--------------------------------------------------------------------------------------*/
+
             if (!clientRepository.create(ClientMapper.toMongoClient(newClient))) {
                 throw new ClientException("Nie udalo sie zarejestrowac klienta w bazie! - brak odpowiedzi");
             }
@@ -51,7 +59,7 @@ public class ClientManager {
     public Client getClient(UUID clientID) {
         try {
             return ClientMapper.fromMongoClient(clientRepository.readByUUID(clientID));
-        } catch (JakartaException exception) {
+        } catch (Exception exception) {
             throw new ClientException("Blad transakcji.");
         }
     }
@@ -59,7 +67,7 @@ public class ClientManager {
     public List<Client> getAllClients() {
         try {
             List<Client> clientsList = new ArrayList<>();
-            for (var el :  clientRepository.readAll()) {
+            for (var el : clientRepository.readAll()) {
                 clientsList.add(ClientMapper.fromMongoClient(el));
             }
             return clientsList;
@@ -69,7 +77,7 @@ public class ClientManager {
     }
 
     public Client findCourtByPersonalId(String personalId) {
-        return ClientMapper.fromMongoClient(
-                clientRepository.read(Filters.eq("personalid", personalId)).get(0));
+        var list = clientRepository.read(Filters.eq("personalid", personalId));
+        return !list.isEmpty() ? ClientMapper.fromMongoClient(list.get(0)) : null;
     }
 }
