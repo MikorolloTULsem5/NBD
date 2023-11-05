@@ -7,6 +7,7 @@ import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;
 import nbd.gV.exceptions.MyMongoException;
 import org.bson.Document;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +38,8 @@ public class ClientMongoRepositoryTest {
     }
 
     @BeforeAll
-    static void cleanFirstTimeDB() {
+    @AfterAll
+    static void cleanFirstAndLastTimeDB() {
         clientRepository.getDatabase()
                 .getCollection(clientRepository.getCollectionName(), ClientMapper.class);
     }

@@ -6,6 +6,8 @@ import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.MainException;
 import nbd.gV.mappers.ClientMapper;
 import nbd.gV.repositories.ClientMongoRepository;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,10 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClientManagerTest {
 
-    private final ClientMongoRepository clientRepository = new ClientMongoRepository();
-    private final ClientType testClientType = new Normal();
+    static final ClientMongoRepository clientRepository = new ClientMongoRepository();
+    final ClientType testClientType = new Normal();
+
+   @BeforeAll
+   @AfterAll
+   static void cleanDatabaseFirstAndLastTime() {
+       List<ClientMapper> listOfClientsMapper = clientRepository.readAll();
+       listOfClientsMapper.forEach((mapper) -> clientRepository.delete(UUID.fromString(mapper.getClientID())));
+   }
     @BeforeEach
-    void cleanDataBase(){
+    void cleanDatabase(){
         List<ClientMapper> listOfClientsMapper = clientRepository.readAll();
         listOfClientsMapper.forEach((mapper) -> clientRepository.delete(UUID.fromString(mapper.getClientID())));
     }

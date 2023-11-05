@@ -2,7 +2,6 @@ package nbd.gV.clients;
 
 import com.mongodb.client.model.Filters;
 import nbd.gV.exceptions.ClientException;
-import nbd.gV.exceptions.JakartaException;
 import nbd.gV.exceptions.MainException;
 import nbd.gV.exceptions.MyMongoException;
 import nbd.gV.mappers.ClientMapper;
