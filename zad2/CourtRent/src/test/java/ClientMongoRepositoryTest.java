@@ -1,21 +1,17 @@
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.result.InsertOneResult;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import nbd.gV.ClientMapper;
 import nbd.gV.ClientMongoRepository;
 import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;
-import nbd.gV.exceptions.JakartaException;
 import nbd.gV.exceptions.MyMongoException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClientMongoRepositoryTest {
-    final ClientMongoRepository clientRepository = new ClientMongoRepository();
+    static final ClientMongoRepository clientRepository = new ClientMongoRepository();
     ClientMapper clientMapper1;
     ClientMapper clientMapper2;
     ClientMapper clientMapper3;
@@ -39,10 +35,14 @@ public class ClientMongoRepositoryTest {
                 .getCollection(clientRepository.getCollectionName(), ClientMapper.class);
     }
 
-    @BeforeEach
-    void cleanDataBase() {
-        getTestCollection().deleteMany(Filters.empty());
+    @BeforeAll
+    static void cleanFirstTimeDB() {
+        clientRepository.getDatabase()
+                .getCollection(clientRepository.getCollectionName(), ClientMapper.class);
+    }
 
+    @BeforeEach
+    void initData() {
         client1 = new Client("Adam", "Smith", "12345678901", testClientType);
         clientMapper1 = ClientMapper.toMongoClient(client1);
 
@@ -51,6 +51,11 @@ public class ClientMongoRepositoryTest {
 
         client3 = new Client("John", "Lenon", "12345678903", testClientType);
         clientMapper3 = ClientMapper.toMongoClient(client3);
+    }
+
+    @AfterEach
+    void cleanDatabase() {
+        getTestCollection().deleteMany(Filters.empty());
     }
 
     @Test
@@ -219,22 +224,26 @@ public class ClientMongoRepositoryTest {
         assertFalse(clientRepository.delete(UUID.fromString(clientMapper3.getClientID())));
         assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
     }
-//
-//    @Test
-//    void testUpdatingRecordsInDB() {
-//        Client client1 = new Client("John", "Smith", "12345678911", new Normal());
-//        clientRepository.create(client1);
-//        Client client2 = new Client("Adam", "Red", "12345678912", new Normal());
-//        clientRepository.create(client2);
-//        Client client3 = new Client("Adam", "Black", "12345678913", new Normal());
-//        assertEquals(2, clientRepository.findAll().size());
-//
-//        assertEquals("Red", clientRepository.findByUUID(client2.getClientID()).getLastName());
-//        client2.setLastName("Purple");
-//        clientRepository.update(client2);
-//        assertEquals("Purple", clientRepository.findByUUID(client2.getClientID()).getLastName());
-//
-//        assertThrows(JakartaException.class, () -> clientRepository.update(client3));
-//        assertThrows(JakartaException.class, () -> clientRepository.update(null));
-//    }
+
+    @Test
+    void testUpdatingRecordsInDB() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(clientRepository.create(clientMapper1));
+        assertTrue(clientRepository.create(clientMapper2));
+        assertTrue(clientRepository.create(clientMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        assertEquals("Adam",
+                clientRepository.readByUUID(UUID.fromString(clientMapper1.getClientID())).getFirstName());
+        assertTrue(clientRepository.update(UUID.fromString(clientMapper1.getClientID()),
+                "firstname", "Chris"));
+        assertEquals("Chris",
+                clientRepository.readByUUID(UUID.fromString(clientMapper1.getClientID())).getFirstName());
+
+        /*------------------------------------------------------------------------------------------------*/
+
+        assertTrue(clientRepository.update(UUID.fromString(clientMapper3.getClientID()),
+                "_id", "312312312"));
+        System.out.println(clientRepository.readByUUID(UUID.fromString(clientMapper1.getClientID())).getClientID());
+    }
 }
