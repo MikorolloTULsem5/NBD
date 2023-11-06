@@ -1,3 +1,5 @@
+package basicClassesTests;
+
 import nbd.gV.clients.Client;
 import nbd.gV.clients.Athlete;
 import nbd.gV.clients.ClientType;

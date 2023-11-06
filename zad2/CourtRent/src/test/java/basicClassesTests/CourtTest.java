@@ -1,3 +1,5 @@
+package basicClassesTests;
+
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.MainException;
 import org.junit.jupiter.api.Test;

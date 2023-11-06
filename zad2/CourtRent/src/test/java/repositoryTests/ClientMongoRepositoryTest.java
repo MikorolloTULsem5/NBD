@@ -1,3 +1,5 @@
+package repositoryTests;
+
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import nbd.gV.mappers.ClientMapper;

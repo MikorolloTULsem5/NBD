@@ -1,3 +1,5 @@
+package basicClassesTests;
+
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.JakartaException;

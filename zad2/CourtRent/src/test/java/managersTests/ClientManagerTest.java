@@ -1,3 +1,5 @@
+package managersTests;
+
 import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientManager;
 import nbd.gV.clients.ClientType;

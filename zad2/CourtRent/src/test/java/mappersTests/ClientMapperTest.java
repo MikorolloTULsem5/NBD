@@ -1,3 +1,5 @@
+package mappersTests;
+
 import nbd.gV.mappers.ClientMapper;
 import nbd.gV.clients.Athlete;
 import nbd.gV.clients.Client;
