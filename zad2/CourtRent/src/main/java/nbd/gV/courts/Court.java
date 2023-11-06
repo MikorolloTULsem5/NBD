@@ -1,51 +1,40 @@
 package nbd.gV.courts;
 
-import jakarta.persistence.Access;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-import jakarta.persistence.AccessType;
-
 import nbd.gV.exceptions.MainException;
 
 import java.util.Formatter;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
-@Entity
-@Table(name="court")
-@Access(value = AccessType.FIELD)
 public class Court {
-
-    @Id
     private UUID courtId;
-    @Column(nullable = false)
     private double area;
-    @Column(nullable = false)
     private int baseCost;
-    @Column(nullable = false, unique = true)
     private int courtNumber;
-    @Column(nullable = false)
     private boolean archive = false;
-    @Column(nullable = false)
     private boolean rented = false;
-    public UUID getCourtId() {
-        return courtId;
-    }
 
     public Court(double area, int baseCost, int courtNumber) {
         if (area <= 0.0 || baseCost < 0 || courtNumber < 1) {
             throw new MainException("Niepoprawny parametr przy tworzeniu obiektu boiska!");
         }
+        this.courtId = UUID.randomUUID();
         this.area = area;
         this.baseCost = baseCost;
         this.courtNumber = courtNumber;
-        courtId = UUID.randomUUID();
+    }
+
+    public Court(UUID courtId, double area, int baseCost, int courtNumber) {
+        this(area, baseCost, courtNumber);
+        this.courtId = courtId;
     }
 
     public Court() {
+    }
+
+    public UUID getCourtId() {
+        return courtId;
     }
 
     public double getArea() {
@@ -93,4 +82,16 @@ public class Court {
                         "rezerwacje: %.2f PLN\n", getCourtNumber(), getArea(), (double) getBaseCost()).toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Court court = (Court) o;
+        return Double.compare(area, court.area) == 0 &&
+                baseCost == court.baseCost &&
+                courtNumber == court.courtNumber &&
+                archive == court.archive &&
+                rented == court.rented &&
+                Objects.equals(courtId, court.courtId);
+    }
 }

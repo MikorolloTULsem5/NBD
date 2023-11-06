@@ -24,16 +24,16 @@ public class Client {
         if (firstName.isEmpty() || lastName.isEmpty() || personalId.isEmpty() || clientType == null)
             throw new MainException("Brakujacy parametr przy tworzeniu obiektu klienta!");
 
+        this.clientID = UUID.randomUUID();
         this.firstName = firstName;
         this.lastName = lastName;
         this.personalId = personalId;
         this.clientType = clientType;
-        clientID = UUID.randomUUID();
     }
 
     public Client(UUID uuid, String firstName, String lastName, String personalId, ClientType clientType) {
         this(firstName, lastName, personalId, clientType);
-        clientID = uuid;
+        this.clientID = uuid;
     }
 
     public Client() {
@@ -112,6 +112,4 @@ public class Client {
                 Objects.equals(clientType.getClientTypeName(), client.clientType.getClientTypeName());
 
     }
-
-
 }
