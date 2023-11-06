@@ -43,7 +43,7 @@ public class ClientMongoRepositoryTest {
     @AfterAll
     static void cleanFirstAndLastTimeDB() {
         clientRepository.getDatabase()
-                .getCollection(clientRepository.getCollectionName(), ClientMapper.class);
+                .getCollection(clientRepository.getCollectionName(), ClientMapper.class).deleteMany(Filters.empty());
     }
 
     @BeforeEach
@@ -57,11 +57,6 @@ public class ClientMongoRepositoryTest {
 
         client3 = new Client("John", "Lenon", "12345678903", testClientType);
         clientMapper3 = ClientMapper.toMongoClient(client3);
-    }
-
-    @AfterEach
-    void cleanDatabase() {
-        getTestCollection().deleteMany(Filters.empty());
     }
 
     @Test
