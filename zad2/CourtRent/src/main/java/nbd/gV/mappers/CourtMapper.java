@@ -68,8 +68,8 @@ public class CourtMapper {
     public static Court fromMongoCourt(CourtMapper courtMapper) {
         Court courtModel = new Court(UUID.fromString(courtMapper.getCourtId()), courtMapper.getArea(),
                 courtMapper.getBaseCost(), courtMapper.getCourtNumber());
-        courtModel.setArchive(courtModel.isArchive());
-        courtModel.setRented(courtModel.isRented());
+        courtModel.setArchive(courtMapper.isArchive());
+        courtModel.setRented(courtMapper.isRented());
         return courtModel;
     }
 
