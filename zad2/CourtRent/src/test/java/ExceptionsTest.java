@@ -1,6 +1,8 @@
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;
+import nbd.gV.exceptions.JakartaException;
 import nbd.gV.exceptions.MainException;
+import nbd.gV.exceptions.MyMongoException;
 import nbd.gV.exceptions.RepositoryException;
 import nbd.gV.exceptions.ReservationException;
 import org.junit.jupiter.api.Test;
@@ -43,5 +45,19 @@ public class ExceptionsTest {
         RuntimeException reservationException = new ReservationException("TEST");
         assertThrows(ReservationException.class, () -> {throw reservationException;});
         assertEquals("TEST", reservationException.getMessage());
+    }
+
+    @Test
+    void testJakartaException() {
+        RuntimeException jakartaException = new JakartaException("TEST");
+        assertThrows(JakartaException.class, () -> {throw jakartaException;});
+        assertEquals("TEST", jakartaException.getMessage());
+    }
+
+    @Test
+    void testMyMongoException() {
+        RuntimeException myMongoException = new MyMongoException("TEST");
+        assertThrows(MyMongoException.class, () -> {throw myMongoException;});
+        assertEquals("TEST", myMongoException.getMessage());
     }
 }

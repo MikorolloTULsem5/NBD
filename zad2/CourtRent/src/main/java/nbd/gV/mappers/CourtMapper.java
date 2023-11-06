@@ -7,7 +7,6 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 import java.util.Objects;
 import java.util.UUID;
 
-
 public class CourtMapper {
     @BsonProperty("_id")
     private String courtId;
