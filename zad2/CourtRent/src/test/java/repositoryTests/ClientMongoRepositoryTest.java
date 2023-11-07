@@ -10,7 +10,6 @@ import nbd.gV.clients.Normal;
 import nbd.gV.exceptions.MyMongoException;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -194,7 +193,7 @@ public class ClientMongoRepositoryTest {
     }
 
     @Test
-    void testDeletingDocumentsInDB() {
+    void testDeletingDocumentsInDBPositive() {
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         assertTrue(clientRepository.create(clientMapper1));
         assertTrue(clientRepository.create(clientMapper2));
@@ -205,10 +204,10 @@ public class ClientMongoRepositoryTest {
         assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
 
         //Check the rest
-        var clientsList = clientRepository.readAll();
-        assertEquals(2, clientsList.size());
-        assertEquals(clientMapper1, clientsList.get(0));
-        assertEquals(clientMapper3, clientsList.get(1));
+        var clientMappersList = clientRepository.readAll();
+        assertEquals(2, clientMappersList.size());
+        assertEquals(clientMapper1, clientMappersList.get(0));
+        assertEquals(clientMapper3, clientMappersList.get(1));
     }
 
     @Test
@@ -227,7 +226,7 @@ public class ClientMongoRepositoryTest {
     }
 
     @Test
-    void testUpdatingRecordsInDB() {
+    void testUpdatingDocumentsInDBPositive() {
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         assertTrue(clientRepository.create(clientMapper1));
         assertTrue(clientRepository.create(clientMapper2));
@@ -259,7 +258,7 @@ public class ClientMongoRepositoryTest {
                 .into(new ArrayList<>()).get(0).getString("field"));
     }
     @Test
-    void testUpdatingRecordsInDBNegative() {
+    void testUpdatingDocumentsInDBNegative() {
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         assertTrue(clientRepository.create(clientMapper1));
         assertTrue(clientRepository.create(clientMapper2));

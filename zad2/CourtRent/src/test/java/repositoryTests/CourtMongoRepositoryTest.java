@@ -6,6 +6,7 @@ import nbd.gV.exceptions.MyMongoException;
 import nbd.gV.mappers.ClientMapper;
 import nbd.gV.mappers.CourtMapper;
 import nbd.gV.repositories.CourtMongoRepository;
+import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -137,5 +139,85 @@ public class CourtMongoRepositoryTest {
         CourtMapper couMapper3 = courtRepository.readByUUID(UUID.fromString(courtMapper3.getCourtId()));
         assertNotNull(couMapper3);
         assertEquals(courtMapper3, couMapper3);
+    }
+
+    @Test
+    void testDeletingDocumentsInDBPositive() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(courtRepository.create(courtMapper1));
+        assertTrue(courtRepository.create(courtMapper2));
+        assertTrue(courtRepository.create(courtMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        assertTrue(courtRepository.delete(UUID.fromString(courtMapper2.getCourtId())));
+        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
+
+        //Check the rest
+        var courtMappersLists = courtRepository.readAll();
+        assertEquals(2, courtMappersLists.size());
+        assertEquals(courtMapper1, courtMappersLists.get(0));
+        assertEquals(courtMapper3, courtMappersLists.get(1));
+    }
+
+    @Test
+    void testDeletingDocumentsInDBNegative() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(courtRepository.create(courtMapper1));
+        assertTrue(courtRepository.create(courtMapper2));
+        assertTrue(courtRepository.create(courtMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        assertTrue(courtRepository.delete(UUID.fromString(courtMapper3.getCourtId())));
+        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
+
+        assertFalse(courtRepository.delete(UUID.fromString(courtMapper3.getCourtId())));
+        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
+    }
+
+    @Test
+    void testUpdatingRecordsInDBPositive() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(courtRepository.create(courtMapper1));
+        assertTrue(courtRepository.create(courtMapper2));
+        assertTrue(courtRepository.create(courtMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        assertEquals(200,
+                courtRepository.readByUUID(UUID.fromString(courtMapper1.getCourtId())).getBaseCost());
+        assertTrue(courtRepository.update(UUID.fromString(courtMapper1.getCourtId()),
+                "basecost", 350));
+        assertEquals(350,
+                courtRepository.readByUUID(UUID.fromString(courtMapper1.getCourtId())).getBaseCost());
+
+        //Test adding new value to document
+        assertFalse(courtRepository.getDatabase().getCollection(courtRepository.getCollectionName(), Document.class)
+                .find(Filters.eq("_id", courtMapper2.getCourtId().toString()))
+                .into(new ArrayList<>()).get(0).containsKey("field"));
+
+        assertTrue(courtRepository.update(UUID.fromString(courtMapper2.getCourtId()),
+                "field", "newValue"));
+
+        assertTrue(courtRepository.getDatabase().getCollection(courtRepository.getCollectionName(), Document.class)
+                .find(Filters.eq("_id", courtMapper2.getCourtId().toString()))
+                .into(new ArrayList<>()).get(0).containsKey("field"));
+
+        assertEquals("newValue",
+                courtRepository.getDatabase().getCollection(courtRepository.getCollectionName(), Document.class)
+                        .find(Filters.eq("_id", courtMapper2.getCourtId().toString()))
+                        .into(new ArrayList<>()).get(0).getString("field"));
+    }
+    @Test
+    void testUpdatingRecordsInDBNegative() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(courtRepository.create(courtMapper1));
+        assertTrue(courtRepository.create(courtMapper2));
+        assertTrue(courtRepository.create(courtMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        assertThrows(MyMongoException.class,
+                () -> courtRepository.update(UUID.fromString(courtMapper3.getCourtId()),
+                        "_id", UUID.randomUUID().toString()));
+
+        assertFalse(courtRepository.update(UUID.randomUUID(), "area", 435.0));
     }
 }
