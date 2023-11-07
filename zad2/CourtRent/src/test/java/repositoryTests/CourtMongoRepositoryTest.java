@@ -3,7 +3,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.MyMongoException;
-import nbd.gV.mappers.ClientMapper;
 import nbd.gV.mappers.CourtMapper;
 import nbd.gV.repositories.CourtMongoRepository;
 import org.bson.Document;
