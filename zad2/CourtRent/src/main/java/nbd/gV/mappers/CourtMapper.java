@@ -22,12 +22,12 @@ public class CourtMapper {
     private boolean rented;
 
     @BsonCreator
-    public CourtMapper(@BsonProperty String courtId,
-                       @BsonProperty double area,
-                       @BsonProperty int baseCost,
-                       @BsonProperty int courtNumber,
-                       @BsonProperty boolean archive,
-                       @BsonProperty boolean rented) {
+    public CourtMapper(@BsonProperty("_id") String courtId,
+                       @BsonProperty("area") double area,
+                       @BsonProperty("basecost") int baseCost,
+                       @BsonProperty("courtnumber") int courtNumber,
+                       @BsonProperty("archive") boolean archive,
+                       @BsonProperty("rented") boolean rented) {
         this.courtId = courtId;
         this.area = area;
         this.baseCost = baseCost;
