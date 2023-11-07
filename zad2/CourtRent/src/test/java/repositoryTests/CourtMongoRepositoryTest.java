@@ -3,6 +3,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.MyMongoException;
+import nbd.gV.mappers.ClientMapper;
 import nbd.gV.mappers.CourtMapper;
 import nbd.gV.repositories.CourtMongoRepository;
 import org.junit.jupiter.api.AfterAll;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -103,5 +105,37 @@ public class CourtMongoRepositoryTest {
 
         var clientsList = courtRepository.read(Filters.eq("area", 999));
         assertEquals(0, clientsList.size());
+    }
+
+    @Test
+    void testFindingAllDocumentsInDB() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(courtRepository.create(courtMapper1));
+        assertTrue(courtRepository.create(courtMapper2));
+        assertTrue(courtRepository.create(courtMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        var clientsList = courtRepository.readAll();
+        assertEquals(3, clientsList.size());
+        assertEquals(courtMapper1, clientsList.get(0));
+        assertEquals(courtMapper2, clientsList.get(1));
+        assertEquals(courtMapper3, clientsList.get(2));
+    }
+
+    @Test
+    void testFindingByUUID() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        assertTrue(courtRepository.create(courtMapper1));
+        assertTrue(courtRepository.create(courtMapper2));
+        assertTrue(courtRepository.create(courtMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        CourtMapper couMapper1 = courtRepository.readByUUID(UUID.fromString(courtMapper1.getCourtId()));
+        assertNotNull(couMapper1);
+        assertEquals(courtMapper1, couMapper1);
+
+        CourtMapper couMapper3 = courtRepository.readByUUID(UUID.fromString(courtMapper3.getCourtId()));
+        assertNotNull(couMapper3);
+        assertEquals(courtMapper3, couMapper3);
     }
 }
