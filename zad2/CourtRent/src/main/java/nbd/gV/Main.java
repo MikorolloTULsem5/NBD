@@ -5,6 +5,7 @@ import nbd.gV.clients.Client;
 import nbd.gV.clients.Normal;
 import nbd.gV.mappers.ClientMapper;
 import nbd.gV.repositories.ClientMongoRepository;
+import nbd.gV.repositories.CourtMongoRepository;
 import org.bson.conversions.Bson;
 
 public class Main {
@@ -28,6 +29,5 @@ public class Main {
 //    }
 
     public static void main(String[] args) {
-//        Bson filter = Filters.eq("client",
     }
 }

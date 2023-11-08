@@ -13,7 +13,6 @@ public class CourtMongoRepository extends AbstractMongoRepository<CourtMapper> {
     public CourtMongoRepository() {
         boolean collectionExists = getDatabase().listCollectionNames().into(new ArrayList<>()).contains("courts");
         if (!collectionExists) {
-            System.out.println("Creating collection");
             ValidationOptions validationOptions = new ValidationOptions().validator(
                     Document.parse("""
                             {
@@ -40,7 +39,6 @@ public class CourtMongoRepository extends AbstractMongoRepository<CourtMapper> {
                     .validationOptions(validationOptions);
             getDatabase().createCollection("courts", createCollectionOptions);
         }
-        System.out.println("Collection exists!");
     }
 
     @Override
