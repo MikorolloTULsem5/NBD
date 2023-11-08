@@ -7,7 +7,7 @@ import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;
 import nbd.gV.courts.Court;
-import nbd.gV.exceptions.MyMongoException;
+import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.ReservationException;
 import nbd.gV.mappers.ClientMapper;
 import nbd.gV.mappers.CourtMapper;
@@ -16,7 +16,6 @@ import nbd.gV.repositories.ClientMongoRepository;
 import nbd.gV.repositories.CourtMongoRepository;
 import nbd.gV.repositories.ReservationMongoRepository;
 import nbd.gV.reservations.Reservation;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -111,12 +110,33 @@ public class ReservationRepositoryTest {
         reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
         assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
 
+        //Reserve reserved court
         Reservation reservation2 = new Reservation(testClient2, testCourt1, testTimeStart);
         assertNotNull(reservation2);
         assertThrows(ReservationException.class, () -> reservationRepository.create(
                 ReservationMapper.toMongoReservation(reservation2)));
+
+        //No client in the database
+        assertThrows(ReservationException.class, () -> reservationRepository.create(
+                ReservationMapper.toMongoReservation(new Reservation(new Client("John", "Blade",
+                        "12345678911", new Normal()), testCourt3, testTimeStart))));
+
+        //No court in the database
+        assertThrows(ReservationException.class, () -> reservationRepository.create(
+                ReservationMapper.toMongoReservation(new Reservation(testClient3, new Court(1000, 100,
+                        5), testTimeStart))));
+
+        //Archive client
+        testClient3.setArchive(true);
+        assertThrows(ClientException.class, () -> reservationRepository.create(
+                ReservationMapper.toMongoReservation(new Reservation(testClient3, testCourt3, testTimeStart))));
+
+        //Archive court
+        testCourt4.setArchive(true);
+        assertThrows(ClientException.class, () -> reservationRepository.create(
+                ReservationMapper.toMongoReservation(new Reservation(testClient2, testCourt4, testTimeStart))));
     }
-//
+
 //    @Test
 //    void testAddingNewRecordWithLogicBasicToDB() {
 //        ReservationRepository reservationRepository = new ReservationRepository("test");
