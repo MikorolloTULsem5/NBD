@@ -85,8 +85,9 @@ public class ReservationMongoRepository extends AbstractMongoRepository<Reservat
     }
 
     public void update(Court court, LocalDateTime endTime) {
+        //Find court
         var listCourt = getDatabase().getCollection("courts", CourtMapper.class)
-                .find(Filters.eq("_id", court.getCourtId())).into(new ArrayList<>());
+                .find(Filters.eq("_id", court.getCourtId().toString())).into(new ArrayList<>());
         if (listCourt.isEmpty()) {
             throw new ReservationException("Brak podanego boiska w bazie!");
         }
@@ -94,14 +95,24 @@ public class ReservationMongoRepository extends AbstractMongoRepository<Reservat
             throw new ReservationException("To boisko nie jest aktualnie wypozyczone!");
         }
 
-        var listReservation = getDatabase().getCollection("courts",
-                ReservationMapper.class).find(Filters.eq("courtid", court.getCourtId())).into(new ArrayList<>());
+        //Find reservation
+        var listReservation = getDatabase().getCollection("reservations",
+                ReservationMapper.class).find(Filters.eq("courtid", court.getCourtId().toString()))
+                .into(new ArrayList<>());
         if (listReservation.isEmpty()) {
             throw new ReservationException("Brak rezerwacji, dla podanego boiska, w bazie!");
         }
+
+        //Find client
+        var listClient = getDatabase().getCollection("clients", ClientMapper.class)
+                .find(Filters.eq("_id", listReservation.get(0).getClientId().toString()))
+                .into(new ArrayList<>());
+        if (listClient.isEmpty()) {
+            throw new ReservationException("Brak podanego klienta w bazie!");
+        }
+
         Reservation reservationFound = ReservationMapper.fromMongoReservation(listReservation.get(0),
-                new ClientMapper(listReservation.get(0).getClientId(), null, null, null,
-                        false, null), listCourt.get(0));
+                listClient.get(0), listCourt.get(0));
 
         ClientSession clientSession = getMongoClient().startSession();
         court.setRented(false);
