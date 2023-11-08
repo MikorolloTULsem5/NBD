@@ -54,6 +54,10 @@ public abstract class AbstractMongoRepository<T> implements AutoCloseable {
         mongoDatabase = mongoClient.getDatabase("admin");
     }
 
+    protected MongoClient getMongoClient() {
+        return mongoClient;
+    }
+
     public MongoDatabase getDatabase() {
         return mongoDatabase;
     }
