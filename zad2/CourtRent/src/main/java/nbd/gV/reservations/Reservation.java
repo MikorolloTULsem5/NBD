@@ -1,7 +1,5 @@
 package nbd.gV.reservations;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import nbd.gV.clients.Client;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.MainException;
@@ -14,34 +12,32 @@ import java.util.Formatter;
 import java.util.Locale;
 import java.util.UUID;
 
-@Entity
-@Table(name = "reservation")
-@Access(value = AccessType.FIELD)
 public class Reservation {
-    @Id
     private UUID id;
-    @NotNull
-    @ManyToOne
-    @JoinColumn
     private Client client;
-    @NotNull
-    @ManyToOne
-    @JoinColumn
     private Court court;
-    @NotNull
     private LocalDateTime beginTime;
     private LocalDateTime endTime = null;
     private double reservationCost;
 
-    public Reservation(UUID id, Client client, Court court, LocalDateTime beginTime) {
-        if (id == null || client == null || court == null)
+    public Reservation(Client client, Court court, LocalDateTime beginTime) {
+        if (client == null || court == null) {
             throw new MainException("Niepoprawny parametr przy tworzeniu obiektu rezerwacji!");
+        }
 
-        this.id = id;
+        this.id = UUID.randomUUID();
         this.client = client;
         this.court = court;
         this.beginTime = (beginTime == null) ? LocalDateTime.now() : beginTime;
         court.setRented(true);
+    }
+
+    public Reservation(UUID id, Client client, Court court, LocalDateTime beginTime) {
+        this(client, court, beginTime);
+        if (id == null) {
+            throw new MainException("UUID nie moze byc null'em!");
+        }
+        this.id = id;
     }
 
     public Reservation() {
