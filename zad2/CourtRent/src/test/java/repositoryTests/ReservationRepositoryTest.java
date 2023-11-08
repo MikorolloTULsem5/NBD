@@ -1,6 +1,7 @@
 package repositoryTests;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.From;
@@ -16,6 +17,7 @@ import nbd.gV.repositories.ClientMongoRepository;
 import nbd.gV.repositories.CourtMongoRepository;
 import nbd.gV.repositories.ReservationMongoRepository;
 import nbd.gV.reservations.Reservation;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,6 +48,14 @@ public class ReservationRepositoryTest {
     private MongoCollection<ReservationMapper> getTestCollection() {
         return reservationRepository.getDatabase()
                 .getCollection(reservationRepository.getCollectionName(), ReservationMapper.class);
+    }
+
+    @BeforeAll
+    static void cleanFirstAndLastTimeDB() {
+        reservationRepository.getDatabase().getCollection(reservationRepository.getCollectionName(),
+                ReservationMapper.class).deleteMany(Filters.empty());
+        clientRepository.readAll().forEach((mapper) -> clientRepository.delete(UUID.fromString(mapper.getClientID())));
+        courtRepository.readAll().forEach((mapper) -> courtRepository.delete(UUID.fromString(mapper.getCourtId())));
     }
 
     @BeforeEach
