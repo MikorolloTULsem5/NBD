@@ -1,75 +1,77 @@
-//import jakarta.persistence.EntityManager;
-//import jakarta.persistence.criteria.CriteriaBuilder;
-//import jakarta.persistence.criteria.CriteriaQuery;
-//import jakarta.persistence.criteria.From;
-//import jakarta.persistence.criteria.Root;
-//import nbd.gV.clients.Client;
-//import nbd.gV.clients.ClientType;
-//import nbd.gV.clients.Normal;
-//import nbd.gV.courts.Court;
-//import nbd.gV.exceptions.ClientException;
-//import nbd.gV.exceptions.CourtException;
-//import nbd.gV.exceptions.JakartaException;
-//import nbd.gV.exceptions.ReservationException;
-//import nbd.gV.repositories.ClientRepository;
-//import nbd.gV.repositories.CourtRepository;
-//import nbd.gV.old.Repository;
-//import nbd.gV.repositories.ReservationRepository;
-//import nbd.gV.reservations.Reservation;
-//import nbd.gV.reservations.Reservation_;
-//import org.junit.jupiter.api.AfterEach;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//
-//import java.time.LocalDateTime;
-//import java.time.Month;
-//import java.util.List;
-//import java.util.UUID;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.junit.jupiter.api.Assertions.assertThrows;
-//
-//public class ReservationRepositoryTest {
-//    private final ReservationRepository reservationRepository = new ReservationRepository("test");
-//
-//    private final CourtRepository courtRepository = new CourtRepository("test");
-//    private final ClientRepository clientRepository = new ClientRepository("test");
-//    ClientType testClientType;
-//
-//    Client testClient1;
-//    Client testClient2;
-//    Client testClient3;
-//    Court testCourt1;
-//    Court testCourt2;
-//    Court testCourt3;
-//    Court testCourt4;
-//    LocalDateTime testTimeStart;
-//    LocalDateTime testTimeEnd;
-//
-//    @BeforeEach
-//    void setUp() {
-//        testClientType = new Normal();
-//
-//        testClient1 = new Client("John", "Smith", "12345678901", testClientType);
-//        testClient2 = new Client("Eva", "Brown", "12345678902", testClientType);
-//        testClient3 = new Client("Adam", "Long", "12345678903", testClientType);
-//        clientRepository.create(testClient1);
-//        clientRepository.create(testClient2);
-//        clientRepository.create(testClient3);
-//
-//        testCourt1 = new Court(1000, 100, 1);
-//        testCourt2 = new Court(1000, 100, 2);
-//        testCourt3 = new Court(1000, 100, 3);
-//        testCourt4 = new Court(1000, 100, 4);
-//
-//        courtRepository.create(testCourt1);
-//        courtRepository.create(testCourt2);
-//        courtRepository.create(testCourt3);
-//        courtRepository.create(testCourt4);
-//
-//        testTimeStart = LocalDateTime.of(2023, Month.JUNE, 4, 12, 0);
-//        testTimeEnd = LocalDateTime.of(2023, Month.JUNE, 4, 15, 0);
-//    }
+package repositoryTests;
+
+import com.mongodb.client.MongoCollection;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.From;
+import nbd.gV.clients.Client;
+import nbd.gV.clients.ClientType;
+import nbd.gV.clients.Normal;
+import nbd.gV.courts.Court;
+import nbd.gV.exceptions.JakartaException;
+import nbd.gV.mappers.ClientMapper;
+import nbd.gV.mappers.CourtMapper;
+import nbd.gV.mappers.ReservationMapper;
+import nbd.gV.repositories.ClientMongoRepository;
+import nbd.gV.repositories.CourtMongoRepository;
+import nbd.gV.repositories.ReservationMongoRepository;
+import nbd.gV.reservations.Reservation;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+public class ReservationRepositoryTest {
+    static final ReservationMongoRepository reservationRepository = new ReservationMongoRepository();
+    static final CourtMongoRepository courtRepository = new CourtMongoRepository();
+    static final ClientMongoRepository clientRepository = new ClientMongoRepository();
+    ClientType testClientType;
+
+    Client testClient1;
+    Client testClient2;
+    Client testClient3;
+    Court testCourt1;
+    Court testCourt2;
+    Court testCourt3;
+    Court testCourt4;
+    LocalDateTime testTimeStart;
+    LocalDateTime testTimeEnd;
+
+    private MongoCollection<ReservationMapper> getTestCollection() {
+        return reservationRepository.getDatabase()
+                .getCollection(reservationRepository.getCollectionName(), ReservationMapper.class);
+    }
+
+    @BeforeEach
+    void setUp() {
+        testClientType = new Normal();
+
+        testClient1 = new Client("John", "Smith", "12345678901", testClientType);
+        testClient2 = new Client("Eva", "Brown", "12345678902", testClientType);
+        testClient3 = new Client("Adam", "Long", "12345678903", testClientType);
+        clientRepository.create(ClientMapper.toMongoClient(testClient1));
+        clientRepository.create(ClientMapper.toMongoClient(testClient2));
+        clientRepository.create(ClientMapper.toMongoClient(testClient3));
+
+        testCourt1 = new Court(1000, 100, 1);
+        testCourt2 = new Court(1000, 100, 2);
+        testCourt3 = new Court(1000, 100, 3);
+        testCourt4 = new Court(1000, 100, 4);
+
+        courtRepository.create(CourtMapper.toMongoCourt(testCourt1));
+        courtRepository.create(CourtMapper.toMongoCourt(testCourt2));
+        courtRepository.create(CourtMapper.toMongoCourt(testCourt3));
+        courtRepository.create(CourtMapper.toMongoCourt(testCourt4));
+
+        testTimeStart = LocalDateTime.of(2023, Month.JUNE, 4, 12, 0);
+        testTimeEnd = LocalDateTime.of(2023, Month.JUNE, 4, 15, 0);
+    }
 //
 //    @AfterEach
 //    void cleanDataBase(){
@@ -82,34 +84,21 @@
 //        List<Client> listOfClients = clientRepository.findAll();
 //        listOfClients.forEach(clientRepository::delete);
 //    }
-//
-//    @Test
-//    void testCreatingRepository() {
-//        Repository<Reservation> reservationRepository = new ReservationRepository("test");
-//        assertNotNull(reservationRepository);
-//        EntityManager em = reservationRepository.getEntityManager();
-//        assertNotNull(em);
-//        assertTrue(em.isOpen());
-//    }
-//
-//    @Test
-//    void testAddingNewRecordToDB() {
-//        ReservationRepository reservationRepository = new ReservationRepository("test");
-//        assertNotNull(reservationRepository);
-//
-//        CriteriaBuilder cb = reservationRepository.getEntityManager().getCriteriaBuilder();
-//        CriteriaQuery<Long> query = cb.createQuery(Long.class);
-//        From<Reservation, Reservation> from = query.from(Reservation.class);
-//        query.select(cb.count(from));
-//        long count = reservationRepository.getEntityManager().createQuery(query).getSingleResult();
-//
-//        assertEquals(0, count);
-//        Reservation reservation = new Reservation(UUID.randomUUID(),testClient1,testCourt1,null);
-//        reservationRepository.create(reservation);
-//        count = reservationRepository.getEntityManager().createQuery(query).getSingleResult();
-//        assertEquals(1, count);
-//        assertThrows(JakartaException.class, () -> reservationRepository.create(null));
-//    }
+
+    @Test
+    void testCreatingRepository() {
+        ReservationMongoRepository reservationRepository = new ReservationMongoRepository();
+        assertNotNull(reservationRepository);
+    }
+
+    @Test
+    void testAddingNewDocumentToDB() {
+        Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
+        assertNotNull(reservation);
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
+        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
+    }
 //
 //    @Test
 //    void testAddingNewRecordWithLogicBasicToDB() {
@@ -263,4 +252,4 @@
 //        assertThrows(ReservationException.class, () -> reservationRepository.update(testCourt3, testTimeEnd));
 //        assertThrows(JakartaException.class, () -> reservationRepository.update(null));
 //    }
-//}
+}

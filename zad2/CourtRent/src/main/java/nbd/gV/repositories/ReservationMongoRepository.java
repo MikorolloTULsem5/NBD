@@ -19,6 +19,7 @@ import nbd.gV.mappers.ReservationMapper;
 import nbd.gV.reservations.Reservation;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class ReservationMongoRepository extends AbstractMongoRepository<ReservationMapper> {
 
@@ -48,7 +49,8 @@ public class ReservationMongoRepository extends AbstractMongoRepository<Reservat
                 try {
                     clientSession.startTransaction();
                     result = this.getCollection().insertOne(ReservationMapper.toMongoReservation(
-                            new Reservation(clientFound, courtFound, reservationMapper.getBeginTime())));
+                            new Reservation(UUID.fromString(reservationMapper.getId()),
+                                    clientFound, courtFound, reservationMapper.getBeginTime())));
                     if (result.wasAcknowledged()) {
                         getDatabase().getCollection("courts", CourtMapper.class).updateOne(
                                 clientSession,
