@@ -7,10 +7,15 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
+import com.mongodb.client.result.UpdateResult;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import nbd.gV.clients.Client;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;
+import nbd.gV.exceptions.JakartaException;
 import nbd.gV.exceptions.MyMongoException;
 import nbd.gV.exceptions.ReservationException;
 import nbd.gV.mappers.ClientMapper;
@@ -18,6 +23,7 @@ import nbd.gV.mappers.CourtMapper;
 import nbd.gV.mappers.ReservationMapper;
 import nbd.gV.reservations.Reservation;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -78,30 +84,51 @@ public class ReservationMongoRepository extends AbstractMongoRepository<Reservat
         }
     }
 
-//    public void update(Court court, LocalDateTime endTime) {
-//        try {
-//            getEntityManager().getTransaction().begin();
-//            Court court1 = getEntityManager().find(Court.class, court.getCourtId(), LockModeType.PESSIMISTIC_WRITE);
-//            if (court1.isRented()) {
-//                court.setRented(false);
-//                getEntityManager().merge(court);
-//                CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
-//                CriteriaQuery<Reservation> query = cb.createQuery(Reservation.class);
-//                Root<Reservation> reservationRoot = query.from(Reservation.class);
-//                query.select(reservationRoot).where(cb.and(cb.equal(reservationRoot.get(Reservation_.COURT), court), cb.isNull(reservationRoot.get(Reservation_.END_TIME))));
-//                Reservation reservation = getEntityManager().createQuery(query).setLockMode(LockModeType.PESSIMISTIC_READ).getSingleResult();
-//                reservation.endReservation(endTime);
-//                getEntityManager().merge(reservation);
-//                getEntityManager().getTransaction().commit();
-//            } else {
-//                getEntityManager().getTransaction().rollback();
-//                throw new ReservationException("To boisko nie jest aktualnie wypozyczone!");
-//            }
-//        } catch (IllegalArgumentException | TransactionRequiredException | PessimisticLockException exception) {
-//            getEntityManager().getTransaction().rollback();
-//            throw new JakartaException(exception.getMessage());
-//        }
-//    }
+    public void update(Court court, LocalDateTime endTime) {
+        var listCourt = getDatabase().getCollection("courts", CourtMapper.class)
+                .find(Filters.eq("_id", court.getCourtId())).into(new ArrayList<>());
+        if (listCourt.isEmpty()) {
+            throw new ReservationException("Brak podanego boiska w bazie!");
+        }
+        if (listCourt.get(0).isRented() == 0) {
+            throw new ReservationException("To boisko nie jest aktualnie wypozyczone!");
+        }
+
+        var listReservation = getDatabase().getCollection("courts",
+                ReservationMapper.class).find(Filters.eq("courtid", court.getCourtId())).into(new ArrayList<>());
+        if (listReservation.isEmpty()) {
+            throw new ReservationException("Brak rezerwacji, dla podanego boiska, w bazie!");
+        }
+        Reservation reservationFound = ReservationMapper.fromMongoReservation(listReservation.get(0),
+                new ClientMapper(listReservation.get(0).getClientId(), null, null, null,
+                        false, null), listCourt.get(0));
+
+        ClientSession clientSession = getMongoClient().startSession();
+        court.setRented(false);
+        try {
+            clientSession.startTransaction();
+            reservationFound.endReservation(endTime);
+
+            //Update reservations properties
+            update(reservationFound.getId(), "endtime", reservationFound.getEndTime());
+            update(reservationFound.getId(), "reservationcost", reservationFound.getReservationCost());
+
+            //Update court's "rented" field
+            getDatabase().getCollection("courts", CourtMapper.class).updateOne(
+                    clientSession,
+                    Filters.eq("_id", listCourt.get(0).getCourtId().toString()),
+                    Updates.inc("rented", -1));
+
+            clientSession.commitTransaction();
+        } catch (Exception exception) {
+            clientSession.abortTransaction();
+            clientSession.close();
+            court.setRented(true);
+            throw new MyMongoException(exception.getMessage());
+        } finally {
+            clientSession.close();
+        }
+    }
 
     @Override
     protected MongoCollection<ReservationMapper> getCollection() {
