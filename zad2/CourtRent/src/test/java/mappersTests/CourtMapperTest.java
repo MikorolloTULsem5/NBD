@@ -16,7 +16,7 @@ public class CourtMapperTest {
     @Test
     void testCreatingMapper() {
         CourtMapper courtMapper = new CourtMapper(uuid.toString(), 300, 200, 1,
-                false, true);
+                false, 1);
         assertNotNull(courtMapper);
 
         assertEquals(uuid, UUID.fromString(courtMapper.getCourtId()));
@@ -24,7 +24,7 @@ public class CourtMapperTest {
         assertEquals(200, courtMapper.getBaseCost());
         assertEquals(1, courtMapper.getCourtNumber());
         assertFalse(courtMapper.isArchive());
-        assertTrue(courtMapper.isRented());
+        assertTrue(courtMapper.isRented() > 0);
     }
 
     @Test
@@ -40,13 +40,13 @@ public class CourtMapperTest {
         assertEquals(court.getBaseCost(), courtMapper.getBaseCost());
         assertEquals(court.getCourtNumber(), courtMapper.getCourtNumber());
         assertFalse(courtMapper.isArchive());
-        assertFalse(courtMapper.isRented());
+        assertFalse(courtMapper.isRented() > 0);
     }
 
     @Test
     void testFromMongoClientMethod() {
         CourtMapper courtMapper = new CourtMapper(uuid.toString(), 300, 200, 1,
-                true, false);
+                true, 0);
         assertNotNull(courtMapper);
 
         Court court = CourtMapper.fromMongoCourt(courtMapper);

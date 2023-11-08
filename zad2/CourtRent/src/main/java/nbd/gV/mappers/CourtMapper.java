@@ -19,7 +19,7 @@ public class CourtMapper {
     @BsonProperty("archive")
     private boolean archive;
     @BsonProperty("rented")
-    private boolean rented;
+    private int rented;
 
     @BsonCreator
     public CourtMapper(@BsonProperty("_id") String courtId,
@@ -27,7 +27,7 @@ public class CourtMapper {
                        @BsonProperty("basecost") int baseCost,
                        @BsonProperty("courtnumber") int courtNumber,
                        @BsonProperty("archive") boolean archive,
-                       @BsonProperty("rented") boolean rented) {
+                       @BsonProperty("rented") int rented) {
         this.courtId = courtId;
         this.area = area;
         this.baseCost = baseCost;
@@ -56,20 +56,20 @@ public class CourtMapper {
         return archive;
     }
 
-    public boolean isRented() {
+    public int isRented() {
         return rented;
     }
 
     public static CourtMapper toMongoCourt(Court court) {
         return new CourtMapper(court.getCourtId().toString(), court.getArea(), court.getBaseCost(),
-                court.getCourtNumber(), court.isArchive(), court.isRented());
+                court.getCourtNumber(), court.isArchive(), court.isRented() ? 1 : 0);
     }
 
     public static Court fromMongoCourt(CourtMapper courtMapper) {
         Court courtModel = new Court(UUID.fromString(courtMapper.getCourtId()), courtMapper.getArea(),
                 courtMapper.getBaseCost(), courtMapper.getCourtNumber());
         courtModel.setArchive(courtMapper.isArchive());
-        courtModel.setRented(courtMapper.isRented());
+        courtModel.setRented(courtMapper.isRented() > 0);
         return courtModel;
     }
 
