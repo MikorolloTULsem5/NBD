@@ -48,15 +48,16 @@ public class ReservationMongoRepository extends AbstractMongoRepository<Reservat
                 ClientSession clientSession = getMongoClient().startSession();
                 try {
                     clientSession.startTransaction();
-                    result = this.getCollection().insertOne(ReservationMapper.toMongoReservation(
+                    result = this.getCollection().insertOne(clientSession, ReservationMapper.toMongoReservation(
                             new Reservation(UUID.fromString(reservationMapper.getId()),
                                     clientFound, courtFound, reservationMapper.getBeginTime())));
                     if (result.wasAcknowledged()) {
                         getDatabase().getCollection("courts", CourtMapper.class).updateOne(
-//                                clientSession,
+                                clientSession,
                                 Filters.eq("_id", courtFound.getCourtId().toString()),
-                                Updates.set("rented", 1));
+                                Updates.inc("rented", 1));
                     }
+                    clientSession.commitTransaction();
                 } catch (Exception e) {
                     clientSession.abortTransaction();
                     clientSession.close();

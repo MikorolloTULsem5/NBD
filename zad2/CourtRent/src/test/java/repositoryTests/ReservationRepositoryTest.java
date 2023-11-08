@@ -7,6 +7,8 @@ import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;
 import nbd.gV.courts.Court;
+import nbd.gV.exceptions.MyMongoException;
+import nbd.gV.exceptions.ReservationException;
 import nbd.gV.mappers.ClientMapper;
 import nbd.gV.mappers.CourtMapper;
 import nbd.gV.mappers.ReservationMapper;
@@ -14,6 +16,7 @@ import nbd.gV.repositories.ClientMongoRepository;
 import nbd.gV.repositories.CourtMongoRepository;
 import nbd.gV.repositories.ReservationMongoRepository;
 import nbd.gV.reservations.Reservation;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,8 +26,7 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ReservationRepositoryTest {
     static final ReservationMongoRepository reservationRepository = new ReservationMongoRepository();
@@ -48,7 +50,7 @@ public class ReservationRepositoryTest {
     }
 
     @BeforeAll
-    static void cleanFirstAndLastTimeDB() {
+    static void cleanDB() {
         reservationRepository.getDatabase().getCollection(reservationRepository.getCollectionName(),
                 ReservationMapper.class).deleteMany(Filters.empty());
         clientRepository.readAll().forEach((mapper) -> clientRepository.delete(UUID.fromString(mapper.getClientID())));
@@ -57,6 +59,7 @@ public class ReservationRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        cleanDB();
         testClientType = new Normal();
 
         testClient1 = new Client("John", "Smith", "12345678901", testClientType);
@@ -79,18 +82,6 @@ public class ReservationRepositoryTest {
         testTimeStart = LocalDateTime.of(2023, Month.JUNE, 4, 12, 0);
         testTimeEnd = LocalDateTime.of(2023, Month.JUNE, 4, 15, 0);
     }
-//
-//    @AfterEach
-//    void cleanDataBase(){
-//        List<Reservation> listOfReservations = reservationRepository.findAll();
-//        listOfReservations.forEach(reservationRepository::delete);
-//
-//        List<Court> listOfCourts = courtRepository.findAll();
-//        listOfCourts.forEach(courtRepository::delete);
-//
-//        List<Client> listOfClients = clientRepository.findAll();
-//        listOfClients.forEach(clientRepository::delete);
-//    }
 
     @Test
     void testCreatingRepository() {
@@ -99,12 +90,31 @@ public class ReservationRepositoryTest {
     }
 
     @Test
-    void testAddingNewDocumentToDB() {
+    void testAddingNewDocumentToDBPositive() {
         Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
         assertNotNull(reservation);
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
         assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
+
+        Reservation reservation2 = new Reservation(testClient2, testCourt2, testTimeStart);
+        assertNotNull(reservation2);
+        reservationRepository.create(ReservationMapper.toMongoReservation(reservation2));
+        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
+    }
+
+    @Test
+    void testAddingNewDocumentToDBNegative() {
+        Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
+        assertNotNull(reservation);
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
+        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
+
+        Reservation reservation2 = new Reservation(testClient2, testCourt1, testTimeStart);
+        assertNotNull(reservation2);
+        assertThrows(ReservationException.class, () -> reservationRepository.create(
+                ReservationMapper.toMongoReservation(reservation2)));
     }
 //
 //    @Test
