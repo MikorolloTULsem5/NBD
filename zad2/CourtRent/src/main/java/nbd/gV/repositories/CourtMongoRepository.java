@@ -17,14 +17,19 @@ public class CourtMongoRepository extends AbstractMongoRepository<CourtMapper> {
             ValidationOptions validationOptions = new ValidationOptions().validator(
                     Document.parse("""
                             {
-                                $jsonSchema:{
-                                    "bsonType": "object,
-                                    "required": [ "area", "basecost", "courtnumber", "rented" ]
+                                "$jsonSchema": {
+                                    "bsonType": "object",
+                                    "required": [
+                                        "area",
+                                        "basecost",
+                                        "courtnumber",
+                                        "rented"
+                                    ],
                                     "properties": {
                                         "rented": {
                                             "bsonType": "int",
-                                            "minimum" : 0,
-                                            "maximum" : 1
+                                            "minimum": 0,
+                                            "maximum": 1,
                                             "description": "Must be 1 for rented and 0 for available"
                                         }
                                     }

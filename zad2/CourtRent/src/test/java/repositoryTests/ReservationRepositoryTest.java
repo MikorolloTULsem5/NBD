@@ -2,14 +2,11 @@ package repositoryTests;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.From;
+
 import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;
 import nbd.gV.courts.Court;
-import nbd.gV.exceptions.JakartaException;
 import nbd.gV.mappers.ClientMapper;
 import nbd.gV.mappers.CourtMapper;
 import nbd.gV.mappers.ReservationMapper;

@@ -53,9 +53,9 @@ public class ReservationMongoRepository extends AbstractMongoRepository<Reservat
                                     clientFound, courtFound, reservationMapper.getBeginTime())));
                     if (result.wasAcknowledged()) {
                         getDatabase().getCollection("courts", CourtMapper.class).updateOne(
-                                clientSession,
+//                                clientSession,
                                 Filters.eq("_id", courtFound.getCourtId().toString()),
-                                Updates.set("rented", true));
+                                Updates.set("rented", 1));
                     }
                 } catch (Exception e) {
                     clientSession.abortTransaction();
