@@ -12,7 +12,6 @@ import nbd.gV.clients.Normal;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;
-import nbd.gV.exceptions.JakartaException;
 import nbd.gV.exceptions.ReservationException;
 import nbd.gV.mappers.ClientMapper;
 import nbd.gV.mappers.CourtMapper;
@@ -144,7 +143,27 @@ public class ReservationMongoRepositoryTest {
 
     @Test
     void testFindingRecordsInDBPositive() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        ReservationMapper reservationMapper1 = ReservationMapper.toMongoReservation(new Reservation(testClient1,
+                        testCourt1, LocalDateTime.now()));
+        assertTrue(reservationRepository.create(reservationMapper1));
+        ReservationMapper reservationMapper2 = ReservationMapper.toMongoReservation(new Reservation(testClient2,
+                testCourt2, testTimeStart));
+        assertTrue(reservationRepository.create(reservationMapper2));
+        ReservationMapper reservationMapper3 = ReservationMapper.toMongoReservation( new Reservation(testClient3,
+                testCourt3, testTimeStart));
+        assertTrue(reservationRepository.create(reservationMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
 
+        var reservationsList1 = reservationRepository.read(Filters.eq("clientid",
+                testClient1.getClientID().toString()));
+        assertEquals(1, reservationsList1.size());
+        assertEquals(reservationMapper1, reservationsList1.get(0));
+
+        var reservationsList2 =  reservationRepository.read(Filters.eq("begintime",
+                testTimeStart.toString()));
+        assertEquals(reservationMapper2, reservationsList2.get(0));
+        assertEquals(reservationMapper3, reservationsList2.get(1));
     }
 
     @Test

@@ -8,6 +8,8 @@ import nbd.gV.repositories.ClientMongoRepository;
 import nbd.gV.repositories.CourtMongoRepository;
 import org.bson.conversions.Bson;
 
+import java.time.LocalDateTime;
+
 public class Main {
 
 //    public static void main(String[] args) {
@@ -29,5 +31,6 @@ public class Main {
 //    }
 
     public static void main(String[] args) {
+        System.out.println(LocalDateTime.now());
     }
 }
