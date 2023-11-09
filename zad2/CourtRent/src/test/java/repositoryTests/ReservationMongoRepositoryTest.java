@@ -12,6 +12,8 @@ import nbd.gV.clients.Normal;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;
+import nbd.gV.exceptions.JakartaException;
+import nbd.gV.exceptions.MyMongoException;
 import nbd.gV.exceptions.ReservationException;
 import nbd.gV.mappers.ClientMapper;
 import nbd.gV.mappers.CourtMapper;
@@ -145,7 +147,7 @@ public class ReservationMongoRepositoryTest {
     void testFindingRecordsInDBPositive() {
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         ReservationMapper reservationMapper1 = ReservationMapper.toMongoReservation(new Reservation(testClient1,
-                        testCourt1, LocalDateTime.now()));
+                        testCourt1, LocalDateTime.of(2000, Month.JUNE, 13, 14, 5)));
         assertTrue(reservationRepository.create(reservationMapper1));
         ReservationMapper reservationMapper2 = ReservationMapper.toMongoReservation(new Reservation(testClient2,
                 testCourt2, testTimeStart));
@@ -161,26 +163,56 @@ public class ReservationMongoRepositoryTest {
         assertEquals(reservationMapper1, reservationsList1.get(0));
 
         var reservationsList2 =  reservationRepository.read(Filters.eq("begintime",
-                testTimeStart.toString()));
+                testTimeStart));
         assertEquals(reservationMapper2, reservationsList2.get(0));
         assertEquals(reservationMapper3, reservationsList2.get(1));
     }
 
     @Test
     void testFindingRecordsInDBNegative() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        ReservationMapper reservationMapper1 = ReservationMapper.toMongoReservation(new Reservation(testClient1,
+                testCourt1, testTimeStart));
+        assertTrue(reservationRepository.create(reservationMapper1));
+        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
 
+        var reservationsList1 = reservationRepository.read(Filters.eq("clientid",
+                testClient2.getClientID().toString()));
+        assertEquals(0, reservationsList1.size());
     }
 
     @Test
     void testFindingByUUIDPositive() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        ReservationMapper reservationMapper2 = ReservationMapper.toMongoReservation(new Reservation(testClient2,
+                testCourt2, testTimeStart));
+        assertTrue(reservationRepository.create(reservationMapper2));
+        ReservationMapper reservationMapper3 = ReservationMapper.toMongoReservation( new Reservation(testClient3,
+                testCourt3, testTimeStart));
+        assertTrue(reservationRepository.create(reservationMapper3));
+        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
 
+        var reservation1 = reservationRepository.readByUUID(
+                UUID.fromString(reservationMapper2.getId()));
+        assertNotNull(reservation1);
+        assertEquals(reservationMapper2, reservation1);
+
+        var reservation2 = reservationRepository.readByUUID(
+                UUID.fromString(reservationMapper3.getId()));
+        assertNotNull(reservation2);
+        assertEquals(reservationMapper3, reservation2);
     }
 
     @Test
     void testFindingByUUIDNegative() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        ReservationMapper reservationMapper1 = ReservationMapper.toMongoReservation(new Reservation(testClient1,
+                testCourt1, testTimeStart));
+        assertTrue(reservationRepository.create(reservationMapper1));
+        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
 
-//        assertNull(reservationRepository.findByUUID(UUID.randomUUID()));
-//        assertThrows(JakartaException.class, () -> reservationRepository.findByUUID(null));
+        assertNull(reservationRepository.readByUUID(UUID.randomUUID()));
+        assertThrows(MyMongoException.class, () -> reservationRepository.readByUUID(null));
     }
 
     //    @Test
