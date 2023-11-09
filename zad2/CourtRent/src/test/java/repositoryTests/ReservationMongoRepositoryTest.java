@@ -230,7 +230,7 @@ public class ReservationMongoRepositoryTest {
         assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
 
         var reservationsList = reservationRepository.readAll();
-        assertEquals(1, reservationsList.size());
+        assertEquals(3, reservationsList.size());
         assertEquals(reservationMapper1, reservationsList.get(0));
         assertEquals(reservationMapper2, reservationsList.get(1));
         assertEquals(reservationMapper3, reservationsList.get(2));
@@ -254,24 +254,57 @@ public class ReservationMongoRepositoryTest {
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
 
         assertThrows(NullPointerException.class, () -> reservationRepository.delete(null));
-        assertThrows(MyMongoException.class, () -> reservationRepository.delete(UUID.randomUUID()));
+        assertFalse(reservationRepository.delete(UUID.randomUUID()));
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
     }
 
     @Test
-    void testUpdatingRecordsInDBPositive() {
+    void testClassicUpdatingDocumentsInDBPositive() {
+        Reservation reservation = new Reservation(testClient2, testCourt2, testTimeStart);
+        assertNotNull(reservation);
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
+        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
+
+        assertEquals(testClient1.getClientID().toString(),
+                reservationRepository.readByUUID(reservation.getId()).getClientId());
+        assertTrue(reservationRepository.update(reservation.getId(), "clientid",
+                testClient2.getClientID().toString()));
+        assertEquals(testClient2.getClientID().toString(),
+                reservationRepository.readByUUID(reservation.getId()).getClientId());
+    }
+
+    @Test
+    void testClassicUpdatingDocumentsInDBNegative() {
+        Reservation reservation = new Reservation(testClient2, testCourt2, testTimeStart);
+        assertNotNull(reservation);
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
+        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
+
+        assertThrows(MyMongoException.class, () -> reservationRepository.update(reservation.getId(),
+                "_id", UUID.randomUUID().toString()));
+        assertFalse(reservationRepository.update(UUID.randomUUID(), "clientid",
+                testClient2.getClientID().toString()));
+    }
+
+    @Test
+    void testEndUpdatingDocumentsInDBPositive() {
         Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
         assertNotNull(reservation);
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
         assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
 
+        assertNull(reservationRepository.readByUUID(reservation.getId()).getEndTime());
+        assertEquals(0, reservationRepository.readByUUID(reservation.getId()).getReservationCost());
         reservationRepository.update(testCourt1, testTimeEnd);
-        //readyyyy
+        assertEquals(testTimeEnd, reservationRepository.readByUUID(reservation.getId()).getEndTime());
+        assertEquals(300, reservationRepository.readByUUID(reservation.getId()).getReservationCost());
     }
 
     @Test
-    void testUpdatingRecordsInDBNegative() {
+    void testEndUpdatingDocumentsInDBNegative() {
         Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
         assertNotNull(reservation);
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
@@ -285,21 +318,4 @@ public class ReservationMongoRepositoryTest {
 //        assertThrows(JakartaException.class, () -> reservationRepository.update(reservation3));
 //        assertThrows(JakartaException.class, () -> reservationRepository.update(null));
     }
-//
-//    @Test
-//    void testUpdatingRecordsInWithLogicDB() {
-//        ReservationRepository reservationRepository = new ReservationRepository("test");
-//        assertNotNull(reservationRepository);
-//
-//        Reservation reservation1 = reservationRepository.create(testClient1, testCourt1, testTimeStart);
-//        Reservation reservation2 = reservationRepository.create(testClient2, testCourt2, testTimeStart);
-//
-//        assertNull(reservationRepository.findByUUID(reservation1.getId()).getEndTime());
-//        reservationRepository.update(testCourt1, testTimeEnd);
-//        assertEquals(testTimeEnd, reservationRepository.findByUUID(reservation1.getId()).getEndTime());
-//        assertFalse(testCourt1.isRented());
-//
-//        assertThrows(ReservationException.class, () -> reservationRepository.update(testCourt3, testTimeEnd));
-//        assertThrows(JakartaException.class, () -> reservationRepository.update(null));
-//    }
 }
