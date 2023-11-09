@@ -313,9 +313,5 @@ public class ReservationMongoRepositoryTest {
 
         reservationRepository.update(testCourt1, testTimeEnd);
         assertThrows(ReservationException.class, () -> reservationRepository.update(testCourt1, testTimeEnd));
-
-
-//        assertThrows(JakartaException.class, () -> reservationRepository.update(reservation3));
-//        assertThrows(JakartaException.class, () -> reservationRepository.update(null));
     }
 }
