@@ -144,15 +144,15 @@ public class ReservationMongoRepositoryTest {
     }
 
     @Test
-    void testFindingRecordsInDBPositive() {
+    void testFindingDocumentRecordsInDBPositive() {
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         ReservationMapper reservationMapper1 = ReservationMapper.toMongoReservation(new Reservation(testClient1,
-                        testCourt1, LocalDateTime.of(2000, Month.JUNE, 13, 14, 5)));
+                testCourt1, LocalDateTime.of(2000, Month.JUNE, 13, 14, 5)));
         assertTrue(reservationRepository.create(reservationMapper1));
         ReservationMapper reservationMapper2 = ReservationMapper.toMongoReservation(new Reservation(testClient2,
                 testCourt2, testTimeStart));
         assertTrue(reservationRepository.create(reservationMapper2));
-        ReservationMapper reservationMapper3 = ReservationMapper.toMongoReservation( new Reservation(testClient3,
+        ReservationMapper reservationMapper3 = ReservationMapper.toMongoReservation(new Reservation(testClient3,
                 testCourt3, testTimeStart));
         assertTrue(reservationRepository.create(reservationMapper3));
         assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
@@ -162,14 +162,14 @@ public class ReservationMongoRepositoryTest {
         assertEquals(1, reservationsList1.size());
         assertEquals(reservationMapper1, reservationsList1.get(0));
 
-        var reservationsList2 =  reservationRepository.read(Filters.eq("begintime",
+        var reservationsList2 = reservationRepository.read(Filters.eq("begintime",
                 testTimeStart));
         assertEquals(reservationMapper2, reservationsList2.get(0));
         assertEquals(reservationMapper3, reservationsList2.get(1));
     }
 
     @Test
-    void testFindingRecordsInDBNegative() {
+    void testFindingDocumentRecordsInDBNegative() {
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         ReservationMapper reservationMapper1 = ReservationMapper.toMongoReservation(new Reservation(testClient1,
                 testCourt1, testTimeStart));
@@ -182,12 +182,12 @@ public class ReservationMongoRepositoryTest {
     }
 
     @Test
-    void testFindingByUUIDPositive() {
+    void testFindingDocumentByUUIDPositive() {
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         ReservationMapper reservationMapper2 = ReservationMapper.toMongoReservation(new Reservation(testClient2,
                 testCourt2, testTimeStart));
         assertTrue(reservationRepository.create(reservationMapper2));
-        ReservationMapper reservationMapper3 = ReservationMapper.toMongoReservation( new Reservation(testClient3,
+        ReservationMapper reservationMapper3 = ReservationMapper.toMongoReservation(new Reservation(testClient3,
                 testCourt3, testTimeStart));
         assertTrue(reservationRepository.create(reservationMapper3));
         assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
@@ -212,30 +212,52 @@ public class ReservationMongoRepositoryTest {
         assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
 
         assertNull(reservationRepository.readByUUID(UUID.randomUUID()));
-        assertThrows(MyMongoException.class, () -> reservationRepository.readByUUID(null));
+        assertThrows(NullPointerException.class, () -> reservationRepository.readByUUID(null));
     }
 
-    //    @Test
-//    void testDeletingRecordsInDB() {
-//        ReservationRepository reservationRepository = new ReservationRepository("test");
-//        assertNotNull(reservationRepository);
-//
-//        Reservation reservation1 = reservationRepository.create(testClient1, testCourt1, testTimeStart);
-//        Reservation reservation2 = reservationRepository.create(testClient2, testCourt2, testTimeStart);
-//
-//        assertEquals(2, reservationRepository.findAll().size());
-//        reservationRepository.delete(reservation2);
-//        assertEquals(1, reservationRepository.findAll().size());
-//
-//        reservationRepository.delete(reservation1);
-//        var reservations = reservationRepository.findAll();
-//        assertTrue(reservations.isEmpty());
-//
-//        assertThrows(JakartaException.class, () -> reservationRepository.delete(null));
-//        assertThrows(JakartaException.class, () -> reservationRepository.delete(reservation1));
-//        assertEquals(0, reservationRepository.findAll().size());
-//    }
-//
+    @Test
+    void testFindingAllDocuments() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        ReservationMapper reservationMapper1 = ReservationMapper.toMongoReservation(new Reservation(testClient1,
+                testCourt1, testTimeStart));
+        assertTrue(reservationRepository.create(reservationMapper1));
+        ReservationMapper reservationMapper2 = ReservationMapper.toMongoReservation(new Reservation(testClient2,
+                testCourt2, testTimeStart));
+        assertTrue(reservationRepository.create(reservationMapper2));
+        ReservationMapper reservationMapper3 = ReservationMapper.toMongoReservation(new Reservation(testClient3,
+                testCourt3, testTimeStart));
+        assertTrue(reservationRepository.create(reservationMapper3));
+        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
+
+        var reservationsList = reservationRepository.readAll();
+        assertEquals(1, reservationsList.size());
+        assertEquals(reservationMapper1, reservationsList.get(0));
+        assertEquals(reservationMapper2, reservationsList.get(1));
+        assertEquals(reservationMapper3, reservationsList.get(2));
+    }
+
+    @Test
+    void testDeletingDocumentsInDB() {
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+        var reservationMapper1 =
+                ReservationMapper.toMongoReservation(new Reservation(testClient1, testCourt1, testTimeStart));
+        reservationRepository.create(reservationMapper1);
+        var reservationMapper2 =
+                ReservationMapper.toMongoReservation(new Reservation(testClient2, testCourt2, testTimeStart));
+        reservationRepository.create(reservationMapper2);
+        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
+
+        reservationRepository.delete(UUID.fromString(reservationMapper2.getId()));
+        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
+
+        reservationRepository.delete(UUID.fromString(reservationMapper1.getId()));
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+
+        assertThrows(NullPointerException.class, () -> reservationRepository.delete(null));
+        assertThrows(MyMongoException.class, () -> reservationRepository.delete(UUID.randomUUID()));
+        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
+    }
+
     @Test
     void testUpdatingRecordsInDBPositive() {
         Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
