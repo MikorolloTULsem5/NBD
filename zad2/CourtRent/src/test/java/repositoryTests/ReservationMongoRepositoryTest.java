@@ -22,6 +22,7 @@ import nbd.gV.repositories.ClientMongoRepository;
 import nbd.gV.repositories.CourtMongoRepository;
 import nbd.gV.repositories.ReservationMongoRepository;
 import nbd.gV.reservations.Reservation;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,7 @@ public class ReservationMongoRepositoryTest {
     }
 
     @BeforeAll
+    @AfterAll
     static void cleanDB() {
         reservationRepository.getDatabase().getCollection(reservationRepository.getCollectionName(),
                 ReservationMapper.class).deleteMany(Filters.empty());

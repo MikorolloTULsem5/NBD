@@ -6,14 +6,12 @@ import nbd.gV.clients.ClientType;
 import nbd.gV.clients.Normal;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.MainException;
-import nbd.gV.mappers.ClientMapper;
 import nbd.gV.repositories.ClientMongoRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

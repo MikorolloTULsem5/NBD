@@ -21,10 +21,6 @@ import java.util.UUID;
 public class ReservationManager {
     private final ReservationMongoRepository reservationRepository;
 
-    public ReservationManager(String unitName) {
-        reservationRepository = new ReservationMongoRepository();
-    }
-
     public ReservationManager() {
         reservationRepository = new ReservationMongoRepository();
     }
