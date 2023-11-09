@@ -113,16 +113,12 @@ public class ReservationManagerTest {
         assertEquals(rm.getAllCurrentReservations().size(), 2);
         assertTrue(testCourt1.isRented());
 
-//        testClient2.setArchive(true);
-//        clientRepository.update(testClient2);
         clientRepository.update(testClient2.getClientID(), "archive", true);
         assertFalse(testCourt3.isRented());
         assertThrows(ClientException.class, () -> rm.makeReservation(testClient2, testCourt3, testTimeStart));
         assertEquals(rm.getAllCurrentReservations().size(), 2);
         assertFalse(testCourt3.isRented());
 
-//        testCourt4.setArchive(true);
-//        courtRepository.update(testCourt4);
         courtRepository.update(testCourt4.getCourtId(), "archive", true);
         assertFalse(testCourt4.isRented());
         assertThrows(CourtException.class, () -> rm.makeReservation(testClient1, testCourt4, testTimeStart));
@@ -170,7 +166,7 @@ public class ReservationManagerTest {
         assertEquals(0, rm.getAllCurrentReservations().size());
 
         assertThrows(MainException.class, () -> rm.returnCourt(null));
-        assertThrows(CourtException.class, () -> rm.returnCourt(testCourt3));
+        assertThrows(ReservationException.class, () -> rm.returnCourt(testCourt3));
     }
 
 

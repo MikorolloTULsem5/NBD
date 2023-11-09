@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Formatter;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Reservation {
@@ -29,7 +30,6 @@ public class Reservation {
         this.client = client;
         this.court = court;
         this.beginTime = (beginTime == null) ? LocalDateTime.now() : beginTime;
-        court.setRented(true);
     }
 
     public Reservation(UUID id, Client client, Court court, LocalDateTime beginTime) {
@@ -113,4 +113,18 @@ public class Reservation {
                 (endTime == null) ? "." : (" do godziny [%s].".formatted(
                         endTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"))))).toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reservation that = (Reservation) o;
+        return Double.compare(reservationCost, that.reservationCost) == 0 &&
+                Objects.equals(id, that.id) &&
+                Objects.equals(client.getClientID().toString(), that.client.getClientID().toString()) &&
+                Objects.equals(court.getCourtId().toString(), that.court.getCourtId().toString()) &&
+                Duration.between(beginTime, that.beginTime).getSeconds() < 5 &&
+                Objects.equals(endTime, that.endTime);
+    }
+
 }

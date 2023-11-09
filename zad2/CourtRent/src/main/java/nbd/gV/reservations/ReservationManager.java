@@ -36,6 +36,7 @@ public class ReservationManager {
             if (!result) {
                 throw new ReservationException("Nie udalo sie utworzyc transkacji!");
             }
+            court.setRented(true);
             return newReservation;
         } catch (MyMongoException exception) {
             throw new ReservationException("Blad transakcji.");
