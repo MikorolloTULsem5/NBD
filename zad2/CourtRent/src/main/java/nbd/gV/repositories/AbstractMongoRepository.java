@@ -103,7 +103,6 @@ public abstract class AbstractMongoRepository<T> implements AutoCloseable {
         return result.getModifiedCount() != 0;
     }
 
-    ///TODO moze zamiast uuid po prostu obiekt?
     public boolean delete(UUID uuid) {
         Bson filter = Filters.eq("_id", uuid.toString());
         var deletedObj = this.getCollection().findOneAndDelete(filter);

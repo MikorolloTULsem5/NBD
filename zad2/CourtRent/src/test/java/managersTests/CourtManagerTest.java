@@ -29,7 +29,7 @@ public class CourtManagerTest {
     }
     @BeforeEach
     void cleanDatabase(){
-        courtRepository.readAll().forEach((mapper) -> courtRepository.delete(UUID.fromString(mapper.getCourtId())));
+        cleanDatabaseFirstAndLastTime();
     }
 
     @Test

@@ -44,7 +44,7 @@ public class CourtMongoRepositoryTest {
 
     @BeforeEach
     void initData() {
-        getTestCollection().deleteMany(Filters.empty());
+        cleanFirstAndLastTimeDB();
         court1 = new Court(100, 200, 1);
         courtMapper1 = CourtMapper.toMongoCourt(court1);
 

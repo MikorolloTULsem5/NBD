@@ -22,13 +22,10 @@ public class ClientManager {
     public Client registerClient(String firstName, String lastName, String personalID, ClientType clientType) {
         Client newClient = new Client(firstName, lastName, personalID, clientType);
         try {
-            ///TODO do zmiany, do validacji numeru pesel nalezy uzyc schematu
-            /*--------------------------------------------------------------------------------------*/
             if (!clientRepository.read(Filters.eq("personalid", personalID)).isEmpty()) {
                 throw new ClientException("Nie udalo sie zarejestrowac klienta w bazie! - klient o tym numerze PESEL" +
                         "znajduje sie juz w bazie");
             }
-            /*--------------------------------------------------------------------------------------*/
 
             if (!clientRepository.create(ClientMapper.toMongoClient(newClient))) {
                 throw new ClientException("Nie udalo sie zarejestrowac klienta w bazie! - brak odpowiedzi");

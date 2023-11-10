@@ -30,13 +30,10 @@ public class CourtManager {
     public Court registerCourt(double area, int baseCost, int courtNumber) {
         Court court = new Court(area, baseCost, courtNumber);
         try {
-            ///TODO do zmiany, do validacji numeru boiska nalezy uzyc schematu
-            /*--------------------------------------------------------------------------------------*/
             if (!courtRepository.read(Filters.eq("courtnumber", courtNumber)).isEmpty()) {
                 throw new CourtException("Nie udalo sie zarejestrowac boiska w bazie! - boisko o tym numerze " +
                         "znajduje sie juz w bazie");
             }
-            /*--------------------------------------------------------------------------------------*/
 
             if (!courtRepository.create(CourtMapper.toMongoCourt(court))) {
                 throw new CourtException("Nie udalo sie zarejestrowac boiska w bazie! - brak odpowiedzi");

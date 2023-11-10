@@ -34,7 +34,7 @@ public class ClientManagerTest {
 
     @BeforeEach
     void cleanDatabase() {
-        clientRepository.readAll().forEach((mapper) -> clientRepository.delete(UUID.fromString(mapper.getClientID())));
+        cleanDatabaseFirstAndLastTime();
     }
 
     @Test
