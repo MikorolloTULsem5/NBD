@@ -262,7 +262,7 @@ public class ReservationMongoRepositoryTest {
 
     @Test
     void testClassicUpdatingDocumentsInDBPositive() {
-        Reservation reservation = new Reservation(testClient2, testCourt2, testTimeStart);
+        Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
         assertNotNull(reservation);
         assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
         reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
