@@ -22,7 +22,6 @@ public class ClientMongoRepository extends AbstractMongoRepository<ClientMapper>
                                         "firstname",
                                         "lastname",
                                         "personalid",
-                                        "rented",
                                         "archive",
                                         "clienttype"
                                     ],
