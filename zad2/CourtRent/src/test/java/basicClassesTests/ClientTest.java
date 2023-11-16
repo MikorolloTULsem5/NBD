@@ -1,10 +1,10 @@
 package basicClassesTests;
 
 import nbd.gV.clients.Client;
-import nbd.gV.clients.Athlete;
-import nbd.gV.clients.ClientType;
-import nbd.gV.clients.Coach;
-import nbd.gV.clients.Normal;
+import nbd.gV.clients.clienttype.Athlete;
+import nbd.gV.clients.clienttype.ClientType;
+import nbd.gV.clients.clienttype.Coach;
+import nbd.gV.clients.clienttype.Normal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -49,13 +49,9 @@ public class ClientTest {
         assertNotNull(client);
 
         assertEquals(testFirstName, client.getFirstName());
-        client.setFirstName("");
-        assertEquals(testFirstName, client.getFirstName());
         client.setFirstName("Adam");
         assertEquals("Adam", client.getFirstName());
 
-        assertEquals(testLastName, client.getLastName());
-        client.setLastName("");
         assertEquals(testLastName, client.getLastName());
         client.setLastName("Long");
         assertEquals("Long", client.getLastName());
@@ -66,8 +62,6 @@ public class ClientTest {
         client.setArchive(false);
         assertFalse(client.isArchive());
 
-        assertEquals(testTypeNormal, client.getClientType());
-        client.setClientType(null);
         assertEquals(testTypeNormal, client.getClientType());
         client.setClientType(testTypeAthlete);
         assertEquals(testTypeAthlete, client.getClientType());

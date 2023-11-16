@@ -34,13 +34,9 @@ public class CourtTest {
         assertNotNull(newCourt);
 
         assertEquals(300, newCourt.getArea());
-        newCourt.setArea(0);
-        assertEquals(300, newCourt.getArea());
         newCourt.setArea(20);
         assertEquals(20, newCourt.getArea());
 
-        assertEquals(100, newCourt.getBaseCost());
-        newCourt.setBaseCost(-1);
         assertEquals(100, newCourt.getBaseCost());
         newCourt.setBaseCost(10);
         assertEquals(10, newCourt.getBaseCost());

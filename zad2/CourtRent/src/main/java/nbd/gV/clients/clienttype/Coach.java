@@ -1,4 +1,4 @@
-package nbd.gV.clients;
+package nbd.gV.clients.clienttype;
 
 public class Coach extends ClientType {
     @Override

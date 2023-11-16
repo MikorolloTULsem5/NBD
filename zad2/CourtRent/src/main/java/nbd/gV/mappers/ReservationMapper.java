@@ -1,5 +1,7 @@
 package nbd.gV.mappers;
 
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 import nbd.gV.reservations.Reservation;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
@@ -8,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
+@FieldDefaults(makeFinal = true)
 public class ReservationMapper {
     @BsonProperty("_id")
     private String id;
@@ -37,32 +41,8 @@ public class ReservationMapper {
         this.reservationCost = reservationCost;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public String getCourtId() {
-        return courtId;
-    }
-
-    public LocalDateTime getBeginTime() {
-        return beginTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public double getReservationCost() {
-        return reservationCost;
-    }
-
     public static ReservationMapper toMongoReservation(Reservation reservation) {
-        return new ReservationMapper(reservation.getId().toString(), reservation.getClient().getClientID().toString(),
+        return new ReservationMapper(reservation.getId().toString(), reservation.getClient().getClientId().toString(),
                 reservation.getCourt().getCourtId().toString(), reservation.getBeginTime(), reservation.getEndTime(),
                 reservation.getReservationCost());
     }

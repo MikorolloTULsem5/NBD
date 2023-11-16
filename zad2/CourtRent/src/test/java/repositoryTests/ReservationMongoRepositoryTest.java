@@ -4,8 +4,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 
 import nbd.gV.clients.Client;
-import nbd.gV.clients.ClientType;
-import nbd.gV.clients.Normal;
+import nbd.gV.clients.clienttype.ClientType;
+import nbd.gV.clients.clienttype.Normal;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;
@@ -131,7 +131,7 @@ public class ReservationMongoRepositoryTest {
                         5), testTimeStart))));
 
         //Archive client
-        clientRepository.update(testClient3.getClientID(), "archive", true);
+        clientRepository.update(testClient3.getClientId(), "archive", true);
         assertThrows(ClientException.class, () -> reservationRepository.create(
                 ReservationMapper.toMongoReservation(new Reservation(testClient3, testCourt3, testTimeStart))));
 
@@ -156,7 +156,7 @@ public class ReservationMongoRepositoryTest {
         assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
 
         var reservationsList1 = reservationRepository.read(Filters.eq("clientid",
-                testClient1.getClientID().toString()));
+                testClient1.getClientId().toString()));
         assertEquals(1, reservationsList1.size());
         assertEquals(reservationMapper1, reservationsList1.get(0));
 
@@ -175,7 +175,7 @@ public class ReservationMongoRepositoryTest {
         assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
 
         var reservationsList1 = reservationRepository.read(Filters.eq("clientid",
-                testClient2.getClientID().toString()));
+                testClient2.getClientId().toString()));
         assertEquals(0, reservationsList1.size());
     }
 
@@ -264,11 +264,11 @@ public class ReservationMongoRepositoryTest {
         reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
         assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
 
-        assertEquals(testClient1.getClientID().toString(),
+        assertEquals(testClient1.getClientId().toString(),
                 reservationRepository.readByUUID(reservation.getId()).getClientId());
         assertTrue(reservationRepository.update(reservation.getId(), "clientid",
-                testClient2.getClientID().toString()));
-        assertEquals(testClient2.getClientID().toString(),
+                testClient2.getClientId().toString()));
+        assertEquals(testClient2.getClientId().toString(),
                 reservationRepository.readByUUID(reservation.getId()).getClientId());
     }
 
@@ -283,7 +283,7 @@ public class ReservationMongoRepositoryTest {
         assertThrows(MyMongoException.class, () -> reservationRepository.update(reservation.getId(),
                 "_id", UUID.randomUUID().toString()));
         assertFalse(reservationRepository.update(UUID.randomUUID(), "clientid",
-                testClient2.getClientID().toString()));
+                testClient2.getClientId().toString()));
     }
 
     @Test

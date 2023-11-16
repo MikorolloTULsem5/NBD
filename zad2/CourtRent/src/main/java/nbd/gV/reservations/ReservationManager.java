@@ -79,7 +79,7 @@ public class ReservationManager {
         if (client == null) {
             throw new MainException("Nie istniejacy klient nie moze posiadac rezerwacji!");
         }
-        return getReservationsWithBsonFilter(Filters.eq("clientid", client.getClientID().toString()));
+        return getReservationsWithBsonFilter(Filters.eq("clientid", client.getClientId().toString()));
     }
 
     public List<Reservation> getClientEndedReservations(Client client) {
@@ -87,7 +87,7 @@ public class ReservationManager {
             throw new MainException("Nie istniejacy klient nie moze posiadac rezerwacji!");
         }
         return getReservationsWithBsonFilter(Filters.and(
-                Filters.eq("clientid", client.getClientID().toString()),
+                Filters.eq("clientid", client.getClientId().toString()),
                 Filters.not(Filters.eq("endtime", null))));
     }
 

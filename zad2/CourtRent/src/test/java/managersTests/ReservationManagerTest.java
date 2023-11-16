@@ -2,6 +2,8 @@ package managersTests;
 
 import com.mongodb.client.model.Filters;
 import nbd.gV.clients.*;
+import nbd.gV.clients.clienttype.ClientType;
+import nbd.gV.clients.clienttype.Normal;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;
@@ -113,7 +115,7 @@ public class ReservationManagerTest {
         assertEquals(rm.getAllCurrentReservations().size(), 2);
         assertTrue(testCourt1.isRented());
 
-        clientRepository.update(testClient2.getClientID(), "archive", true);
+        clientRepository.update(testClient2.getClientId(), "archive", true);
         assertFalse(testCourt3.isRented());
         assertThrows(ClientException.class, () -> rm.makeReservation(testClient2, testCourt3, testTimeStart));
         assertEquals(rm.getAllCurrentReservations().size(), 2);

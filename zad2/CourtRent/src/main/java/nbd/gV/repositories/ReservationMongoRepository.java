@@ -49,7 +49,7 @@ public class ReservationMongoRepository extends AbstractMongoRepository<Reservat
         }
     }
 
-    //Sprawdzenie spojnosci bazy
+    //Checking database consistency
     @Override
     public boolean create(ReservationMapper reservationMapper) {
         try {

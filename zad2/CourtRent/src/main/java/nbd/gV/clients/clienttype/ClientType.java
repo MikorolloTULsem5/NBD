@@ -1,8 +1,8 @@
-package nbd.gV.clients;
+package nbd.gV.clients.clienttype;
 
 public abstract class ClientType {
 
-    private String name;
+    private final String name;
 
     public ClientType() {
         name = this.getClass().getSimpleName();

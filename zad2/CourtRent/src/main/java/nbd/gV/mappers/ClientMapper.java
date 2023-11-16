@@ -1,17 +1,20 @@
 package nbd.gV.mappers;
 
-import nbd.gV.clients.Athlete;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+import nbd.gV.clients.clienttype.Athlete;
 import nbd.gV.clients.Client;
-import nbd.gV.clients.ClientType;
-import nbd.gV.clients.Coach;
-import nbd.gV.clients.Normal;
+import nbd.gV.clients.clienttype.ClientType;
+import nbd.gV.clients.clienttype.Coach;
+import nbd.gV.clients.clienttype.Normal;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.util.Objects;
 import java.util.UUID;
 
-
+@Getter
+@FieldDefaults(makeFinal = true)
 public class ClientMapper {
     @BsonProperty("_id")
     private String clientID;
@@ -41,32 +44,8 @@ public class ClientMapper {
         this.clientType = clientType;
     }
 
-    public String getClientID() {
-        return clientID;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getPersonalId() {
-        return personalId;
-    }
-
-    public boolean isArchive() {
-        return archive;
-    }
-
-    public String getClientType() {
-        return clientType;
-    }
-
     public static ClientMapper toMongoClient(Client client) {
-        return new ClientMapper(client.getClientID().toString(), client.getFirstName(),
+        return new ClientMapper(client.getClientId().toString(), client.getFirstName(),
                 client.getLastName(), client.getPersonalId(), client.isArchive(),
                 client.getClientType().getClientTypeName());
     }

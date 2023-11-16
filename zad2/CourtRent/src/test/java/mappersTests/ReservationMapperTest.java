@@ -1,7 +1,7 @@
 package mappersTests;
 
 import nbd.gV.clients.Client;
-import nbd.gV.clients.Normal;
+import nbd.gV.clients.clienttype.Normal;
 import nbd.gV.courts.Court;
 import nbd.gV.mappers.ClientMapper;
 import nbd.gV.mappers.CourtMapper;
@@ -43,12 +43,12 @@ public class ReservationMapperTest {
     @Test
     void testCreatingMapper() {
         ReservationMapper reservationMapper = new ReservationMapper(uuid.toString(),
-                testClient.getClientID().toString(), testCourt.getCourtId().toString(), testTimeStart, testTimeEnd,
+                testClient.getClientId().toString(), testCourt.getCourtId().toString(), testTimeStart, testTimeEnd,
                 200);
         assertNotNull(reservationMapper);
 
         assertEquals(uuid, UUID.fromString(reservationMapper.getId()));
-        assertEquals(testClient.getClientID(), UUID.fromString(reservationMapper.getClientId()));
+        assertEquals(testClient.getClientId(), UUID.fromString(reservationMapper.getClientId()));
         assertEquals(testCourt.getCourtId(), UUID.fromString(reservationMapper.getCourtId()));
         assertEquals(testTimeStart, reservationMapper.getBeginTime());
         assertEquals(testTimeEnd, reservationMapper.getEndTime());
@@ -64,7 +64,7 @@ public class ReservationMapperTest {
         assertNotNull(reservationMapper);
 
         assertEquals(reservation.getId(), UUID.fromString(reservationMapper.getId()));
-        assertEquals(testClient.getClientID(), UUID.fromString(reservationMapper.getClientId()));
+        assertEquals(testClient.getClientId(), UUID.fromString(reservationMapper.getClientId()));
         assertEquals(testCourt.getCourtId(), UUID.fromString(reservationMapper.getCourtId()));
         assertEquals(testTimeStart, reservationMapper.getBeginTime());
         assertNull(reservationMapper.getEndTime());
@@ -78,7 +78,7 @@ public class ReservationMapperTest {
         assertNotNull(reservationMapperEnded);
 
         assertEquals(reservationEnded.getId(), UUID.fromString(reservationMapperEnded.getId()));
-        assertEquals(testClient.getClientID(), UUID.fromString(reservationMapperEnded.getClientId()));
+        assertEquals(testClient.getClientId(), UUID.fromString(reservationMapperEnded.getClientId()));
         assertEquals(testCourt.getCourtId(), UUID.fromString(reservationMapperEnded.getCourtId()));
         assertEquals(testTimeStart, reservationMapperEnded.getBeginTime());
         assertEquals(testTimeEnd, reservationMapperEnded.getEndTime());
@@ -88,7 +88,7 @@ public class ReservationMapperTest {
     @Test
     void testFromMongoClientMethod() {
         ReservationMapper reservationMapper = new ReservationMapper(uuid.toString(),
-                testClient.getClientID().toString(), testCourt.getCourtId().toString(), testTimeStart, null,
+                testClient.getClientId().toString(), testCourt.getCourtId().toString(), testTimeStart, null,
                 0);
         assertNotNull(reservationMapper);
 
@@ -97,7 +97,7 @@ public class ReservationMapperTest {
         assertNotNull(reservation);
 
         assertEquals(uuid, reservation.getId());
-        assertEquals(testClient.getClientID(), reservation.getClient().getClientID());
+        assertEquals(testClient.getClientId(), reservation.getClient().getClientId());
         assertEquals(testCourt.getCourtId(), reservation.getCourt().getCourtId());
         assertEquals(testTimeStart, reservation.getBeginTime());
         assertNull(reservation.getEndTime());
@@ -105,7 +105,7 @@ public class ReservationMapperTest {
 
 
         ReservationMapper reservationMapperEnded = new ReservationMapper(uuid.toString(),
-                testClient.getClientID().toString(), testCourt.getCourtId().toString(), testTimeStart, testTimeEnd,
+                testClient.getClientId().toString(), testCourt.getCourtId().toString(), testTimeStart, testTimeEnd,
                 300);
         assertNotNull(reservationMapperEnded);
 
@@ -114,7 +114,7 @@ public class ReservationMapperTest {
         assertNotNull(reservationEnded);
 
         assertEquals(UUID.fromString(reservationMapperEnded.getId()), reservationEnded.getId());
-        assertEquals(testClient.getClientID(), reservationEnded.getClient().getClientID());
+        assertEquals(testClient.getClientId(), reservationEnded.getClient().getClientId());
         assertEquals(testCourt.getCourtId(), reservationEnded.getCourt().getCourtId());
         assertEquals(testTimeStart, reservationEnded.getBeginTime());
         assertEquals(testTimeEnd, reservationEnded.getEndTime());

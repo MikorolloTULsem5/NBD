@@ -1,5 +1,6 @@
 package nbd.gV.reservations;
 
+import lombok.Getter;
 import nbd.gV.clients.Client;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.MainException;
@@ -13,11 +14,14 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
 public class Reservation {
     private UUID id;
-    private Client client;
-    private Court court;
-    private LocalDateTime beginTime;
+
+    private final Client client;
+    private final Court court;
+    private final LocalDateTime beginTime;
+
     private LocalDateTime endTime = null;
     private double reservationCost;
 
@@ -38,33 +42,6 @@ public class Reservation {
             throw new MainException("UUID nie moze byc null'em!");
         }
         this.id = id;
-    }
-
-    public Reservation() {
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public Court getCourt() {
-        return court;
-    }
-
-    public LocalDateTime getBeginTime() {
-        return beginTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public double getReservationCost() {
-        return reservationCost;
     }
 
     public int getReservationHours() {
@@ -121,10 +98,9 @@ public class Reservation {
         Reservation that = (Reservation) o;
         return Double.compare(reservationCost, that.reservationCost) == 0 &&
                 Objects.equals(id, that.id) &&
-                Objects.equals(client.getClientID().toString(), that.client.getClientID().toString()) &&
+                Objects.equals(client.getClientId().toString(), that.client.getClientId().toString()) &&
                 Objects.equals(court.getCourtId().toString(), that.court.getCourtId().toString()) &&
                 Duration.between(beginTime, that.beginTime).getSeconds() < 5 &&
                 Objects.equals(endTime, that.endTime);
     }
-
 }

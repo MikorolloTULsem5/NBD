@@ -2,8 +2,8 @@ package managersTests;
 
 import nbd.gV.clients.Client;
 import nbd.gV.clients.ClientManager;
-import nbd.gV.clients.ClientType;
-import nbd.gV.clients.Normal;
+import nbd.gV.clients.clienttype.ClientType;
+import nbd.gV.clients.clienttype.Normal;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.MainException;
 import nbd.gV.repositories.ClientMongoRepository;
@@ -54,7 +54,7 @@ public class ClientManagerTest {
                 cm.registerClient("Adam", "Smith", "12345678901", testClientType);
         assertNotNull(newClient);
         assertEquals(1, cm.getAllClients().size());
-        assertEquals(newClient, cm.getClient(newClient.getClientID()));
+        assertEquals(newClient, cm.getClient(newClient.getClientId()));
 
         cm.registerClient("Adam", "Long", "12345678902", testClientType);
         cm.registerClient("Eva", "Brown", "12345678903", testClientType);
@@ -81,8 +81,8 @@ public class ClientManagerTest {
         assertNotNull(testClient2);
         assertEquals(2, cm.getAllClients().size());
 
-        assertEquals(testClient1, cm.getClient(testClient1.getClientID()));
-        assertEquals(testClient2, cm.getClient(testClient2.getClientID()));
+        assertEquals(testClient1, cm.getClient(testClient1.getClientId()));
+        assertEquals(testClient2, cm.getClient(testClient2.getClientId()));
         assertNull(cm.getClient(UUID.randomUUID()));
     }
 
@@ -101,13 +101,13 @@ public class ClientManagerTest {
         assertEquals(2, cm.getAllClients().size());
 
         assertEquals(2, cm.getAllClients().size());
-        assertEquals(testClient1, cm.getClient(testClient1.getClientID()));
+        assertEquals(testClient1, cm.getClient(testClient1.getClientId()));
         assertFalse(testClient1.isArchive());
 
         cm.unregisterClient(testClient1);
 
         assertEquals(2, cm.getAllClients().size());
-        Client dbClient = cm.getClient(testClient1.getClientID());
+        Client dbClient = cm.getClient(testClient1.getClientId());
         assertNotNull(dbClient);
         assertTrue(dbClient.isArchive());
 

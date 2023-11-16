@@ -1,6 +1,7 @@
 package nbd.gV.clients;
 
 import com.mongodb.client.model.Filters;
+import nbd.gV.clients.clienttype.ClientType;
 import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.MainException;
 import nbd.gV.exceptions.MyMongoException;
@@ -42,7 +43,7 @@ public class ClientManager {
         }
         try {
             client.setArchive(true);
-            if (!clientRepository.update(client.getClientID(), "archive", true)) {
+            if (!clientRepository.update(client.getClientId(), "archive", true)) {
                 client.setArchive(false);
                 throw new ClientException("Nie udalo sie wyrejestrowac podanego klienta.");
             }
