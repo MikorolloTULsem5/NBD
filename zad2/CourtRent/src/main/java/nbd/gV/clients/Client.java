@@ -7,7 +7,6 @@ import java.util.UUID;
 
 public class Client {
 
-
     private UUID clientID;
 
     private String firstName;

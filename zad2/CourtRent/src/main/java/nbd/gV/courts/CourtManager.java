@@ -1,17 +1,10 @@
 package nbd.gV.courts;
 
 import com.mongodb.client.model.Filters;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 
-import nbd.gV.clients.Client;
-import nbd.gV.exceptions.ClientException;
-import nbd.gV.exceptions.JakartaException;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.MainException;
 import nbd.gV.exceptions.MyMongoException;
-import nbd.gV.mappers.ClientMapper;
 import nbd.gV.mappers.CourtMapper;
 import nbd.gV.repositories.CourtMongoRepository;
 

@@ -139,10 +139,10 @@ public class ClientManagerTest {
         assertNotNull(testClient2);
         assertEquals(2, cm.getAllClients().size());
 
-        Client newClient = cm.findCourtByPersonalId("12345678901");
+        Client newClient = cm.findClientByPersonalId("12345678901");
         assertNotNull(newClient);
         assertEquals(testClient1, newClient);
-        Client newClient2 = cm.findCourtByPersonalId("12345678999");
+        Client newClient2 = cm.findClientByPersonalId("12345678999");
         assertNull(newClient2);
     }
 }

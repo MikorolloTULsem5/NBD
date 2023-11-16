@@ -1,8 +1,5 @@
 package nbd.gV.clients;
 
-import jakarta.persistence.Entity;
-
-@Entity
 public class Athlete extends ClientType {
 
     @Override

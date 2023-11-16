@@ -1,8 +1,5 @@
 package nbd.gV.clients;
 
-import jakarta.persistence.Entity;
-
-@Entity
 public class Coach extends ClientType {
     @Override
     public double applyDiscount(double price) {

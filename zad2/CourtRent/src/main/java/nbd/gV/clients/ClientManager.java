@@ -73,7 +73,7 @@ public class ClientManager {
         }
     }
 
-    public Client findCourtByPersonalId(String personalId) {
+    public Client findClientByPersonalId(String personalId) {
         var list = clientRepository.read(Filters.eq("personalid", personalId));
         return !list.isEmpty() ? ClientMapper.fromMongoClient(list.get(0)) : null;
     }

@@ -128,5 +128,4 @@ public class ReservationManager {
                 clientsRepo.readByUUID(UUID.fromString(reservationMapper.getClientId())),
                 courtsRepo.readByUUID(UUID.fromString(reservationMapper.getCourtId())));
     }
-
 }
