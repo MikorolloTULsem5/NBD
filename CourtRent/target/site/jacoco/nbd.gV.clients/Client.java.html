@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Client.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CourtRent</a> &gt; <a href="index.source.html" class="el_package">nbd.gV.clients</a> &gt; <span class="el_source">Client.java</span></div><h1>Client.java</h1><pre class="source lang-java linenums">package nbd.gV.clients;
+
+import jakarta.persistence.Access;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import jakarta.persistence.AccessType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.CascadeType;
+
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
+import jakarta.validation.constraints.Size;
+import nbd.gV.exceptions.MainException;
+
+import java.util.UUID;
+
+@Entity
+@Table(name=&quot;client&quot;)
+@Access(value = AccessType.FIELD)
+public class Client {
+
+    @Id
+    private UUID clientID;
+    @NotEmpty
+    private String firstName;
+    @NotEmpty
+    private String lastName;
+    @Column(unique = true)
+    @NotEmpty
+    @Size(min = 11, max = 11)
+    private String personalId;
+<span class="fc" id="L37">    @Column(nullable = false)</span>
+    private boolean archive = false;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @NotNull
+    private ClientType clientType;
+
+<span class="fc" id="L43">    public Client(String firstName, String lastName, String personalId, ClientType clientType) {</span>
+<span class="fc bfc" id="L44" title="All 8 branches covered.">        if (firstName.isEmpty() || lastName.isEmpty() || personalId.isEmpty() || clientType == null)</span>
+<span class="fc" id="L45">            throw new MainException(&quot;Brakujacy parametr przy tworzeniu obiektu klienta!&quot;);</span>
+
+<span class="fc" id="L47">        this.firstName = firstName;</span>
+<span class="fc" id="L48">        this.lastName = lastName;</span>
+<span class="fc" id="L49">        this.personalId = personalId;</span>
+<span class="fc" id="L50">        this.clientType = clientType;</span>
+<span class="fc" id="L51">        clientID = UUID.randomUUID();</span>
+<span class="fc" id="L52">    }</span>
+
+<span class="fc" id="L54">    public Client() {</span>
+<span class="fc" id="L55">    }</span>
+
+    public UUID getClientID() {
+<span class="fc" id="L58">        return clientID;</span>
+    }
+
+    public String getFirstName() {
+<span class="fc" id="L62">        return firstName;</span>
+    }
+
+    public void setFirstName(String firstName) {
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (!firstName.isEmpty()) {</span>
+<span class="fc" id="L67">            this.firstName = firstName;</span>
+        }
+<span class="fc" id="L69">    }</span>
+
+    public String getLastName() {
+<span class="fc" id="L72">        return lastName;</span>
+    }
+
+    public void setLastName(String lastName) {
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (!lastName.isEmpty()) {</span>
+<span class="fc" id="L77">            this.lastName = lastName;</span>
+        }
+<span class="fc" id="L79">    }</span>
+
+    public String getPersonalId() {
+<span class="fc" id="L82">        return personalId;</span>
+    }
+
+    public boolean isArchive() {
+<span class="fc" id="L86">        return archive;</span>
+    }
+
+    public void setArchive(boolean archive) {
+<span class="fc" id="L90">        this.archive = archive;</span>
+<span class="fc" id="L91">    }</span>
+
+    public ClientType getClientType() {
+<span class="fc" id="L94">        return clientType;</span>
+    }
+
+    public void setClientType(ClientType clientType) {
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (clientType != null) {</span>
+<span class="fc" id="L99">            this.clientType = clientType;</span>
+        }
+<span class="fc" id="L101">    }</span>
+
+    public String getClientInfo() {
+<span class="fc" id="L104">        return &quot;Klient - %s %s o numerze PESEL %s\n&quot;.formatted(firstName, lastName, personalId);</span>
+    }
+
+    public double applyDiscount(double price) {
+<span class="fc" id="L108">        return clientType.applyDiscount(price);</span>
+    }
+
+    public int getClientMaxHours() {
+<span class="fc" id="L112">        return clientType.getMaxHours();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

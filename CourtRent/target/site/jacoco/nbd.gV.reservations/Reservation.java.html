@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Reservation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CourtRent</a> &gt; <a href="index.source.html" class="el_package">nbd.gV.reservations</a> &gt; <span class="el_source">Reservation.java</span></div><h1>Reservation.java</h1><pre class="source lang-java linenums">package nbd.gV.reservations;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import nbd.gV.clients.Client;
+import nbd.gV.courts.Court;
+import nbd.gV.exceptions.MainException;
+import nbd.gV.exceptions.ReservationException;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Formatter;
+import java.util.Locale;
+import java.util.UUID;
+
+@Entity
+@Table(name = &quot;reservation&quot;)
+@Access(value = AccessType.FIELD)
+public class Reservation {
+    @Id
+    private UUID id;
+    @NotNull
+    @ManyToOne
+    @JoinColumn
+    private Client client;
+    @NotNull
+    @ManyToOne
+    @JoinColumn
+    private Court court;
+    @NotNull
+    private LocalDateTime beginTime;
+<span class="fc" id="L33">    private LocalDateTime endTime = null;</span>
+    private double reservationCost;
+
+<span class="fc" id="L36">    public Reservation(UUID id, Client client, Court court, LocalDateTime beginTime) {</span>
+<span class="fc bfc" id="L37" title="All 6 branches covered.">        if (id == null || client == null || court == null)</span>
+<span class="fc" id="L38">            throw new MainException(&quot;Niepoprawny parametr przy tworzeniu obiektu rezerwacji!&quot;);</span>
+
+<span class="fc" id="L40">        this.id = id;</span>
+<span class="fc" id="L41">        this.client = client;</span>
+<span class="fc" id="L42">        this.court = court;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        this.beginTime = (beginTime == null) ? LocalDateTime.now() : beginTime;</span>
+<span class="fc" id="L44">        court.setRented(true);</span>
+<span class="fc" id="L45">    }</span>
+
+<span class="fc" id="L47">    public Reservation() {</span>
+<span class="fc" id="L48">    }</span>
+
+    public UUID getId() {
+<span class="fc" id="L51">        return id;</span>
+    }
+
+    public Client getClient() {
+<span class="fc" id="L55">        return client;</span>
+    }
+
+    public Court getCourt() {
+<span class="fc" id="L59">        return court;</span>
+    }
+
+    public LocalDateTime getBeginTime() {
+<span class="fc" id="L63">        return beginTime;</span>
+    }
+
+    public LocalDateTime getEndTime() {
+<span class="fc" id="L67">        return endTime;</span>
+    }
+
+    public double getReservationCost() {
+<span class="fc" id="L71">        return reservationCost;</span>
+    }
+
+    public int getReservationHours() {
+<span class="fc" id="L75">        int hours = 0;</span>
+
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (endTime != null) {</span>
+<span class="fc" id="L78">            long duration = Duration.between(beginTime, endTime).getSeconds();</span>
+<span class="fc" id="L79">            int hoursDur = (int) (duration / 3600);</span>
+<span class="fc" id="L80">            int minutesDur = (int) ((duration / 60) % 60);</span>
+
+<span class="fc bfc" id="L82" title="All 4 branches covered.">            if (!(hoursDur == 0 &amp;&amp; minutesDur == 0)) {</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">                hours = (minutesDur == 0) ? hoursDur : (hoursDur + 1);</span>
+            }
+        }
+
+<span class="fc" id="L87">        return hours;</span>
+    }
+
+    public void endReservation(LocalDateTime endingDate) {
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (endTime == null) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">            endTime = (endingDate == null) ? LocalDateTime.now() : endingDate;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">            if (Duration.between(beginTime, endTime).isNegative()) {</span>
+<span class="fc" id="L94">                endTime = beginTime;</span>
+            }
+
+<span class="fc" id="L97">            court.setRented(false);</span>
+
+<span class="fc bfc" id="L99" title="All 2 branches covered.">            if (getReservationHours() &lt;= client.getClientMaxHours()) {</span>
+<span class="fc" id="L100">                reservationCost = getReservationHours() * court.getBaseCost() -</span>
+<span class="fc" id="L101">                        client.applyDiscount(getReservationHours() * court.getBaseCost());</span>
+            } else {
+<span class="fc" id="L103">                reservationCost = court.getBaseCost() *</span>
+<span class="fc" id="L104">                        (client.getClientMaxHours() + (getReservationHours() - client.getClientMaxHours()) * 1.5) -</span>
+<span class="fc" id="L105">                        client.applyDiscount(client.getClientMaxHours() * court.getBaseCost());</span>
+            }
+        } else {
+<span class="fc" id="L108">            throw new ReservationException(&quot;Ta rezerwacja juz sie zakonczyla i nie mozna zmienic jej daty!&quot;);</span>
+        }
+<span class="fc" id="L110">    }</span>
+
+    public String getReservationInfo() {
+<span class="fc" id="L113">        return new Formatter(Locale.GERMAN).format(&quot;Rezerwacja nr %s przez '%s' boiska: '%s', od godziny [%s]%s%n&quot;, id,</span>
+<span class="fc" id="L114">                client.getClientInfo().replace(&quot;\n&quot;, &quot;&quot;),</span>
+<span class="fc" id="L115">                court.getCourtInfo().replace(&quot;\n&quot;, &quot;&quot;),</span>
+<span class="fc" id="L116">                beginTime.format(DateTimeFormatter.ofPattern(&quot;dd.MM.yyyy, HH:mm&quot;)),</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">                (endTime == null) ? &quot;.&quot; : (&quot; do godziny [%s].&quot;.formatted(</span>
+<span class="fc" id="L118">                        endTime.format(DateTimeFormatter.ofPattern(&quot;dd.MM.yyyy, HH:mm&quot;))))).toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

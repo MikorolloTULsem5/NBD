@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClientManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CourtRent</a> &gt; <a href="index.source.html" class="el_package">nbd.gV.clients</a> &gt; <span class="el_source">ClientManager.java</span></div><h1>ClientManager.java</h1><pre class="source lang-java linenums">package nbd.gV.clients;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import nbd.gV.exceptions.ClientException;
+import nbd.gV.exceptions.CourtException;
+import nbd.gV.exceptions.JakartaException;
+import nbd.gV.exceptions.MainException;
+import nbd.gV.repositories.ClientRepository;
+
+import java.util.List;
+import java.util.UUID;
+
+public class ClientManager {
+
+    private final ClientRepository clientRepository;
+
+<span class="fc" id="L19">    public ClientManager(String unitName) {</span>
+<span class="fc" id="L20">        this.clientRepository = new ClientRepository(unitName);</span>
+<span class="fc" id="L21">    }</span>
+
+<span class="nc" id="L23">    public ClientManager() {</span>
+<span class="nc" id="L24">        this.clientRepository = new ClientRepository(&quot;default&quot;);</span>
+<span class="nc" id="L25">    }</span>
+
+    public Client registerClient(String firstName, String lastName, String personalID, ClientType clientType) {
+<span class="fc" id="L28">        Client newClient = new Client(firstName, lastName, personalID, clientType);</span>
+        try {
+<span class="fc" id="L30">            clientRepository.create(newClient);</span>
+<span class="fc" id="L31">        } catch (JakartaException exception) {</span>
+<span class="fc" id="L32">            throw new ClientException(&quot;Nie udalo sie zarejestrowac klienta w bazie!&quot;);</span>
+<span class="fc" id="L33">        }</span>
+<span class="fc" id="L34">        return newClient;</span>
+    }
+
+    public void unregisterClient(Client client) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (client == null) {</span>
+<span class="fc" id="L39">            throw new MainException(&quot;Nie mozna wyrejestrowac nieistniejacego klienta!&quot;);</span>
+        }
+        try {
+<span class="fc" id="L42">            client.setArchive(true);</span>
+<span class="fc" id="L43">            clientRepository.update(client);</span>
+<span class="fc" id="L44">        } catch (JakartaException exception) {</span>
+<span class="fc" id="L45">            client.setArchive(false);</span>
+<span class="fc" id="L46">            throw new ClientException(&quot;Nie udalo sie wyrejestrowac podanego boiska.&quot;);</span>
+<span class="fc" id="L47">        }</span>
+<span class="fc" id="L48">    }</span>
+
+    public Client getClient(UUID clientID) {
+        try {
+<span class="fc" id="L52">            return clientRepository.findByUUID(clientID);</span>
+<span class="nc" id="L53">        } catch (JakartaException exception) {</span>
+<span class="nc" id="L54">            throw new ClientException(&quot;Blad transakcji.&quot;);</span>
+        }
+    }
+
+    public List&lt;Client&gt; getAllClients() {
+        try {
+<span class="fc" id="L60">            return clientRepository.findAll();</span>
+<span class="nc" id="L61">        } catch (JakartaException exception) {</span>
+<span class="nc" id="L62">            throw new CourtException(&quot;Nie udalo sie uzyskac clientow.&quot;);</span>
+        }
+    }
+
+    public Client findCourtByPersonalId(String personalId) {
+<span class="fc" id="L67">        CriteriaBuilder cb = clientRepository.getEntityManager().getCriteriaBuilder();</span>
+<span class="fc" id="L68">        CriteriaQuery&lt;Client&gt; query = cb.createQuery(Client.class);</span>
+<span class="fc" id="L69">        Root&lt;Client&gt; clientRoot = query.from(Client.class);</span>
+<span class="fc" id="L70">        query.select(clientRoot).where(cb.equal(clientRoot.get(Client_.PERSONAL_ID), personalId));</span>
+<span class="fc" id="L71">        List&lt;Client&gt; result = clientRepository.find(query);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        return result.isEmpty() ? null : result.get(0);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

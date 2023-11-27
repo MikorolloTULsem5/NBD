@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservationRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CourtRent</a> &gt; <a href="index.source.html" class="el_package">nbd.gV.repositories</a> &gt; <span class="el_source">ReservationRepository.java</span></div><h1>ReservationRepository.java</h1><pre class="source lang-java linenums">package nbd.gV.repositories;
+
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.PessimisticLockException;
+import jakarta.persistence.TransactionRequiredException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import nbd.gV.clients.Client;
+import nbd.gV.courts.Court;
+import nbd.gV.exceptions.ClientException;
+import nbd.gV.exceptions.CourtException;
+import nbd.gV.exceptions.JakartaException;
+import nbd.gV.exceptions.ReservationException;
+import nbd.gV.reservations.Reservation;
+import nbd.gV.reservations.Reservation_;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+public class ReservationRepository extends Repository&lt;Reservation&gt; {
+    public ReservationRepository(String unitName) {
+<span class="fc" id="L24">        super(unitName);</span>
+<span class="fc" id="L25">    }</span>
+
+    //Sprawdzenie spojnosci bazy
+    public Reservation create(Client client, Court court, LocalDateTime beginTime) {
+        try {
+<span class="fc" id="L30">            getEntityManager().getTransaction().begin();</span>
+<span class="fc" id="L31">            Client client1 = getEntityManager().find(Client.class, client.getClientID(), LockModeType.PESSIMISTIC_READ);</span>
+<span class="fc" id="L32">            Court court1 = getEntityManager().find(Court.class, court.getCourtId(), LockModeType.PESSIMISTIC_WRITE);</span>
+<span class="fc bfc" id="L33" title="All 6 branches covered.">            if (!court1.isRented() &amp;&amp; !client1.isArchive() &amp;&amp; !court1.isArchive()) {</span>
+<span class="fc" id="L34">                court.setRented(true);</span>
+<span class="fc" id="L35">                getEntityManager().merge(court);</span>
+<span class="fc" id="L36">                Reservation newReservation = new Reservation(UUID.randomUUID(), client, court, beginTime);</span>
+<span class="fc" id="L37">                getEntityManager().persist(newReservation);</span>
+<span class="fc" id="L38">                getEntityManager().getTransaction().commit();</span>
+<span class="fc" id="L39">                return newReservation;</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">            } else if (client1.isArchive()) {</span>
+<span class="fc" id="L41">                getEntityManager().getTransaction().rollback();</span>
+<span class="fc" id="L42">                throw new ClientException(&quot;Nie udalo sie utworzyc rezerwacji - klient jest archiwalny!&quot;);</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            } else if (court1.isArchive()) {</span>
+<span class="fc" id="L44">                getEntityManager().getTransaction().rollback();</span>
+<span class="fc" id="L45">                throw new CourtException(&quot;Nie udalo sie utworzyc rezerwacji - boisko jest archiwalne!&quot;);</span>
+            } else {
+<span class="fc" id="L47">                getEntityManager().getTransaction().rollback();</span>
+<span class="fc" id="L48">                throw new ReservationException(&quot;To boisko jest aktualnie wypozyczone!&quot;);</span>
+            }
+<span class="nc" id="L50">        } catch (IllegalArgumentException | TransactionRequiredException | PessimisticLockException exception) {</span>
+<span class="nc" id="L51">            throw new JakartaException(exception.getMessage());</span>
+        }
+    }
+
+    public void update(Court court, LocalDateTime endTime) {
+        try {
+<span class="fc" id="L57">            getEntityManager().getTransaction().begin();</span>
+<span class="fc" id="L58">            Court court1 = getEntityManager().find(Court.class, court.getCourtId(), LockModeType.PESSIMISTIC_WRITE);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">            if (court1.isRented()) {</span>
+<span class="fc" id="L60">                court.setRented(false);</span>
+<span class="fc" id="L61">                getEntityManager().merge(court);</span>
+<span class="fc" id="L62">                CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();</span>
+<span class="fc" id="L63">                CriteriaQuery&lt;Reservation&gt; query = cb.createQuery(Reservation.class);</span>
+<span class="fc" id="L64">                Root&lt;Reservation&gt; reservationRoot = query.from(Reservation.class);</span>
+<span class="fc" id="L65">                query.select(reservationRoot).where(cb.and(cb.equal(reservationRoot.get(Reservation_.COURT), court), cb.isNull(reservationRoot.get(Reservation_.END_TIME))));</span>
+<span class="fc" id="L66">                Reservation reservation = getEntityManager().createQuery(query).setLockMode(LockModeType.PESSIMISTIC_READ).getSingleResult();</span>
+<span class="fc" id="L67">                reservation.endReservation(endTime);</span>
+<span class="fc" id="L68">                getEntityManager().merge(reservation);</span>
+<span class="fc" id="L69">                getEntityManager().getTransaction().commit();</span>
+<span class="fc" id="L70">            } else {</span>
+<span class="fc" id="L71">                getEntityManager().getTransaction().rollback();</span>
+<span class="fc" id="L72">                throw new ReservationException(&quot;To boisko nie jest aktualnie wypozyczone!&quot;);</span>
+            }
+<span class="nc" id="L74">        } catch (IllegalArgumentException | TransactionRequiredException | PessimisticLockException exception) {</span>
+<span class="nc" id="L75">            getEntityManager().getTransaction().rollback();</span>
+<span class="nc" id="L76">            throw new JakartaException(exception.getMessage());</span>
+<span class="fc" id="L77">        }</span>
+<span class="fc" id="L78">    }</span>
+
+
+    @Override
+    public Reservation findByUUID(UUID identifier) {
+<span class="fc" id="L83">        Reservation returnReservation = null;</span>
+        try {
+<span class="fc" id="L85">            getEntityManager().getTransaction().begin();</span>
+<span class="fc" id="L86">            returnReservation = getEntityManager().find(Reservation.class, identifier, LockModeType.PESSIMISTIC_READ);</span>
+<span class="fc" id="L87">            getEntityManager().getTransaction().commit();</span>
+<span class="fc" id="L88">        } catch (IllegalArgumentException | TransactionRequiredException | PessimisticLockException exception) {</span>
+<span class="fc" id="L89">            getEntityManager().getTransaction().rollback();</span>
+<span class="fc" id="L90">            throw new JakartaException(exception.getMessage());</span>
+<span class="fc" id="L91">        }</span>
+<span class="fc" id="L92">        return returnReservation;</span>
+    }
+
+    @Override
+    public List&lt;Reservation&gt; findAll() {
+<span class="fc" id="L97">        List&lt;Reservation&gt; reservationList = null;</span>
+        try {
+<span class="fc" id="L99">            getEntityManager().getTransaction().begin();</span>
+<span class="fc" id="L100">            CriteriaQuery&lt;Reservation&gt; findAllReservations = getEntityManager().getCriteriaBuilder().createQuery(Reservation.class);</span>
+<span class="fc" id="L101">            Root&lt;Reservation&gt; screeningRoomRoot = findAllReservations.from(Reservation.class);</span>
+<span class="fc" id="L102">            findAllReservations.select(screeningRoomRoot);</span>
+<span class="fc" id="L103">            reservationList = getEntityManager().createQuery(findAllReservations).setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();</span>
+<span class="fc" id="L104">            getEntityManager().getTransaction().commit();</span>
+<span class="nc" id="L105">        } catch (IllegalStateException | IllegalArgumentException exception) {</span>
+<span class="nc" id="L106">            getEntityManager().getTransaction().rollback();</span>
+<span class="nc" id="L107">            throw new JakartaException(exception.getMessage());</span>
+<span class="fc" id="L108">        }</span>
+<span class="fc" id="L109">        return reservationList;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClientRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CourtRent</a> &gt; <a href="index.source.html" class="el_package">nbd.gV.repositories</a> &gt; <span class="el_source">ClientRepository.java</span></div><h1>ClientRepository.java</h1><pre class="source lang-java linenums">package nbd.gV.repositories;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockTimeoutException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PessimisticLockException;
+import jakarta.persistence.TransactionRequiredException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import nbd.gV.clients.Client;
+import nbd.gV.clients.ClientType;
+import nbd.gV.clients.Client_;
+import nbd.gV.exceptions.JakartaException;
+
+import java.util.List;
+import java.util.UUID;
+
+public class ClientRepository extends Repository&lt;Client&gt; {
+
+    public ClientRepository(String unitName) {
+<span class="fc" id="L23">        super(unitName);</span>
+<span class="fc" id="L24">    }</span>
+
+    private ClientType returnClientTypeFromDB(ClientType clientType) {
+<span class="fc" id="L27">        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();</span>
+<span class="fc" id="L28">        CriteriaQuery&lt;Client&gt; query = cb.createQuery(Client.class);</span>
+<span class="fc" id="L29">        Root&lt;Client&gt; clientRoot = query.from(Client.class);</span>
+<span class="fc" id="L30">        query.select(clientRoot).where(cb.equal(clientRoot.get(Client_.CLIENT_TYPE), clientType));</span>
+<span class="fc" id="L31">        List&lt;Client&gt; result = find(query);</span>
+
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        return result.isEmpty() ? null : result.get(0).getClientType();</span>
+    }
+
+    @Override
+    public void create(Client newClient) {
+<span class="fc" id="L38">        EntityManager entityManager = getEntityManager();</span>
+        try {
+<span class="fc" id="L40">            ClientType clientTypeFromDB = returnClientTypeFromDB(newClient.getClientType());</span>
+
+<span class="fc" id="L42">            entityManager.getTransaction().begin();</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            if (clientTypeFromDB != null) {</span>
+<span class="fc" id="L44">                newClient.setClientType(clientTypeFromDB);</span>
+            }
+<span class="fc" id="L46">            entityManager.persist(newClient);</span>
+<span class="fc" id="L47">            entityManager.getTransaction().commit();</span>
+<span class="fc" id="L48">        } catch (PersistenceException | IllegalArgumentException | IllegalStateException</span>
+                 | NullPointerException exception) {
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">            if (entityManager.getTransaction().isActive()) {</span>
+<span class="nc" id="L51">                entityManager.getTransaction().rollback();</span>
+            }
+<span class="fc" id="L53">            throw new JakartaException(exception.getMessage());</span>
+<span class="fc" id="L54">        }</span>
+<span class="fc" id="L55">    }</span>
+
+    @Override
+    public Client findByUUID(UUID identifier) {
+        Client returnClient;
+        try{
+<span class="fc" id="L61">            getEntityManager().getTransaction().begin();</span>
+<span class="fc" id="L62">            returnClient = getEntityManager().find(Client.class, identifier, LockModeType.PESSIMISTIC_READ);</span>
+<span class="fc" id="L63">            getEntityManager().getTransaction().commit();</span>
+<span class="fc" id="L64">        }catch (IllegalArgumentException | TransactionRequiredException | PessimisticLockException</span>
+                | LockTimeoutException exception) {
+<span class="fc" id="L66">            getEntityManager().getTransaction().rollback();</span>
+<span class="fc" id="L67">            throw new JakartaException(exception.getMessage());</span>
+<span class="fc" id="L68">        }</span>
+<span class="fc" id="L69">        return returnClient;</span>
+    }
+
+    @Override
+    public List&lt;Client&gt; findAll() {
+<span class="fc" id="L74">        CriteriaQuery&lt;Client&gt; findAllClients = getEntityManager().getCriteriaBuilder().createQuery(Client.class);</span>
+<span class="fc" id="L75">        Root&lt;Client&gt; courtClient = findAllClients.from(Client.class);</span>
+<span class="fc" id="L76">        findAllClients.select(courtClient);</span>
+<span class="fc" id="L77">        return find(findAllClients);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
