@@ -1,6 +1,7 @@
 package nbd.gV.mappers;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import nbd.gV.courts.Court;
 import org.bson.BsonDocument;
@@ -13,7 +14,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Getter
-@FieldDefaults(makeFinal = true)
+@Setter
 public class CourtMapper {
     @BsonProperty("_id")
     private String courtId;
@@ -42,6 +43,9 @@ public class CourtMapper {
         this.archive = archive;
         this.rented = rented;
     }
+
+    public CourtMapper(){}
+
 
     public int isRented() {
         return rented;

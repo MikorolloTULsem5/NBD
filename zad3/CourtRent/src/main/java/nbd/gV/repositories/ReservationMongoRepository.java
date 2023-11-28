@@ -27,6 +27,8 @@ import java.util.UUID;
 
 public class ReservationMongoRepository extends AbstractMongoRepository<ReservationMapper> {
 
+
+
     public ReservationMongoRepository() {
         boolean collectionExists = getDatabase().listCollectionNames().into(new ArrayList<>()).contains("reservations");
         if (!collectionExists) {

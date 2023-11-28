@@ -157,7 +157,6 @@ public class ReservationManagerTest {
 
         assertEquals(0, rm.getAllArchiveReservations().size());
         assertEquals(2, rm.getAllCurrentReservations().size());
-        System.out.println(testCourt1.isRented());
         rm.returnCourt(testCourt1, testTimeEnd);
 
         assertEquals(1, rm.getAllArchiveReservations().size());

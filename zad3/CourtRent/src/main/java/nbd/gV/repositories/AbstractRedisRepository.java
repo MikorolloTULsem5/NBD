@@ -16,10 +16,11 @@ public abstract class AbstractRedisRepository<T>{
 
     public abstract boolean create(T mapper);
     public abstract T read(String id);
+     public abstract boolean update(T mapper);
 
     protected boolean create(String id, String json){
         try {
-            pool.jsonSet(id, json);
+            pool.set(id, json);
             pool.expire(id, 10);
         } catch (Exception e){
             return false;
@@ -35,14 +36,8 @@ public abstract class AbstractRedisRepository<T>{
         }
         return true;
     }
-    public boolean update(String id, String json){
-        try {
-            delete(id);
-            create(id, json);
-        } catch (Exception e){
-            return false;
-        }
-        return true;
+    protected boolean update(String id, String json){
+        return create(id, json);
     }
 
     protected String readById(String id){
