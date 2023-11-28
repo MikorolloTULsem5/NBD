@@ -4,6 +4,8 @@ import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import nbd.gV.mappers.CourtMapper;
 
+import java.util.UUID;
+
 public class CourtRedisRepository extends AbstractRedisRepository<CourtMapper> {
 
     private final Jsonb jsonb = JsonbBuilder.create();
@@ -27,7 +29,7 @@ public class CourtRedisRepository extends AbstractRedisRepository<CourtMapper> {
     }
 
     @Override
-    public String getPrefix(){
-        return prefix;
+    public boolean delete(String id){
+        return super.delete(prefix+id);
     }
 }

@@ -1,12 +1,15 @@
 package nbd.gV.repositories;
 
 
+import lombok.Getter;
 import nbd.gV.mappers.CourtMapper;
 import org.bson.conversions.Bson;
 import java.util.List;
 import java.util.UUID;
 
+@Getter
 public class CourtRepository extends CourtMongoRepository {
+
     CourtRedisRepository cache = new CourtRedisRepository();
     CourtMongoRepository db = new CourtMongoRepository();
 
@@ -23,7 +26,9 @@ public class CourtRepository extends CourtMongoRepository {
         if (result != null) return result;
         else {
             result = db.readByUUID(uuid);
-            cache.create(result);
+            if (result != null) {
+                cache.create(result);
+            }
             return result;
         }
     }
@@ -52,7 +57,8 @@ public class CourtRepository extends CourtMongoRepository {
 
     @Override
     public boolean delete(UUID uuid) {
-        if (db.delete(uuid)) {
+        boolean result = db.delete(uuid);
+        if (result) {
             cache.delete(uuid.toString());
             return true;
         }

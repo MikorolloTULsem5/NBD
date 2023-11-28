@@ -7,6 +7,7 @@ import nbd.gV.exceptions.MainException;
 import nbd.gV.exceptions.MyMongoException;
 import nbd.gV.mappers.CourtMapper;
 import nbd.gV.repositories.CourtMongoRepository;
+import nbd.gV.repositories.CourtRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +15,10 @@ import java.util.UUID;
 
 public class CourtManager {
 
-    private final CourtMongoRepository courtRepository;
+    private final CourtRepository courtRepository;
 
     public CourtManager() {
-        courtRepository = new CourtMongoRepository();
+        courtRepository = new CourtRepository();
     }
 
     public Court registerCourt(double area, int baseCost, int courtNumber) {

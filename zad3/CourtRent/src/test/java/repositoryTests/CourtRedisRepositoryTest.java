@@ -7,7 +7,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class CourtRedisRepositoryTest {
     static final CourtRedisRepository courtRedisRepository = new CourtRedisRepository();
@@ -77,6 +79,16 @@ public class CourtRedisRepositoryTest {
         assertTrue(courtRedisRepository.create(CourtMapper.toMongoCourt(court1)));
         assertEquals(court1, CourtMapper.fromMongoCourt(courtRedisRepository.read(court1.getCourtId().toString())));
 
+    }
+
+    @Test
+    void deleteCourtTest(){
+        assertTrue(courtRedisRepository.create(courtMapper1));
+        assertTrue(courtRedisRepository.create(courtMapper2));
+        assertTrue(courtRedisRepository.create(courtMapper3));
+
+        assertTrue(courtRedisRepository.delete(courtMapper1.getCourtId()));
+        assertNull(courtRedisRepository.read(courtMapper1.getCourtId()));
     }
 
 }
