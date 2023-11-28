@@ -58,6 +58,16 @@ public class CourtRedisRepositoryTest {
     }
 
     @Test
+    void readNonexistentCourtTest(){
+        assertTrue(courtRedisRepository.create(courtMapper1));
+        assertTrue(courtRedisRepository.create(courtMapper2));
+        assertTrue(courtRedisRepository.create(courtMapper3));
+
+        CourtMapper testCourtMapper1 = courtRedisRepository.read("a");
+        assertNull(testCourtMapper1);
+    }
+
+    @Test
     void updateCourtSuccessfulTest(){
         assertTrue(courtRedisRepository.create(courtMapper1));
         assertTrue(courtRedisRepository.create(courtMapper2));

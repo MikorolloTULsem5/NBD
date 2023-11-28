@@ -2,7 +2,6 @@ package nbd.gV.repositories;
 
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
-import nbd.gV.courts.Court;
 import nbd.gV.mappers.CourtMapper;
 
 public class CourtRedisRepository extends AbstractRedisRepository<CourtMapper> {
@@ -23,14 +22,13 @@ public class CourtRedisRepository extends AbstractRedisRepository<CourtMapper> {
         String result = super.readById(prefix+id);
         if(result == null) return null;
         else {
-            CourtMapper temp = jsonb.fromJson(result,CourtMapper.class);
-            return temp;
+            return jsonb.fromJson(result,CourtMapper.class);
         }
     }
 
     @Override
     public boolean update(CourtMapper mapper) {
-        return super.update(prefix + mapper.getCourtId().toString(), jsonb.toJson(mapper));
+        return super.update(prefix + mapper.getCourtId(), jsonb.toJson(mapper));
     }
 
     @Override
