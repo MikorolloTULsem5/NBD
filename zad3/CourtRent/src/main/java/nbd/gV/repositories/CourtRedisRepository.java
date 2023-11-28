@@ -4,8 +4,6 @@ import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import nbd.gV.mappers.CourtMapper;
 
-import java.util.UUID;
-
 public class CourtRedisRepository extends AbstractRedisRepository<CourtMapper> {
 
     private final Jsonb jsonb = JsonbBuilder.create();

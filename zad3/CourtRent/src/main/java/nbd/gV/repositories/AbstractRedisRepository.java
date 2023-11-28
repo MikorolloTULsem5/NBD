@@ -6,6 +6,11 @@ import redis.clients.jedis.DefaultJedisClientConfig;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.exceptions.JedisException;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public abstract class AbstractRedisRepository<T>{
 
     private static JedisPooled pool;
@@ -22,8 +27,19 @@ public abstract class AbstractRedisRepository<T>{
     }
 
     public void connect() {
+        Properties prop = new Properties();
+        InputStream inputStream;
+        try {
+            inputStream = new FileInputStream("src/main/resources/connection.properties");
+            prop.load(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         JedisClientConfig clientConfig = DefaultJedisClientConfig.builder().build();
-        pool = new JedisPooled(new HostAndPort("localhost", 6379), clientConfig);
+        String name = prop.getProperty("redisHost");
+        int port = Integer.parseInt(prop.getProperty("redisPort"));
+        pool = new JedisPooled(new HostAndPort(name, port), clientConfig);
     }
 
     protected boolean create(String id, String json){
