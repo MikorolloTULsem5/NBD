@@ -27,11 +27,6 @@ public class CourtRedisRepository extends AbstractRedisRepository<CourtMapper> {
     }
 
     @Override
-    public boolean update(CourtMapper mapper) {
-        return super.update(prefix + mapper.getCourtId(), jsonb.toJson(mapper));
-    }
-
-    @Override
     public String getPrefix(){
         return prefix;
     }

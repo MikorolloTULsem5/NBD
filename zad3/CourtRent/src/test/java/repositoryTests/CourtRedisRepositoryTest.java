@@ -74,7 +74,7 @@ public class CourtRedisRepositoryTest {
         assertTrue(courtRedisRepository.create(courtMapper3));
 
         court1.setArea(12);
-        assertTrue(courtRedisRepository.update(CourtMapper.toMongoCourt(court1)));
+        assertTrue(courtRedisRepository.create(CourtMapper.toMongoCourt(court1)));
         assertEquals(court1, CourtMapper.fromMongoCourt(courtRedisRepository.read(court1.getCourtId().toString())));
 
     }
