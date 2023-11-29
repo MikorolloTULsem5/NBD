@@ -9,7 +9,6 @@ import nbd.gV.repositories.CourtRepository;
 import org.junit.jupiter.api.*;
 
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -69,11 +68,9 @@ public class CourtRepositoryTest {
         courtRepository.create(courtMapper2);
         courtRepository.create(courtMapper3);
 
-        try {
-            TimeUnit.SECONDS.sleep(11);
-        } catch (InterruptedException e) {
-            fail();
-        }
+        assertTrue(courtRepository.getCache().delete(courtMapper1.getCourtId()));
+        assertTrue(courtRepository.getCache().delete(courtMapper2.getCourtId()));
+        assertTrue(courtRepository.getCache().delete(courtMapper3.getCourtId()));
 
         assertNull(courtRepository.getCache().read(courtMapper1.getCourtId()));
         assertNull(courtRepository.getCache().read(courtMapper2.getCourtId()));
