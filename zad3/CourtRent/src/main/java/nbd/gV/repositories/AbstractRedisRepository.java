@@ -45,7 +45,7 @@ public abstract class AbstractRedisRepository<T>{
     protected boolean create(String id, String json){
         try {
             pool.set(id, json);
-            pool.expire(id, 10);
+            pool.expire(id, 600);
         } catch (JedisException e){
             return false;
         }
