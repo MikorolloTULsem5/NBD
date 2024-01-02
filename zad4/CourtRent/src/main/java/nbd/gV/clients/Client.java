@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import lombok.ToString;
 import nbd.gV.SchemaConst;
 import nbd.gV.clients.clienttype.Athlete;
 import nbd.gV.clients.clienttype.ClientType;
@@ -26,6 +27,7 @@ import java.util.UUID;
 @Entity(defaultKeyspace = SchemaConst.RESERVE_A_COURT_NAMESPACE)
 @CqlName("clients")
 @NoArgsConstructor
+@ToString
 public class Client {
 
     private UUID clientId;
