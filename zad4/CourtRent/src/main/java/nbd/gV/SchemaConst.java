@@ -7,6 +7,7 @@ public class SchemaConst {
 
     //TABLES
     public final static String CLIENTS_TABLE = "clients";
+    public final static String COURTS_TABLE = "courts";
 
     //CLIENT FIELDS
     public final static String PERSONAL_ID = "personal_id";
@@ -14,5 +15,14 @@ public class SchemaConst {
     public final static String CLIENT_ID = "client_id";
     public final static String FIRST_NAME = "first_name";
     public final static String LAST_NAME = "last_name";
+
+    //COURT FIELDS
+    public final static String COURT_NUMBER = "court_number";
+    public final static String COURT_ID = "court_id";
+    public final static String AREA = "area";
+    public final static String BASE_COST = "base_cost";
+    public final static String RENTED = "rented";
+
+    //COMMON FIELDS
     public final static String ARCHIVE = "archive";
 }

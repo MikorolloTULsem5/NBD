@@ -1,84 +1,94 @@
-//package repositoryTests;
-//import com.mongodb.client.MongoCollection;
-//import com.mongodb.client.model.Filters;
-//import nbd.gV.courts.Court;
-//import nbd.gV.exceptions.MyMongoException;
-//import nbd.gV.mappers.CourtMapper;
-//import nbd.gV.repositories.CourtMongoRepository;
-//import org.bson.Document;
-//import org.junit.jupiter.api.AfterAll;
-//import org.junit.jupiter.api.BeforeAll;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//
-//import java.util.ArrayList;
-//import java.util.UUID;
-//
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertFalse;
-//import static org.junit.jupiter.api.Assertions.assertNotNull;
-//import static org.junit.jupiter.api.Assertions.assertTrue;
-//import static org.junit.jupiter.api.Assertions.assertThrows;
-//
-//public class CourtMongoRepositoryTest {
-//    static final CourtMongoRepository courtRepository = new CourtMongoRepository();
-//
-//    CourtMapper courtMapper1;
-//    CourtMapper courtMapper2;
-//    CourtMapper courtMapper3;
-//    Court court1;
-//    Court court2;
-//    Court court3;
-//
-//    private MongoCollection<CourtMapper> getTestCollection() {
-//        return courtRepository.getDatabase()
-//                .getCollection(courtRepository.getCollectionName(), CourtMapper.class);
-//    }
-//
-//    @BeforeAll
+package repositoryTests;
+
+import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.CqlSession;
+import nbd.gV.SchemaConst;
+import nbd.gV.courts.Court;
+
+import nbd.gV.repositories.clients.ClientCassandraRepository;
+import nbd.gV.repositories.courts.CourtCassandraRepository;
+import nbd.gV.repositories.courts.CourtMapper;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.UUID;
+
+import static nbd.gV.SchemaConst.CLIENTS_TABLE;
+import static nbd.gV.SchemaConst.COURTS_TABLE;
+import static nbd.gV.SchemaConst.COURTS_TABLE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+public class CourtCassandraRepositoryTest {
+    static CourtCassandraRepository courtRepository;
+
+    static CqlSession session;
+    
+    Court court1;
+    Court court2;
+    Court court3;
+
+    @BeforeAll
+    static void setupTestSession() {
+        session = CqlSession.builder()
+                .addContactPoint(new InetSocketAddress("cassandranode1", 9042))
+                .addContactPoint(new InetSocketAddress("cassandranode2", 9043))
+                .addContactPoint(new InetSocketAddress("cassandranode3", 9044))
+                .withLocalDatacenter("dc1")
+                .withAuthCredentials("admin", "adminpassword")
+                .withKeyspace(CqlIdentifier.fromCql(SchemaConst.RESERVE_A_COURT_NAMESPACE))
+                .build();
+
+        session.execute("DROP TABLE IF EXISTS " + COURTS_TABLE);
+
+        courtRepository = new CourtCassandraRepository();
+    }
+
 //    @AfterAll
-//    static void cleanFirstAndLastTimeDB() {
-//        courtRepository.getDatabase()
-//                .getCollection(courtRepository.getCollectionName(), CourtMapper.class).deleteMany(Filters.empty());
-//    }
-//
-//    @BeforeEach
-//    void initData() {
-//        cleanFirstAndLastTimeDB();
-//        court1 = new Court(100, 200, 1);
-//        courtMapper1 = CourtMapper.toMongoCourt(court1);
-//
-//        court2 = new Court(200, 200, 2);
-//        courtMapper2 = CourtMapper.toMongoCourt(court2);
-//
-//        court3 = new Court(300, 300, 3);
-//        courtMapper3 = CourtMapper.toMongoCourt(court3);
-//    }
-//
-//
-//    @Test
-//    void testCreatingRepository() {
-//        CourtMongoRepository courtRepository = new CourtMongoRepository();
-//        assertNotNull(courtRepository);
-//    }
-//
-//    @Test
-//    void testAddingNewDocumentToDBPositive() {
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//        assertTrue(courtRepository.create(courtMapper1));
-//        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
-//        assertTrue(courtRepository.create(courtMapper2));
-//        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
-//    }
-//
-//    @Test
-//    void testAddingNewDocumentToDBNegative() {
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//        assertTrue(courtRepository.create(courtMapper1));
-//        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
-//        assertThrows(MyMongoException.class, () -> courtRepository.create(courtMapper1));
-//        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
-//    }
+    static void cleanTable() {
+        session.execute("TRUNCATE " + COURTS_TABLE);
+    }
+
+    @BeforeEach
+    void initData() {
+        cleanTable();
+
+        court1 = new Court(100, 200, 1);
+        court2 = new Court(200, 200, 2);
+        court3 = new Court(300, 300, 3);
+    }
+
+
+    @Test
+    void testCreatingRepository() {
+        assertNotNull(courtRepository);
+        assertTrue(session.execute("SELECT * FROM " + COURTS_TABLE).all().isEmpty());
+    }
+
+    @Test
+    void testAddingNewDocumentToDBPositive() {
+        assertEquals(0, session.execute("SELECT * FROM " + COURTS_TABLE).all().size());
+        courtRepository.create(court1);
+        assertEquals(1, session.execute("SELECT * FROM " + COURTS_TABLE).all().size());
+        courtRepository.create(court2);
+        assertEquals(2, session.execute("SELECT * FROM " + COURTS_TABLE).all().size());
+    }
+
+    @Test
+    void testAddingNewDocumentToDBNegative() {
+        assertEquals(0, session.execute("SELECT * FROM " + COURTS_TABLE).all().size());
+        courtRepository.create(court1);
+        assertEquals(1, session.execute("SELECT * FROM " + COURTS_TABLE).all().size());
+        courtRepository.create(court1);
+        assertEquals(1, session.execute("SELECT * FROM " + COURTS_TABLE).all().size());
+    }
 //
 //    @Test
 //    void testFindingDocumentsInDBPositive() {
@@ -219,4 +229,4 @@
 //
 //        assertFalse(courtRepository.update(UUID.randomUUID(), "area", 435.0));
 //    }
-//}
+}

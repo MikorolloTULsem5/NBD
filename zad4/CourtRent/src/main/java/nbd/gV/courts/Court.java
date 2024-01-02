@@ -1,13 +1,17 @@
 package nbd.gV.courts;
 
+import com.datastax.oss.driver.api.mapper.annotations.ClusteringColumn;
 import com.datastax.oss.driver.api.mapper.annotations.CqlName;
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
 import com.datastax.oss.driver.api.mapper.annotations.PartitionKey;
+import com.datastax.oss.driver.api.mapper.annotations.PropertyStrategy;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 import nbd.gV.SchemaConst;
 import nbd.gV.exceptions.MainException;
 
@@ -20,17 +24,31 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity(defaultKeyspace = SchemaConst.RESERVE_A_COURT_NAMESPACE)
 @CqlName("courts")
+@PropertyStrategy(mutable = false)
 public class Court {
+    @Setter(AccessLevel.NONE)
+    @PartitionKey
+    private int courtNumber;
+    @ClusteringColumn
+    private boolean rented = false;
+
+    @Setter(AccessLevel.NONE)
     private UUID courtId;
 
     private double area;
     private int baseCost;
 
-    @PartitionKey
-    private int courtNumber;
-
     private boolean archive = false;
-    private boolean rented = false;
+
+    //Constructor for Cassandra
+    public Court(int courtNumber, boolean rented, UUID courtId, double area, int baseCost, boolean archive) {
+        this.courtNumber = courtNumber;
+        this.rented = rented;
+        this.courtId = courtId;
+        this.area = area;
+        this.baseCost = baseCost;
+        this.archive = archive;
+    }
 
     public Court(double area, int baseCost, int courtNumber) {
         if (area <= 0.0 || baseCost < 0 || courtNumber < 1) {
@@ -40,11 +58,6 @@ public class Court {
         this.area = area;
         this.baseCost = baseCost;
         this.courtNumber = courtNumber;
-    }
-
-    public Court(UUID courtId, double area, int baseCost, int courtNumber) {
-        this(area, baseCost, courtNumber);
-        this.courtId = courtId;
     }
 
     @Override

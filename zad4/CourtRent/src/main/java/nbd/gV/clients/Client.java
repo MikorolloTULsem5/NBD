@@ -11,8 +11,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import lombok.ToString;
+
 import nbd.gV.SchemaConst;
 import nbd.gV.clients.clienttype.Athlete;
 import nbd.gV.clients.clienttype.ClientType;
@@ -63,7 +63,7 @@ public class Client {
             default -> null;
         };
     }
-    
+
     public Client(String firstName, String lastName, String personalId, String clientTypeName) {
         if (firstName.isEmpty() || lastName.isEmpty() || personalId.isEmpty() || clientTypeName.isEmpty()) {
             throw new MainException("Brakujacy parametr przy tworzeniu obiektu klienta!");

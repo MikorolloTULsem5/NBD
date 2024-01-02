@@ -32,9 +32,9 @@ public class ClientProvider {
                 .isEqualTo(literal(clientId))
                 .allowFiltering()
                 .build();
-        PreparedStatement preparedSelectUser = session.prepare(statement);
+        PreparedStatement preparedSelectClient = session.prepare(statement);
         return session
-                .execute(preparedSelectUser.getQuery())
+                .execute(preparedSelectClient.getQuery())
                 .map(result -> clientHelper.get(result, true)).one();
     }
 }
