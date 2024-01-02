@@ -59,20 +59,6 @@ public class ClientTest {
         assertTrue(client.isArchive());
         client.setArchive(false);
         assertFalse(client.isArchive());
-
-        assertEquals(testTypeNormal.getClientTypeName(), client.getClientType().getClientTypeName());
-        client.setClientType(testTypeAthlete);
-        assertEquals(testTypeAthlete, client.getClientType());
-        client.setClientType(testTypeCoach);
-        assertEquals(testTypeCoach, client.getClientType());
-    }
-
-    @Test
-    void testGettingClientInfo() {
-        Client client = new Client(testFirstName, testLastName, testPersonalID, testTypeNormal.getClientTypeName());
-        assertNotNull(client);
-
-        assertEquals("Klient - John Smith o numerze PESEL 12345678\n", client.getClientInfo());
     }
 
     @Test

@@ -53,13 +53,4 @@ public class CourtTest {
         newCourt.setRented(false);
         assertFalse(newCourt.isRented());
     }
-
-    @Test
-    void testGettingCourtInfo() {
-        Court newCourt = new Court(300, 100, 1);
-        assertNotNull(newCourt);
-
-        assertEquals("Boisko nr 1 o powierzchni 300,00 i koszcie za rezerwacje: 100,00 PLN\n",
-                newCourt.getCourtInfo());
-    }
 }

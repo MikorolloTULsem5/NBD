@@ -8,9 +8,6 @@ import nbd.gV.exceptions.ReservationException;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Formatter;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -80,15 +77,6 @@ public class Reservation {
         } else {
             throw new ReservationException("Ta rezerwacja juz sie zakonczyla i nie mozna zmienic jej daty!");
         }
-    }
-
-    public String getReservationInfo() {
-        return new Formatter(Locale.GERMAN).format("Rezerwacja nr %s przez '%s' boiska: '%s', od godziny [%s]%s%n", id,
-                client.getClientInfo().replace("\n", ""),
-                court.getCourtInfo().replace("\n", ""),
-                beginTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")),
-                (endTime == null) ? "." : (" do godziny [%s].".formatted(
-                        endTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"))))).toString();
     }
 
     @Override
