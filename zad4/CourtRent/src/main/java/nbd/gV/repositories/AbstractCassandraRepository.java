@@ -6,7 +6,6 @@ import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
 
 import nbd.gV.SchemaConst;
-import nbd.gV.repositories.clients.ClientDao;
 
 import java.net.InetSocketAddress;
 
@@ -33,10 +32,6 @@ public abstract class AbstractCassandraRepository implements AutoCloseable {
                 .withDurableWrites(true);
         SimpleStatement createKeyspace = keyspace.build();
         session.execute(createKeyspace);
-    }
-
-    protected ClientDao getDao() {
-        return null;
     }
 
     @Override

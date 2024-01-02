@@ -1,6 +1,5 @@
 package nbd.gV.repositories.clients;
 
-import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder;
@@ -38,18 +37,18 @@ public class ClientCassandraRepository extends AbstractCassandraRepository {
         session.execute(createClients);
     }
 
-    /*----------------------------------------------CRUD-------------------------------------------------------*/
-
-    @Override
     protected ClientDao getDao() {
         ClientMapper clientMapper = new ClientMapperBuilder(session).build();
         return clientMapper.clientDao();
     }
 
+    /*----------------------------------------------CRUD-------------------------------------------------------*/
+
     public void create(Client client) {
         getDao().create(client);
     }
 
+    //TODO ewentualnie dodac opcje wyszukiwania po query
     public Client read(String personalId) {
         return getDao().findClient(personalId);
     }
