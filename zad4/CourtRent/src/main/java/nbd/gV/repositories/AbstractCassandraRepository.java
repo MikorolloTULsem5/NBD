@@ -1,19 +1,18 @@
 package nbd.gV.repositories;
 
-import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
-import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
 
 import nbd.gV.SchemaConst;
+import nbd.gV.repositories.clients.ClientDao;
 
 import java.net.InetSocketAddress;
 
 import static com.datastax.oss.driver.api.querybuilder.SchemaBuilder.createKeyspace;
 
-public class AbstractCassandraRepository implements AutoCloseable {
+public abstract class AbstractCassandraRepository implements AutoCloseable {
     protected static CqlSession session;
 
     public void initSession() {
@@ -34,6 +33,10 @@ public class AbstractCassandraRepository implements AutoCloseable {
                 .withDurableWrites(true);
         SimpleStatement createKeyspace = keyspace.build();
         session.execute(createKeyspace);
+    }
+
+    protected ClientDao getDao() {
+        return null;
     }
 
     @Override

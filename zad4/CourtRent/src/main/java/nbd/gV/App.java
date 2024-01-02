@@ -13,19 +13,22 @@ public class App {
         try (ClientCassandraRepository acr = new ClientCassandraRepository()) {
 
             Client client = new Client(
-                    "Adam",
+                    "John",
                     "Smith",
                     String.valueOf(10_000_000_000L + (long) (new Random().nextDouble() * 89_999_999_999L)),
                     "athlete");
 
-//            acr.create(client);
+            acr.create(client);
 
-//            System.out.println("TEST1: " + acr.read("34831451710"));
-//            System.out.println("TEST2: " + acr.readByUUID("be2ec0ee-773d-43ed-9809-b7bb15f6ed52"));
-//            client = acr.read("1190985388");
-//            client.setArchive(true);
-//            acr.update(client);
+            System.out.println("TEST1: " + acr.read("98824917721"));
+            System.out.println("TEST2: " + acr.readByUUID("d5b5d57f-d208-493c-9097-88e2d72434c9"));
             clients = acr.readAll();
+
+            client = acr.read("17778933802");
+            client.setArchive(true);
+            acr.update(client);
+
+            acr.delete(acr.read("80064422555"));
         } catch (Exception exception) {
             exception.printStackTrace();
         }

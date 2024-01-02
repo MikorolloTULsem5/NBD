@@ -40,25 +40,22 @@ public class ClientCassandraRepository extends AbstractCassandraRepository {
 
     /*----------------------------------------------CRUD-------------------------------------------------------*/
 
-    public void create(Client client) {
+    @Override
+    protected ClientDao getDao() {
         ClientMapper clientMapper = new ClientMapperBuilder(session).build();
-        ClientDao clientDao = clientMapper.clientDao();
+        return clientMapper.clientDao();
+    }
 
-        clientDao.create(client);
+    public void create(Client client) {
+        getDao().create(client);
     }
 
     public Client read(String personalId) {
-        ClientMapper clientMapper = new ClientMapperBuilder(session).build();
-        ClientDao clientDao = clientMapper.clientDao();
-
-        return clientDao.findClient(personalId);
+        return getDao().findClient(personalId);
     }
 
     public Client readByUUID(UUID clientId) {
-        ClientMapper clientMapper = new ClientMapperBuilder(session).build();
-        ClientDao clientDao = clientMapper.clientDao();
-
-        return clientDao.findClientByUUID(clientId);
+        return getDao().findClientByUUID(clientId);
     }
 
     public Client readByUUID(String clientId) {
@@ -66,23 +63,14 @@ public class ClientCassandraRepository extends AbstractCassandraRepository {
     }
 
     public List<Client> readAll() {
-        ClientMapper clientMapper = new ClientMapperBuilder(session).build();
-        ClientDao clientDao = clientMapper.clientDao();
-
-        return clientDao.findAllClients().all();
+        return getDao().findAllClients().all();
     }
 
     public void update(Client client) {
-        ClientMapper clientMapper = new ClientMapperBuilder(session).build();
-        ClientDao clientDao = clientMapper.clientDao();
-
-        clientDao.updateClient(client);
+        getDao().updateClient(client);
     }
 
     public void delete(Client client) {
-        ClientMapper clientMapper = new ClientMapperBuilder(session).build();
-        ClientDao clientDao = clientMapper.clientDao();
-
-        clientDao.deleteClient(client);
+        getDao().deleteClient(client);
     }
 }

@@ -23,7 +23,8 @@ public interface ClientDao {
     Client findClient(String personalId);
 
     @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
-    @QueryProvider(providerClass = ClientProvider.class, entityHelpers = {Client.class}, providerMethod = "findClientByUUID")
+    @QueryProvider(providerClass = ClientProvider.class, entityHelpers = {Client.class},
+            providerMethod = "findClientByUUID")
     Client findClientByUUID(UUID clientId);
 
     @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
