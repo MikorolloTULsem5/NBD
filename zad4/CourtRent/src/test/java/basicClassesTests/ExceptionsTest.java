@@ -46,18 +46,4 @@ public class ExceptionsTest {
         assertThrows(ReservationException.class, () -> {throw reservationException;});
         assertEquals("TEST", reservationException.getMessage());
     }
-
-    @Test
-    void testJakartaException() {
-        RuntimeException jakartaException = new JakartaException("TEST");
-        assertThrows(JakartaException.class, () -> {throw jakartaException;});
-        assertEquals("TEST", jakartaException.getMessage());
-    }
-
-    @Test
-    void testMyMongoException() {
-        RuntimeException myMongoException = new MyMongoException("TEST");
-        assertThrows(MyMongoException.class, () -> {throw myMongoException;});
-        assertEquals("TEST", myMongoException.getMessage());
-    }
 }
