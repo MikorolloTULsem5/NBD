@@ -1,22 +1,19 @@
 package nbd.gV.repositories.clients;
 
-import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
-import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import com.datastax.oss.driver.api.mapper.MapperContext;
 import com.datastax.oss.driver.api.mapper.entity.EntityHelper;
 import com.datastax.oss.driver.api.querybuilder.QueryBuilder;
 
-import com.datastax.oss.driver.api.querybuilder.relation.Relation;
-import com.datastax.oss.driver.api.querybuilder.select.Select;
 import nbd.gV.clients.Client;
 
 import java.util.UUID;
 
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
 import static nbd.gV.SchemaConst.CLIENTS_TABLE;
+import static nbd.gV.SchemaConst.CLIENT_ID;
 
 public class ClientProvider {
 
@@ -31,7 +28,7 @@ public class ClientProvider {
     public Client findClientByUUID(UUID clientId) {
         SimpleStatement statement = QueryBuilder.selectFrom(CLIENTS_TABLE)
                 .all()
-                .whereColumn("client_id")
+                .whereColumn(CLIENT_ID)
                 .isEqualTo(literal(clientId))
                 .allowFiltering()
                 .build();
