@@ -4,6 +4,7 @@ import com.datastax.oss.driver.api.mapper.annotations.ClusteringColumn;
 import com.datastax.oss.driver.api.mapper.annotations.CqlName;
 import com.datastax.oss.driver.api.mapper.annotations.Entity;
 import com.datastax.oss.driver.api.mapper.annotations.PartitionKey;
+import com.datastax.oss.driver.api.mapper.annotations.PropertyStrategy;
 import com.datastax.oss.driver.api.mapper.annotations.Transient;
 
 import lombok.AccessLevel;
@@ -24,25 +25,45 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
 @Entity(defaultKeyspace = SchemaConst.RESERVE_A_COURT_NAMESPACE)
 @CqlName("clients")
-@NoArgsConstructor
-@ToString
+@PropertyStrategy(mutable = false)
 public class Client {
+    @PartitionKey
+    @Setter(AccessLevel.NONE)
+    private String personalId;
+    @ClusteringColumn
+    private String clientTypeName;
 
+    @Setter(AccessLevel.NONE)
     private UUID clientId;
     private String firstName;
     private String lastName;
-    @PartitionKey
-    private String personalId;
     private boolean archive = false;
-    @ClusteringColumn
-    private String clientTypeName;
 
     @Transient
     @Setter(AccessLevel.NONE)
     private ClientType clientType;
 
+    //Constructor for Cassandra
+    public Client(String personalId, String clientTypeName, UUID clientId, String firstName, String lastName, boolean archive) {
+        this.personalId = personalId;
+        this.clientTypeName = clientTypeName;
+        this.clientId = clientId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.archive = archive;
+
+        this.clientType = switch (clientTypeName.toLowerCase()) {
+            case "normal" -> new Normal();
+            case "athlete" -> new Athlete();
+            case "coach" -> new Coach();
+            default -> null;
+        };
+    }
+    
     public Client(String firstName, String lastName, String personalId, String clientTypeName) {
         if (firstName.isEmpty() || lastName.isEmpty() || personalId.isEmpty() || clientTypeName.isEmpty()) {
             throw new MainException("Brakujacy parametr przy tworzeniu obiektu klienta!");
@@ -61,11 +82,6 @@ public class Client {
             default -> null;
         };
     }
-
-//    public Client(UUID uuid, String firstName, String lastName, String personalId, String clientTypeName) {
-//        this(firstName, lastName, personalId, clientTypeName);
-//        this.clientId = uuid;
-//    }
 
     public void setClientTypeName(String clientTypeName) {
         this.clientTypeName = clientTypeName;

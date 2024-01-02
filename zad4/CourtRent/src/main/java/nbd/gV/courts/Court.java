@@ -1,9 +1,14 @@
 package nbd.gV.courts;
 
+import com.datastax.oss.driver.api.mapper.annotations.CqlName;
+import com.datastax.oss.driver.api.mapper.annotations.Entity;
+import com.datastax.oss.driver.api.mapper.annotations.PartitionKey;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import nbd.gV.SchemaConst;
 import nbd.gV.exceptions.MainException;
 
 import java.util.Objects;
@@ -11,15 +16,17 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
+@Entity(defaultKeyspace = SchemaConst.RESERVE_A_COURT_NAMESPACE)
+@CqlName("courts")
 public class Court {
-    @Setter(AccessLevel.NONE)
     private UUID courtId;
 
     private double area;
     private int baseCost;
 
-    @Setter(AccessLevel.NONE)
+    @PartitionKey
     private int courtNumber;
 
     private boolean archive = false;
