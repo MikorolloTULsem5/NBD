@@ -3,6 +3,9 @@ package nbd.gV.repositories;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder;
+import com.datastax.oss.driver.api.core.type.DataTypes;
+import com.datastax.oss.driver.api.querybuilder.SchemaBuilder;
 import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
 
 import java.net.InetSocketAddress;
@@ -19,7 +22,7 @@ public class AbstractCassandraRepository implements AutoCloseable {
                 .addContactPoint(new InetSocketAddress("cassandranode3", 9044))
                 .withLocalDatacenter("dc1")
                 .withAuthCredentials("admin", "adminpassword")
-//                .withKeyspace(CqlIdentifier.fromCql("rent_a_car"))
+                .withKeyspace(CqlIdentifier.fromCql("rent_a_car"))
                 .build();
     }
 
@@ -30,6 +33,20 @@ public class AbstractCassandraRepository implements AutoCloseable {
                 .withDurableWrites(true);
         SimpleStatement createKeyspace = keyspace.build();
         session.execute(createKeyspace);
+    }
+
+    public void createClientsTable() {
+        SimpleStatement createClients = SchemaBuilder.createTable(CqlIdentifier.fromCql("clients"))
+                .ifNotExists()
+                .withPartitionKey(CqlIdentifier.fromCql("personalId"), DataTypes.TEXT)
+                .withClusteringColumn(CqlIdentifier.fromCql("clientTypeName"), DataTypes.TEXT)
+                .withColumn(CqlIdentifier.fromCql("clientId"), DataTypes.TEXT)
+                .withColumn(CqlIdentifier.fromCql("firstName"), DataTypes.TEXT)
+                .withColumn(CqlIdentifier.fromCql("lastName"), DataTypes.TEXT)
+                .withColumn(CqlIdentifier.fromCql("archive"), DataTypes.BOOLEAN)
+                .withClusteringOrder(CqlIdentifier.fromCql("clientTypeName"), ClusteringOrder.ASC)
+                .build();
+        session.execute(createClients);
     }
 
     @Override

@@ -3,7 +3,10 @@ package nbd.gV.clients;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import nbd.gV.clients.clienttype.Athlete;
 import nbd.gV.clients.clienttype.ClientType;
+import nbd.gV.clients.clienttype.Coach;
+import nbd.gV.clients.clienttype.Normal;
 import nbd.gV.exceptions.MainException;
 
 import java.util.Objects;
@@ -19,21 +22,32 @@ public class Client {
     private String lastName;
     private String personalId;
     private boolean archive = false;
+    //
     private ClientType clientType;
+    //
 
-    public Client(String firstName, String lastName, String personalId, ClientType clientType) {
-        if (firstName.isEmpty() || lastName.isEmpty() || personalId.isEmpty() || clientType == null)
+    private String clientTypeName;
+
+    public Client(String firstName, String lastName, String personalId, String clientTypeName) {
+        if (firstName.isEmpty() || lastName.isEmpty() || personalId.isEmpty())
             throw new MainException("Brakujacy parametr przy tworzeniu obiektu klienta!");
 
         this.clientId = UUID.randomUUID();
         this.firstName = firstName;
         this.lastName = lastName;
         this.personalId = personalId;
-        this.clientType = clientType;
+        this.clientTypeName = clientTypeName;
+
+        this.clientType = switch (clientTypeName.toLowerCase()) {
+            case "normal" -> new Normal();
+            case "athlete" -> new Athlete();
+            case "coach" -> new Coach();
+            default -> null;
+        };
     }
 
-    public Client(UUID uuid, String firstName, String lastName, String personalId, ClientType clientType) {
-        this(firstName, lastName, personalId, clientType);
+    public Client(UUID uuid, String firstName, String lastName, String personalId, String clientTypeName) {
+        this(firstName, lastName, personalId, clientTypeName);
         this.clientId = uuid;
     }
 

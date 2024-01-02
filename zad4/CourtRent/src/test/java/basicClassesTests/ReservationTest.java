@@ -30,7 +30,7 @@ public class ReservationTest {
     @BeforeEach
     void setUp() {
         testClientType = new Normal();
-        testClient = new Client("John", "Smith", "123456789", testClientType);
+        testClient = new Client("John", "Smith", "123456789", testClientType.getClientTypeName());
         testCourt = new Court(1, 100, 1);
         testUUID = UUID.randomUUID();
     }

@@ -24,28 +24,26 @@ public class ClientTest {
     ClientType testTypeNormal = new Normal();
     @Test
     void testCreatingClient() {
-        Client client = new Client(testFirstName, testLastName, testPersonalID, testTypeNormal);
+        Client client = new Client(testFirstName, testLastName, testPersonalID, testTypeNormal.getClientTypeName());
         assertNotNull(client);
 
         assertEquals(testFirstName, client.getFirstName());
         assertEquals(testLastName, client.getLastName());
         assertEquals(testPersonalID, client.getPersonalId());
-        assertEquals(testTypeNormal, client.getClientType());
+        assertEquals(testTypeNormal.getClientTypeName(), client.getClientType().getClientTypeName());
         assertFalse(client.isArchive());
 
         assertThrows(MainException.class, ()
-                -> new Client("", testLastName, testPersonalID, testTypeNormal));
+                -> new Client("", testLastName, testPersonalID, testTypeNormal.getClientTypeName()));
         assertThrows(MainException.class, ()
-                -> new Client(testFirstName, "", testPersonalID, testTypeNormal));
+                -> new Client(testFirstName, "", testPersonalID, testTypeNormal.getClientTypeName()));
         assertThrows(MainException.class, ()
-                -> new Client(testFirstName, testLastName, "", testTypeNormal));
-        assertThrows(MainException.class, ()
-                -> new Client(testFirstName, testLastName, testPersonalID, null));
+                -> new Client(testFirstName, testLastName, "", testTypeNormal.getClientTypeName()));
     }
 
     @Test
     void testSetters() {
-        Client client = new Client(testFirstName, testLastName, testPersonalID, testTypeNormal);
+        Client client = new Client(testFirstName, testLastName, testPersonalID, testTypeNormal.getClientTypeName());
         assertNotNull(client);
 
         assertEquals(testFirstName, client.getFirstName());
@@ -62,7 +60,7 @@ public class ClientTest {
         client.setArchive(false);
         assertFalse(client.isArchive());
 
-        assertEquals(testTypeNormal, client.getClientType());
+        assertEquals(testTypeNormal.getClientTypeName(), client.getClientType().getClientTypeName());
         client.setClientType(testTypeAthlete);
         assertEquals(testTypeAthlete, client.getClientType());
         client.setClientType(testTypeCoach);
@@ -71,7 +69,7 @@ public class ClientTest {
 
     @Test
     void testGettingClientInfo() {
-        Client client = new Client(testFirstName, testLastName, testPersonalID, testTypeNormal);
+        Client client = new Client(testFirstName, testLastName, testPersonalID, testTypeNormal.getClientTypeName());
         assertNotNull(client);
 
         assertEquals("Klient - John Smith o numerze PESEL 12345678\n", client.getClientInfo());
@@ -79,11 +77,11 @@ public class ClientTest {
 
     @Test
     void testGettingClientMaxHoursAndApplyingDiscount() {
-        Client client = new Client(testFirstName, testLastName, testPersonalID, testTypeNormal);
+        Client client = new Client(testFirstName, testLastName, testPersonalID, testTypeNormal.getClientTypeName());
         assertNotNull(client);
-        Client client1 = new Client(testFirstName, testLastName, testPersonalID, testTypeAthlete);
+        Client client1 = new Client(testFirstName, testLastName, testPersonalID, testTypeAthlete.getClientTypeName());
         assertNotNull(client1);
-        Client client2 = new Client(testFirstName, testLastName, testPersonalID, testTypeCoach);
+        Client client2 = new Client(testFirstName, testLastName, testPersonalID, testTypeCoach.getClientTypeName());
         assertNotNull(client2);
 
         assertEquals(0, client.applyDiscount(100));
