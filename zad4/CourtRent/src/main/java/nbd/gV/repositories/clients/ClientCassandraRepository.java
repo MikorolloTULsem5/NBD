@@ -1,5 +1,6 @@
 package nbd.gV.repositories.clients;
 
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder;
@@ -8,6 +9,7 @@ import com.datastax.oss.driver.api.querybuilder.SchemaBuilder;
 import nbd.gV.clients.Client;
 import nbd.gV.repositories.AbstractCassandraRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 import static nbd.gV.SchemaConst.ARCHIVE;
@@ -61,5 +63,26 @@ public class ClientCassandraRepository extends AbstractCassandraRepository {
 
     public Client readByUUID(String clientId) {
         return readByUUID(UUID.fromString(clientId));
+    }
+
+    public List<Client> readAll() {
+        ClientMapper clientMapper = new ClientMapperBuilder(session).build();
+        ClientDao clientDao = clientMapper.clientDao();
+
+        return clientDao.findAllClients().all();
+    }
+
+    public void update(Client client) {
+        ClientMapper clientMapper = new ClientMapperBuilder(session).build();
+        ClientDao clientDao = clientMapper.clientDao();
+
+        clientDao.updateClient(client);
+    }
+
+    public void delete(Client client) {
+        ClientMapper clientMapper = new ClientMapperBuilder(session).build();
+        ClientDao clientDao = clientMapper.clientDao();
+
+        clientDao.deleteClient(client);
     }
 }
