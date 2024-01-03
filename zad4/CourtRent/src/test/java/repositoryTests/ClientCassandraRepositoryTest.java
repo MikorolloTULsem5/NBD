@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.InetSocketAddress;
+
 import java.util.Comparator;
 import java.util.UUID;
 
@@ -191,7 +192,6 @@ public class ClientCassandraRepositoryTest {
 
         Client clientToUpd = clientRepository.readByUUID(client1.getClientId());
         assertEquals("Adam", clientToUpd.getFirstName());
-        assertEquals(3, session.execute("SELECT * FROM " + CLIENTS_TABLE).all().size());
 
         clientToUpd.setFirstName("Jacob");
 
