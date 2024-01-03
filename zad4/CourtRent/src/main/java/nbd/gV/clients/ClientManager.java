@@ -36,7 +36,7 @@ public class ClientManager {
             clientRepository.update(client);
         } catch (Exception exception) {
             client.setArchive(false);
-            throw new ClientException("Nie udalo sie wyrejestrowac podanego klienta. - nieznany blad");
+            throw new ClientException("Nie udalo sie wyrejestrowac podanego klienta. - " + exception.getMessage());
         }
     }
 
