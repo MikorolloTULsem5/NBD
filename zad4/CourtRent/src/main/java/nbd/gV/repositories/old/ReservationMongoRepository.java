@@ -51,7 +51,11 @@
 //            throw new MyMongoException(exception.getMessage());
 //        }
 //    }
-//
+
+
+
+
+
 //    public void update(Court court, LocalDateTime endTime) {
 //        //Find court
 //        var listCourt = getDatabase().getCollection("courts", CourtMapper.class)

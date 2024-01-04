@@ -67,7 +67,7 @@ public class CourtCassandraRepository extends AbstractCassandraRepository {
     }
 
     public void update(Court court) {
-        getDao().updateCourt(court);
+        getDao().updateCourtRented(court);
     }
 
     public void delete(Court court) {

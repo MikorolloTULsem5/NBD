@@ -34,9 +34,14 @@ public interface CourtDao {
 
     @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
     @Update
-    void updateCourt(Court user);
+    void updateCourt(Court court);
+
+    @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
+    @QueryProvider(providerClass = CourtProvider.class, entityHelpers = {Court.class},
+            providerMethod = "updateCourtRented")
+    void updateCourtRented(Court court);
 
     @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
     @Delete
-    void deleteCourt(Court user);
+    void deleteCourt(Court court);
 }

@@ -6,7 +6,15 @@ import com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder;
 import com.datastax.oss.driver.api.core.type.DataTypes;
 import com.datastax.oss.driver.api.querybuilder.SchemaBuilder;
 
+import nbd.gV.clients.Client;
+import nbd.gV.courts.Court;
+import nbd.gV.exceptions.ClientException;
+import nbd.gV.exceptions.CourtException;
+import nbd.gV.exceptions.ReservationException;
 import nbd.gV.repositories.AbstractCassandraRepository;
+import nbd.gV.repositories.clients.ClientMapper;
+import nbd.gV.repositories.clients.ClientMapperBuilder;
+import nbd.gV.repositories.courts.CourtMapperBuilder;
 import nbd.gV.reservations.Reservation;
 import nbd.gV.reservations.ReservationClientsDTO;
 import nbd.gV.reservations.ReservationCourtsDTO;
@@ -58,7 +66,32 @@ public class ReservationCassandraRepository extends AbstractCassandraRepository 
     /*----------------------------------------------CRUD-------------------------------------------------------*/
 
     public void create(Reservation reservation) {
-        getDao().createClientReservation(ReservationClientsDTO.toDTO(reservation));
-        getDao().createCourtReservation(ReservationCourtsDTO.toDTO(reservation));
+        //Check client
+        Client client = new ClientMapperBuilder(session).build().clientDao()
+                .findClient(reservation.getClient().getPersonalId());
+        if (client == null) {
+            throw new ReservationException("Brak podanego klienta w bazie!");
+        }
+
+        //Check court
+        Court court = new CourtMapperBuilder(session).build().courtDao()
+                .findCourt(reservation.getCourt().getCourtNumber());
+        if (court == null) {
+            throw new ReservationException("Brak podanego boiska w bazie!");
+        }
+
+        if (!court.isRented() && !client.isArchive() && !court.isArchive()) {
+            ///TODO dodac kurna transakcje xD
+            court.setRented(true);
+            new CourtMapperBuilder(session).build().courtDao().updateCourt(court);
+            getDao().createClientReservation(ReservationClientsDTO.toDTO(reservation));
+            getDao().createCourtReservation(ReservationCourtsDTO.toDTO(reservation));
+        } else if (client.isArchive()) {
+            throw new ClientException("Nie udalo sie utworzyc rezerwacji - klient jest archiwalny!");
+        } else if (court.isArchive()) {
+            throw new CourtException("Nie udalo sie utworzyc rezerwacji - boisko jest archiwalne!");
+        } else {
+            throw new ReservationException("To boisko jest aktualnie wypozyczone!");
+        }
     }
 }

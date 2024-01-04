@@ -3,6 +3,7 @@ package nbd.gV;
 import nbd.gV.clients.Client;
 import nbd.gV.courts.Court;
 import nbd.gV.repositories.clients.ClientCassandraRepository;
+import nbd.gV.repositories.courts.CourtCassandraRepository;
 import nbd.gV.repositories.reservations.ReservationCassandraRepository;
 import nbd.gV.reservations.Reservation;
 
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 //        List<Client> clients = new ArrayList<>();
 //        try (ClientCassandraRepository acr = new ClientCassandraRepository()) {
 //
@@ -42,19 +43,27 @@ public class App {
 //        System.out.println("SIZE: " + clients.size());
 //        clients.forEach(System.out::println);
 
-        try (ReservationCassandraRepository rcr = new ReservationCassandraRepository()) {
+//        ReservationCassandraRepository rcr = new ReservationCassandraRepository();
+//        ClientCassandraRepository clientRepo = new ClientCassandraRepository();
+        ;
+
+        try (CourtCassandraRepository courtRepo = new CourtCassandraRepository()) {
 
             Client client = new Client(
                     "John",
                     "Smith",
-                    String.valueOf(10_000_000_000L + (long) (new Random().nextDouble() * 89_999_999_999L)),
+                    "1111111",
                     "athlete");
             Court court = new Court(100, 100, 1);
             Reservation reservation = new Reservation(client, court, LocalDateTime.now());
 
-            reservation.endReservation(LocalDateTime.now().plusHours(2));
+//            reservation.endReservation(LocalDateTime.now().plusHours(2));
 
-            rcr.create(reservation);
+//            clientRepo.create(client);
+//            courtRepo.create(court);
+//            rcr.create(reservation);
+            court.setRented(false);
+            courtRepo.update(court);
         } catch (Exception e) {
             e.printStackTrace();
         }
