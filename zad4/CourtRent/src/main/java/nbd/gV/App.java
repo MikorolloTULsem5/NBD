@@ -1,14 +1,20 @@
-//package nbd.gV;
-//
-//import nbd.gV.clients.Client;
-//import nbd.gV.repositories.clients.ClientCassandraRepository;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.Random;
-//
-//public class App {
-//    public static void main(String[] args) {
+package nbd.gV;
+
+import nbd.gV.clients.Client;
+import nbd.gV.courts.Court;
+import nbd.gV.repositories.clients.ClientCassandraRepository;
+import nbd.gV.repositories.reservations.ReservationCassandraRepository;
+import nbd.gV.reservations.Reservation;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class App {
+    public static void main(String[] args) {
 //        List<Client> clients = new ArrayList<>();
 //        try (ClientCassandraRepository acr = new ClientCassandraRepository()) {
 //
@@ -35,5 +41,22 @@
 //
 //        System.out.println("SIZE: " + clients.size());
 //        clients.forEach(System.out::println);
-//    }
-//}
+
+        try (ReservationCassandraRepository rcr = new ReservationCassandraRepository()) {
+
+            Client client = new Client(
+                    "John",
+                    "Smith",
+                    String.valueOf(10_000_000_000L + (long) (new Random().nextDouble() * 89_999_999_999L)),
+                    "athlete");
+            Court court = new Court(100, 100, 1);
+            Reservation reservation = new Reservation(client, court, LocalDateTime.now());
+
+            reservation.endReservation(LocalDateTime.now().plusHours(2));
+
+            rcr.create(reservation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

@@ -11,51 +11,53 @@ import nbd.gV.SchemaConst;
 import nbd.gV.clients.Client;
 import nbd.gV.courts.Court;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 @Getter
 @Setter
 @Entity(defaultKeyspace = SchemaConst.RESERVE_A_COURT_NAMESPACE)
-@CqlName("reservations_by_client")
+@CqlName(SchemaConst.RESERVATIONS_BY_CLIENT_TABLE)
 @PropertyStrategy(mutable = false)
-public class ReservationDTO {
+public class ReservationClientsDTO {
     @PartitionKey
     private final UUID clientId;
     @ClusteringColumn
-    private final LocalDateTime endTime;
-    @ClusteringColumn
+    private final Instant beginTime;
+    @ClusteringColumn(1)
     private final UUID reservationId;
 
-    private final LocalDateTime beginTime;
+    private final Instant endTime;
     private final UUID courtId;
     private final double reservationCost;
 
-    public ReservationDTO(UUID clientId, LocalDateTime endTime, UUID reservationId, LocalDateTime beginTime,
-                          UUID courtId, double reservationCost) {
+    public ReservationClientsDTO(UUID clientId, Instant beginTime, UUID reservationId, Instant endTime,
+                                 UUID courtId, double reservationCost) {
         this.clientId = clientId;
-        this.endTime = endTime;
-        this.reservationId = reservationId;
         this.beginTime = beginTime;
+        this.reservationId = reservationId;
+        this.endTime = endTime;
         this.courtId = courtId;
         this.reservationCost = reservationCost;
     }
 
-    public static ReservationDTO toDTO(Reservation reservation) {
-        return new ReservationDTO(
+    public static ReservationClientsDTO toDTO(Reservation reservation) {
+        return new ReservationClientsDTO(
                 reservation.getClient().getClientId(),
-                reservation.getEndTime(),
+                reservation.getBeginTime().atZone(ZoneId.systemDefault()).toInstant(),
                 reservation.getId(),
-                reservation.getBeginTime(),
+                reservation.getEndTime() != null ? reservation.getEndTime().atZone(ZoneId.systemDefault()).toInstant() : null,
                 reservation.getCourt().getCourtId(),
                 reservation.getReservationCost());
     }
 
-    public static Reservation fromDTO(ReservationDTO reservationDto, Client client, Court court) {
-        Reservation reservation = new Reservation(client, court, reservationDto.getBeginTime());
+    public static Reservation fromDTO(ReservationClientsDTO reservationDto, Client client, Court court) {
+        Reservation reservation = new Reservation(client, court, LocalDateTime.ofInstant(reservationDto.getBeginTime(), ZoneId.systemDefault()));
 
         if (reservationDto.getEndTime() != null) {
-            reservation.endReservation(reservationDto.getEndTime());
+            reservation.endReservation(LocalDateTime.ofInstant(reservationDto.getEndTime(), ZoneId.systemDefault()));
         }
         return reservation;
     }

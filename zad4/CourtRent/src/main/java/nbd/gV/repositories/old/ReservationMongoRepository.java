@@ -1,57 +1,3 @@
-//package nbd.gV.repositories;
-//
-//import com.mongodb.MongoCommandException;
-//import com.mongodb.MongoWriteException;
-//import com.mongodb.client.ClientSession;
-//import com.mongodb.client.MongoCollection;
-//import com.mongodb.client.model.CreateCollectionOptions;
-//import com.mongodb.client.model.Filters;
-//import com.mongodb.client.model.Updates;
-//import com.mongodb.client.model.ValidationOptions;
-//import com.mongodb.client.result.InsertOneResult;
-//import nbd.gV.clients.Client;
-//import nbd.gV.courts.Court;
-//import nbd.gV.exceptions.ClientException;
-//import nbd.gV.exceptions.CourtException;
-//import nbd.gV.exceptions.MyMongoException;
-//import nbd.gV.exceptions.ReservationException;
-//import nbd.gV.mappers.ClientMapper;
-//import nbd.gV.mappers.CourtMapper;
-//import nbd.gV.mappers.ReservationMapper;
-//import nbd.gV.reservations.Reservation;
-//import org.bson.Document;
-//
-//import java.time.LocalDateTime;
-//import java.util.ArrayList;
-//import java.util.UUID;
-//
-//public class ReservationMongoRepository extends AbstractMongoRepository<ReservationMapper> {
-//
-//
-//
-//    public ReservationMongoRepository() {
-//        boolean collectionExists = getDatabase().listCollectionNames().into(new ArrayList<>()).contains("reservations");
-//        if (!collectionExists) {
-//            ValidationOptions validationOptions = new ValidationOptions().validator(
-//                    Document.parse("""
-//                            {
-//                                "$jsonSchema": {
-//                                    "bsonType": "object",
-//                                    "required": [
-//                                        "clientid",
-//                                        "courtid",
-//                                        "begintime"
-//                                    ],
-//                                }
-//                            }
-//                            """));
-//            CreateCollectionOptions createCollectionOptions = new CreateCollectionOptions()
-//                    .validationOptions(validationOptions);
-//            getDatabase().createCollection("reservations", createCollectionOptions);
-//        }
-//    }
-//
-//    //Checking database consistency
 //    @Override
 //    public boolean create(ReservationMapper reservationMapper) {
 //        try {
@@ -162,14 +108,3 @@
 //            clientSession.close();
 //        }
 //    }
-//
-//    @Override
-//    protected MongoCollection<ReservationMapper> getCollection() {
-//        return getDatabase().getCollection(getCollectionName(), ReservationMapper.class);
-//    }
-//
-//    @Override
-//    public String getCollectionName() {
-//        return "reservations";
-//    }
-//}

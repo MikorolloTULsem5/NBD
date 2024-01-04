@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Getter
 public class Reservation {
-    private UUID id;
+    private final UUID id;
 
     private final Client client;
     private final Court court;
@@ -34,14 +34,6 @@ public class Reservation {
         this.court = court;
         this.beginTime = (beginTime == null) ? LocalDateTime.now() : beginTime;
     }
-
-//    public Reservation(UUID id, Client client, Court court, LocalDateTime beginTime) {
-//        this(client, court, beginTime);
-//        if (id == null) {
-//            throw new MainException("UUID nie moze byc null'em!");
-//        }
-//        this.id = id;
-//    }
 
     public int getReservationHours() {
         int hours = 0;
