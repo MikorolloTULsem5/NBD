@@ -25,24 +25,22 @@ public class ReservationTest {
     Client testClient;
     ClientType testClientType;
     Court testCourt;
-    UUID testUUID;
 
     @BeforeEach
     void setUp() {
         testClientType = new Normal();
         testClient = new Client("John", "Smith", "123456789", testClientType.getClientTypeName());
         testCourt = new Court(1, 100, 1);
-        testUUID = UUID.randomUUID();
     }
 
     @Test
     void testCreatingReservation() {
         LocalDateTime now = LocalDateTime.of(2023, Month.JUNE, 3, 22, 15);
         assertNotNull(now);
-        Reservation reservation = new Reservation(testUUID, testClient, testCourt, now);
+        Reservation reservation = new Reservation(testClient, testCourt, now);
         assertNotNull(reservation);
 
-        assertEquals(testUUID, reservation.getId());
+        assertNotNull(reservation.getId());
         assertEquals(testClient, reservation.getClient());
         assertEquals(testCourt, reservation.getCourt());
         assertEquals(now, reservation.getBeginTime());
@@ -51,12 +49,12 @@ public class ReservationTest {
 
     @Test
     void testCreatingReservationWithNullDate() {
-        Reservation reservation = new Reservation(testUUID, testClient, testCourt, null);
+        Reservation reservation = new Reservation(testClient, testCourt, null);
         assertNotNull(reservation);
         LocalDateTime now = LocalDateTime.now();
         assertNotNull(now);
 
-        assertEquals(testUUID, reservation.getId());
+        assertNotNull(reservation.getId());
         assertEquals(testClient, reservation.getClient());
         assertEquals(testCourt, reservation.getCourt());
         assertEquals(0, Duration.between(reservation.getBeginTime(), now).getSeconds());
@@ -66,16 +64,15 @@ public class ReservationTest {
 
     @Test
     void testConstructorException() {
-        assertThrows(MainException.class, () -> new Reservation(null, testClient, testCourt, null));
-        assertThrows(MainException.class, () -> new Reservation(testUUID, null, testCourt, null));
-        assertThrows(MainException.class, () -> new Reservation(testUUID, testClient, null, null));
+        assertThrows(MainException.class, () -> new Reservation(null, testCourt, null));
+        assertThrows(MainException.class, () -> new Reservation(testClient, null, null));
     }
 
     @Test
     void testEndingReservation() {
         LocalDateTime now = LocalDateTime.of(2023, Month.JUNE, 3, 22, 15);
         LocalDateTime then = LocalDateTime.of(2023, Month.JUNE, 3, 20, 7);
-        Reservation reservation = new Reservation(testUUID, testClient, testCourt, then);
+        Reservation reservation = new Reservation(testClient, testCourt, then);
         assertNotNull(reservation);
 
         assertEquals(0, reservation.getReservationHours());
@@ -96,7 +93,7 @@ public class ReservationTest {
     @Test
     void testEndingReservationWithNullDate() {
         LocalDateTime then = LocalDateTime.of(2023, Month.JUNE, 3, 20, 7);
-        Reservation reservation = new Reservation(testUUID, testClient, testCourt, then);
+        Reservation reservation = new Reservation(testClient, testCourt, then);
         assertNotNull(reservation);
 
         assertNull(reservation.getEndTime());
@@ -113,7 +110,7 @@ public class ReservationTest {
 
         Court testCourt1 = new Court(1, 100, 2);
         LocalDateTime earlier = LocalDateTime.of(2023, Month.JUNE, 2, 21, 10);
-        Reservation reservation2 = new Reservation(UUID.randomUUID(), testClient, testCourt1, then);
+        Reservation reservation2 = new Reservation(testClient, testCourt1, then);
         assertNotNull(reservation2);
 
         reservation2.endReservation(earlier);
@@ -131,15 +128,15 @@ public class ReservationTest {
         Court testCourt2 = new Court(1, 100, 3);
         Court testCourt3 = new Court(1, 100, 4);
         Court testCourt4 = new Court(1, 100, 4);
-        Reservation reservation1 = new Reservation(UUID.randomUUID(), testClient, testCourt, beginTime);
+        Reservation reservation1 = new Reservation(testClient, testCourt, beginTime);
         assertNotNull(reservation1);
-        Reservation reservation2 = new Reservation(UUID.randomUUID(), testClient, testCourt1, beginTime);
+        Reservation reservation2 = new Reservation(testClient, testCourt1, beginTime);
         assertNotNull(reservation2);
-        Reservation reservation3 = new Reservation(UUID.randomUUID(), testClient, testCourt2, beginTime);
+        Reservation reservation3 = new Reservation(testClient, testCourt2, beginTime);
         assertNotNull(reservation3);
-        Reservation reservation4 = new Reservation(UUID.randomUUID(), testClient, testCourt3, beginTime);
+        Reservation reservation4 = new Reservation(testClient, testCourt3, beginTime);
         assertNotNull(reservation4);
-        Reservation reservation5 = new Reservation(UUID.randomUUID(), testClient, testCourt4, beginTime);
+        Reservation reservation5 = new Reservation(testClient, testCourt4, beginTime);
         assertNotNull(reservation5);
 
         assertEquals(0, reservation1.getReservationHours());
@@ -167,7 +164,7 @@ public class ReservationTest {
     void testExceedingReservationPermittedTime() {
         LocalDateTime now = LocalDateTime.of(2023, Month.JUNE, 3, 23, 15);
         LocalDateTime then = LocalDateTime.of(2023, Month.JUNE, 3, 19, 7);
-        Reservation reservation = new Reservation(testUUID, testClient, testCourt, then);
+        Reservation reservation = new Reservation(testClient, testCourt, then);
         assertNotNull(reservation);
 
         reservation.endReservation(now);

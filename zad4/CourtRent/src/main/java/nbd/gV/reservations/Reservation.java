@@ -1,6 +1,7 @@
 package nbd.gV.reservations;
 
 import lombok.Getter;
+
 import nbd.gV.clients.Client;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.MainException;
@@ -8,6 +9,7 @@ import nbd.gV.exceptions.ReservationException;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -33,13 +35,13 @@ public class Reservation {
         this.beginTime = (beginTime == null) ? LocalDateTime.now() : beginTime;
     }
 
-    public Reservation(UUID id, Client client, Court court, LocalDateTime beginTime) {
-        this(client, court, beginTime);
-        if (id == null) {
-            throw new MainException("UUID nie moze byc null'em!");
-        }
-        this.id = id;
-    }
+//    public Reservation(UUID id, Client client, Court court, LocalDateTime beginTime) {
+//        this(client, court, beginTime);
+//        if (id == null) {
+//            throw new MainException("UUID nie moze byc null'em!");
+//        }
+//        this.id = id;
+//    }
 
     public int getReservationHours() {
         int hours = 0;
