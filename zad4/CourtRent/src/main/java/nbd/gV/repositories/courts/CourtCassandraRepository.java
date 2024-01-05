@@ -49,7 +49,6 @@ public class CourtCassandraRepository extends AbstractCassandraRepository {
         getDao().create(court);
     }
 
-    //TODO ewentualnie dodac opcje wyszukiwania po query
     public Court read(int courtNumber) {
         return getDao().findCourt(courtNumber);
     }

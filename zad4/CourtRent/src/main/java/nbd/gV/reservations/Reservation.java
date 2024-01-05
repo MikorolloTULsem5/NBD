@@ -2,6 +2,7 @@ package nbd.gV.reservations;
 
 import lombok.Getter;
 
+import lombok.ToString;
 import nbd.gV.clients.Client;
 import nbd.gV.courts.Court;
 import nbd.gV.exceptions.MainException;
@@ -14,8 +15,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Getter
+@ToString
 public class Reservation {
-    private final UUID id;
+    private UUID id;
 
     private final Client client;
     private final Court court;
@@ -33,6 +35,11 @@ public class Reservation {
         this.client = client;
         this.court = court;
         this.beginTime = (beginTime == null) ? LocalDateTime.now() : beginTime;
+    }
+
+    public Reservation(UUID id, Client client, Court court, LocalDateTime beginTime) {
+        this(client, court, beginTime);
+        this.id = id;
     }
 
     public int getReservationHours() {

@@ -10,8 +10,10 @@ import com.datastax.oss.driver.api.mapper.annotations.StatementAttributes;
 import com.datastax.oss.driver.api.mapper.annotations.Update;
 import nbd.gV.courts.Court;
 import nbd.gV.repositories.courts.CourtProvider;
+import nbd.gV.reservations.Reservation;
 import nbd.gV.reservations.ReservationClientsDTO;
 import nbd.gV.reservations.ReservationCourtsDTO;
+import nbd.gV.reservations.ReservationDTO;
 //import nbd.gV.reservations.ReservationCourtsDTO;
 
 import java.util.UUID;
@@ -26,10 +28,28 @@ public interface ReservationDao {
     @Insert
     void createCourtReservation(ReservationCourtsDTO reservationCourtsDTO);
 
+    @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
+    @QueryProvider(providerClass = ReservationProvider.class,
+            entityHelpers = {ReservationClientsDTO.class},
+            providerMethod = "findReservationByUUID")
+    ReservationDTO findReservationByUUID(UUID reservationId);
+
+    @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
+    @Select
+    PagingIterable<ReservationClientsDTO> findAllReservationsByClients();
+
+    @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
+    @Select
+    PagingIterable<ReservationCourtsDTO> findAllReservationsByCourts();
+
 //    @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
 //    @Select
-//    Court findCourt(int courtNumber);
+//    ReservationClientsDTO findReservationByClient(UUID clientId);
 //
+//    @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
+//    @Select
+//    ReservationCourtsDTO findReservationByCourt(UUID courtId);
+
 //    @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
 //    @QueryProvider(providerClass = CourtProvider.class, entityHelpers = {Court.class},
 //            providerMethod = "findCourtByUUID")

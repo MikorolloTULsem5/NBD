@@ -12,12 +12,14 @@ import nbd.gV.exceptions.ClientException;
 import nbd.gV.exceptions.CourtException;
 import nbd.gV.exceptions.ReservationException;
 import nbd.gV.repositories.AbstractCassandraRepository;
-import nbd.gV.repositories.clients.ClientMapper;
 import nbd.gV.repositories.clients.ClientMapperBuilder;
 import nbd.gV.repositories.courts.CourtMapperBuilder;
 import nbd.gV.reservations.Reservation;
 import nbd.gV.reservations.ReservationClientsDTO;
 import nbd.gV.reservations.ReservationCourtsDTO;
+
+import java.util.List;
+import java.util.UUID;
 
 import static nbd.gV.SchemaConst.BEGIN_TIME;
 import static nbd.gV.SchemaConst.CLIENT_ID;
@@ -83,7 +85,7 @@ public class ReservationCassandraRepository extends AbstractCassandraRepository 
         if (!court.isRented() && !client.isArchive() && !court.isArchive()) {
             ///TODO dodac kurna transakcje xD
             court.setRented(true);
-            new CourtMapperBuilder(session).build().courtDao().updateCourt(court);
+            new CourtMapperBuilder(session).build().courtDao().updateCourtRented(court);
             getDao().createClientReservation(ReservationClientsDTO.toDTO(reservation));
             getDao().createCourtReservation(ReservationCourtsDTO.toDTO(reservation));
         } else if (client.isArchive()) {
@@ -93,5 +95,27 @@ public class ReservationCassandraRepository extends AbstractCassandraRepository 
         } else {
             throw new ReservationException("To boisko jest aktualnie wypozyczone!");
         }
+    }
+
+    ///TODO rozszerz
+    public Reservation read(UUID reservationId) {
+        ReservationClientsDTO reservationClientsDTO = (ReservationClientsDTO) getDao().findReservationByUUID(reservationId);
+        if (reservationClientsDTO == null) {
+            return null;
+        }
+        //Check client
+        Client client = new ClientMapperBuilder(session).build().clientDao()
+                .findClientByUUID(reservationClientsDTO.getClientId());
+
+        //Check court
+        Court court = new CourtMapperBuilder(session).build().courtDao()
+                .findCourtByUUID(reservationClientsDTO.getCourtId());
+
+         Reservation readReservation = ReservationClientsDTO.fromDTO(reservationClientsDTO, client, court);
+         return readReservation;
+    }
+
+    public List<Reservation> readAll() {
+        Reservation
     }
 }

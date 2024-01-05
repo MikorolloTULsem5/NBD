@@ -5,7 +5,6 @@ import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
 import nbd.gV.SchemaConst;
 import nbd.gV.clients.Client;
-import nbd.gV.clients.clienttype.Normal;
 import nbd.gV.courts.Court;
 
 import nbd.gV.exceptions.ClientException;
@@ -15,6 +14,7 @@ import nbd.gV.repositories.clients.ClientCassandraRepository;
 import nbd.gV.repositories.courts.CourtCassandraRepository;
 import nbd.gV.repositories.reservations.ReservationCassandraRepository;
 
+import nbd.gV.repositories.reservations.ReservationMapper;
 import nbd.gV.reservations.Reservation;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -25,6 +25,7 @@ import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import static nbd.gV.SchemaConst.RESERVATIONS_BY_CLIENT_TABLE;
 import static nbd.gV.SchemaConst.RESERVATIONS_BY_COURT_TABLE;
@@ -163,78 +164,38 @@ public class ReservationCassandraRepositoryTest {
                 new Reservation(testClient2, testCourt4, testTimeStart)));
     }
 
-//    @Test
-//    void testFindingDocumentRecordsInDBPositive() {
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//        ReservationMapper reservationMapper1 = ReservationMapper.toMongoReservation(new Reservation(testClient1,
-//                testCourt1, LocalDateTime.of(2000, Month.JUNE, 13, 14, 5)));
-//        assertTrue(reservationRepository.create(reservationMapper1));
-//        ReservationMapper reservationMapper2 = ReservationMapper.toMongoReservation(new Reservation(testClient2,
-//                testCourt2, testTimeStart));
-//        assertTrue(reservationRepository.create(reservationMapper2));
-//        ReservationMapper reservationMapper3 = ReservationMapper.toMongoReservation(new Reservation(testClient3,
-//                testCourt3, testTimeStart));
-//        assertTrue(reservationRepository.create(reservationMapper3));
-//        assertEquals(3, getTestCollection().find().into(new ArrayList<>()).size());
-//
-//        var reservationsList1 = reservationRepository.read(Filters.eq("clientid",
-//                testClient1.getClientId().toString()));
-//        assertEquals(1, reservationsList1.size());
-//        assertEquals(reservationMapper1, reservationsList1.get(0));
-//
-//        var reservationsList2 = reservationRepository.read(Filters.eq("begintime",
-//                testTimeStart));
-//        assertEquals(reservationMapper2, reservationsList2.get(0));
-//        assertEquals(reservationMapper3, reservationsList2.get(1));
-//    }
-//
-//    @Test
-//    void testFindingDocumentRecordsInDBNegative() {
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//        ReservationMapper reservationMapper1 = ReservationMapper.toMongoReservation(new Reservation(testClient1,
-//                testCourt1, testTimeStart));
-//        assertTrue(reservationRepository.create(reservationMapper1));
-//        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
-//
-//        var reservationsList1 = reservationRepository.read(Filters.eq("clientid",
-//                testClient2.getClientId().toString()));
-//        assertEquals(0, reservationsList1.size());
-//    }
-//
-//    @Test
-//    void testFindingDocumentByUUIDPositive() {
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//        ReservationMapper reservationMapper2 = ReservationMapper.toMongoReservation(new Reservation(testClient2,
-//                testCourt2, testTimeStart));
-//        assertTrue(reservationRepository.create(reservationMapper2));
-//        ReservationMapper reservationMapper3 = ReservationMapper.toMongoReservation(new Reservation(testClient3,
-//                testCourt3, testTimeStart));
-//        assertTrue(reservationRepository.create(reservationMapper3));
-//        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
-//
-//        var reservation1 = reservationRepository.readByUUID(
-//                UUID.fromString(reservationMapper2.getId()));
-//        assertNotNull(reservation1);
-//        assertEquals(reservationMapper2, reservation1);
-//
-//        var reservation2 = reservationRepository.readByUUID(
-//                UUID.fromString(reservationMapper3.getId()));
-//        assertNotNull(reservation2);
-//        assertEquals(reservationMapper3, reservation2);
-//    }
-//
-//    @Test
-//    void testFindingByUUIDNegative() {
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//        ReservationMapper reservationMapper1 = ReservationMapper.toMongoReservation(new Reservation(testClient1,
-//                testCourt1, testTimeStart));
-//        assertTrue(reservationRepository.create(reservationMapper1));
-//        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
-//
-//        assertNull(reservationRepository.readByUUID(UUID.randomUUID()));
-//        assertThrows(NullPointerException.class, () -> reservationRepository.readByUUID(null));
-//    }
-//
+    @Test
+    void testFindingDocumentRecordsInDBPositive() {
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+        Reservation reservation = new Reservation(testClient1,
+                testCourt1, LocalDateTime.of(2000, Month.JUNE, 13, 14, 5));
+        reservationRepository.create(reservation);
+        Reservation reservation2 = new Reservation(testClient2,
+                testCourt2, testTimeStart);
+        reservationRepository.create(reservation2);
+        reservationRepository.create(new Reservation(testClient3,
+                testCourt3, testTimeStart));
+        assertEquals(3, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(3, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+
+        assertEquals(reservation, reservationRepository.read(reservation.getId()));
+        assertEquals(reservation2, reservationRepository.read(reservation2.getId()));
+
+    }
+
+    @Test
+    void testFindingDocumentRecordsInDBNegative() {
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+        Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
+        reservationRepository.create(reservation);
+        assertEquals(1, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(1, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+
+        assertNull(reservationRepository.read(UUID.randomUUID()));
+    }
+
 //    @Test
 //    void testFindingAllDocuments() {
 //        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());

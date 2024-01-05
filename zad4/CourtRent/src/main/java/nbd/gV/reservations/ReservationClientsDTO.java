@@ -21,7 +21,7 @@ import java.util.UUID;
 @Entity(defaultKeyspace = SchemaConst.RESERVE_A_COURT_NAMESPACE)
 @CqlName(SchemaConst.RESERVATIONS_BY_CLIENT_TABLE)
 @PropertyStrategy(mutable = false)
-public class ReservationClientsDTO {
+public class ReservationClientsDTO implements ReservationDTO {
     @PartitionKey
     private final UUID clientId;
     @ClusteringColumn
@@ -54,7 +54,7 @@ public class ReservationClientsDTO {
     }
 
     public static Reservation fromDTO(ReservationClientsDTO reservationDto, Client client, Court court) {
-        Reservation reservation = new Reservation(client, court, LocalDateTime.ofInstant(reservationDto.getBeginTime(), ZoneId.systemDefault()));
+        Reservation reservation = new Reservation(reservationDto.getReservationId(), client, court, LocalDateTime.ofInstant(reservationDto.getBeginTime(), ZoneId.systemDefault()));
 
         if (reservationDto.getEndTime() != null) {
             reservation.endReservation(LocalDateTime.ofInstant(reservationDto.getEndTime(), ZoneId.systemDefault()));
