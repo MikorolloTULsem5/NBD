@@ -255,28 +255,30 @@ public class ReservationCassandraRepositoryTest {
         assertEquals(2, reservationsListByCourts.size());
     }
 
-//    @Test
-//    void testDeletingDocumentsInDB() {
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//        var reservationMapper1 =
-//                ReservationMapper.toMongoReservation(new Reservation(testClient1, testCourt1, testTimeStart));
-//        reservationRepository.create(reservationMapper1);
-//        var reservationMapper2 =
-//                ReservationMapper.toMongoReservation(new Reservation(testClient2, testCourt2, testTimeStart));
-//        reservationRepository.create(reservationMapper2);
-//        assertEquals(2, getTestCollection().find().into(new ArrayList<>()).size());
-//
-//        reservationRepository.delete(UUID.fromString(reservationMapper2.getId()));
-//        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
-//
-//        reservationRepository.delete(UUID.fromString(reservationMapper1.getId()));
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//
-//        assertThrows(NullPointerException.class, () -> reservationRepository.delete(null));
-//        assertFalse(reservationRepository.delete(UUID.randomUUID()));
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//    }
-//
+    @Test
+    void testDeletingDocumentsInDB() {
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+        Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
+        reservationRepository.create(reservation);
+        Reservation reservation2 = new Reservation(testClient2, testCourt2, testTimeStart);
+        reservationRepository.create(reservation2);
+        assertEquals(2, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(2, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+
+        reservationRepository.delete(reservation2);
+        assertEquals(1, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(1, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+
+        reservationRepository.delete(reservation);
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+
+        reservationRepository.delete(null);
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+    }
+
 //    @Test
 //    void testClassicUpdatingDocumentsInDBPositive() {
 //        Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);

@@ -161,4 +161,13 @@ public class ReservationCassandraRepository extends AbstractCassandraRepository 
     public List<Reservation> readAllByCourts() {
         return readAllByCourts(null);
     }
+
+    public void delete(Reservation reservation) {
+        if (reservation == null) {
+            return;
+        }
+
+        getDao().deleteReservation(ReservationClientsDTO.toDTO(reservation));
+        getDao().deleteReservation(ReservationCourtsDTO.toDTO(reservation));
+    }
 }
