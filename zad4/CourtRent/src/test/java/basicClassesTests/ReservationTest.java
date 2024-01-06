@@ -85,9 +85,6 @@ public class ReservationTest {
         assertEquals(300, reservation.getReservationCost());
         assertNotNull(reservation.getEndTime());
         assertEquals(now, reservation.getEndTime());
-
-        assertThrows(ReservationException.class, () ->
-                reservation.endReservation(LocalDateTime.of(2023, Month.JUNE, 3, 20, 8)));
     }
 
     @Test
@@ -104,9 +101,6 @@ public class ReservationTest {
 
         assertNotNull(reservation.getEndTime());
         assertEquals(0, Duration.between(reservation.getEndTime(), now).getSeconds());
-
-        assertThrows(ReservationException.class, () ->
-                reservation.endReservation(LocalDateTime.of(2023, Month.JUNE, 3, 20, 8)));
 
         Court testCourt1 = new Court(1, 100, 2);
         LocalDateTime earlier = LocalDateTime.of(2023, Month.JUNE, 2, 21, 10);

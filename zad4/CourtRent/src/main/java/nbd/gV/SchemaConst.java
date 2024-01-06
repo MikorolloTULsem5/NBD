@@ -34,4 +34,5 @@ public class SchemaConst {
     public final static String BEGIN_TIME = "begin_time";
     public final static String END_TIME = "end_time";
     public final static String RESERVATION_COST = "reservation_cost";
+    public final static String NOT_ENDED = "not_ended";
 }

@@ -32,15 +32,17 @@ public class ReservationClientsDTO implements ReservationDTO {
     private final Instant endTime;
     private final UUID courtId;
     private final double reservationCost;
+    private final boolean notEnded;
 
     public ReservationClientsDTO(UUID clientId, Instant beginTime, UUID reservationId, Instant endTime,
-                                 UUID courtId, double reservationCost) {
+                                 UUID courtId, double reservationCost, boolean notEnded) {
         this.clientId = clientId;
         this.beginTime = beginTime;
         this.reservationId = reservationId;
         this.endTime = endTime;
         this.courtId = courtId;
         this.reservationCost = reservationCost;
+        this.notEnded = notEnded;
     }
 
     public static ReservationClientsDTO toDTO(Reservation reservation) {
@@ -50,7 +52,8 @@ public class ReservationClientsDTO implements ReservationDTO {
                 reservation.getId(),
                 reservation.getEndTime() != null ? reservation.getEndTime().atZone(ZoneId.systemDefault()).toInstant() : null,
                 reservation.getCourt().getCourtId(),
-                reservation.getReservationCost());
+                reservation.getReservationCost(),
+                reservation.getEndTime() == null);
     }
 
     public static Reservation fromDTO(ReservationClientsDTO reservationDto, Client client, Court court) {

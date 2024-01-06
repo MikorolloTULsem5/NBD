@@ -26,6 +26,7 @@ import static nbd.gV.SchemaConst.BEGIN_TIME;
 import static nbd.gV.SchemaConst.CLIENT_ID;
 import static nbd.gV.SchemaConst.COURT_ID;
 import static nbd.gV.SchemaConst.END_TIME;
+import static nbd.gV.SchemaConst.NOT_ENDED;
 import static nbd.gV.SchemaConst.RESERVATIONS_BY_CLIENT_TABLE;
 import static nbd.gV.SchemaConst.RESERVATIONS_BY_COURT_TABLE;
 import static nbd.gV.SchemaConst.RESERVATION_COST;
@@ -44,6 +45,7 @@ public class ReservationCassandraRepository extends AbstractCassandraRepository 
                 .withColumn(CqlIdentifier.fromCql(END_TIME), DataTypes.TIMESTAMP)
                 .withColumn(CqlIdentifier.fromCql(COURT_ID), DataTypes.UUID)
                 .withColumn(CqlIdentifier.fromCql(RESERVATION_COST), DataTypes.DOUBLE)
+                .withColumn(CqlIdentifier.fromCql(NOT_ENDED), DataTypes.BOOLEAN)
                 .withClusteringOrder(CqlIdentifier.fromCql(BEGIN_TIME), ClusteringOrder.ASC)
                 .build();
         session.execute(createReservationsByClient);
@@ -56,6 +58,7 @@ public class ReservationCassandraRepository extends AbstractCassandraRepository 
                 .withColumn(CqlIdentifier.fromCql(END_TIME), DataTypes.TIMESTAMP)
                 .withColumn(CqlIdentifier.fromCql(CLIENT_ID), DataTypes.UUID)
                 .withColumn(CqlIdentifier.fromCql(RESERVATION_COST), DataTypes.DOUBLE)
+                .withColumn(CqlIdentifier.fromCql(NOT_ENDED), DataTypes.BOOLEAN)
                 .withClusteringOrder(CqlIdentifier.fromCql(BEGIN_TIME), ClusteringOrder.ASC)
                 .build();
         session.execute(createReservationsByCourt);
