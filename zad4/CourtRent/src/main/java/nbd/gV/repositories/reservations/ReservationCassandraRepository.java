@@ -162,6 +162,25 @@ public class ReservationCassandraRepository extends AbstractCassandraRepository 
         return readAllByCourts(null);
     }
 
+    //Method for updating only endTime and reservationCost
+    public void update(Reservation reservation) {
+        if (reservation == null || reservation.getEndTime() == null) {
+            return;
+        }
+
+        //Find court
+        Court court = new CourtMapperBuilder(session).build().courtDao()
+                .findCourtByUUID(reservation.getCourt().getCourtId());
+        if (court == null) {
+            throw new ReservationException("Brak podanego boiska w bazie!");
+        }
+
+        ///TODO ???
+        court.setRented(false);
+        new CourtMapperBuilder(session).build().courtDao().updateCourtRented(court);
+        getDao().updateReservation(reservation);
+    }
+
     public void delete(Reservation reservation) {
         if (reservation == null) {
             return;

@@ -75,8 +75,6 @@ public class Reservation {
                         (client.getClientMaxHours() + (getReservationHours() - client.getClientMaxHours()) * 1.5) -
                         client.applyDiscount(client.getClientMaxHours() * court.getBaseCost());
             }
-        } else {
-            throw new ReservationException("Ta rezerwacja juz sie zakonczyla i nie mozna zmienic jej daty!");
         }
     }
 

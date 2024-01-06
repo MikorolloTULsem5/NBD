@@ -9,7 +9,9 @@ import com.datastax.oss.driver.api.mapper.annotations.QueryProvider;
 import com.datastax.oss.driver.api.mapper.annotations.Select;
 import com.datastax.oss.driver.api.mapper.annotations.StatementAttributes;
 
+import com.datastax.oss.driver.api.mapper.annotations.Update;
 import nbd.gV.courts.Court;
+import nbd.gV.reservations.Reservation;
 import nbd.gV.reservations.ReservationClientsDTO;
 import nbd.gV.reservations.ReservationCourtsDTO;
 import nbd.gV.reservations.ReservationDTO;
@@ -52,10 +54,12 @@ public interface ReservationDao {
             providerMethod = "findAllReservationsByCourtsFilter")
     PagingIterable<ReservationCourtsDTO> findAllReservationsByCourtsFilter(SimpleStatement statement);
 
-//    @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
-//    @Update
-//    void updateReservation(Reserv user);
-//
+    @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
+    @QueryProvider(providerClass = ReservationProvider.class,
+            entityHelpers = {ReservationClientsDTO.class, ReservationCourtsDTO.class},
+            providerMethod = "updateReservation")
+    void updateReservation(Reservation reservation);
+
     @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
     @Delete
     void deleteReservation(ReservationClientsDTO reservationClientsDTO);

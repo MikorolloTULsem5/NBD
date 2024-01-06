@@ -16,7 +16,6 @@ import nbd.gV.repositories.clients.ClientCassandraRepository;
 import nbd.gV.repositories.courts.CourtCassandraRepository;
 import nbd.gV.repositories.reservations.ReservationCassandraRepository;
 
-import nbd.gV.repositories.reservations.ReservationMapper;
 import nbd.gV.reservations.Reservation;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,19 +23,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.InetSocketAddress;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.UUID;
 
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
 import static nbd.gV.SchemaConst.BEGIN_TIME;
 import static nbd.gV.SchemaConst.RESERVATIONS_BY_CLIENT_TABLE;
 import static nbd.gV.SchemaConst.RESERVATIONS_BY_COURT_TABLE;
-import static nbd.gV.SchemaConst.RESERVATION_ID;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ReservationCassandraRepositoryTest {
@@ -279,60 +274,55 @@ public class ReservationCassandraRepositoryTest {
         assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
     }
 
-//    @Test
-//    void testClassicUpdatingDocumentsInDBPositive() {
-//        Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
-//        assertNotNull(reservation);
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//        reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
-//        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
-//
-//        assertEquals(testClient1.getClientId().toString(),
-//                reservationRepository.readByUUID(reservation.getId()).getClientId());
-//        assertTrue(reservationRepository.update(reservation.getId(), "clientid",
-//                testClient2.getClientId().toString()));
-//        assertEquals(testClient2.getClientId().toString(),
-//                reservationRepository.readByUUID(reservation.getId()).getClientId());
-//    }
-//
-//    @Test
-//    void testClassicUpdatingDocumentsInDBNegative() {
-//        Reservation reservation = new Reservation(testClient2, testCourt2, testTimeStart);
-//        assertNotNull(reservation);
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//        reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
-//        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
-//
-//        assertThrows(MyMongoException.class, () -> reservationRepository.update(reservation.getId(),
-//                "_id", UUID.randomUUID().toString()));
-//        assertFalse(reservationRepository.update(UUID.randomUUID(), "clientid",
-//                testClient2.getClientId().toString()));
-//    }
-//
-//    @Test
-//    void testEndUpdatingDocumentsInDBPositive() {
-//        Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
-//        assertNotNull(reservation);
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//        reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
-//        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
-//
-//        assertNull(reservationRepository.readByUUID(reservation.getId()).getEndTime());
-//        assertEquals(0, reservationRepository.readByUUID(reservation.getId()).getReservationCost());
-//        reservationRepository.update(testCourt1, testTimeEnd);
-//        assertEquals(testTimeEnd, reservationRepository.readByUUID(reservation.getId()).getEndTime());
-//        assertEquals(300, reservationRepository.readByUUID(reservation.getId()).getReservationCost());
-//    }
-//
-//    @Test
-//    void testEndUpdatingDocumentsInDBNegative() {
-//        Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
-//        assertNotNull(reservation);
-//        assertEquals(0, getTestCollection().find().into(new ArrayList<>()).size());
-//        reservationRepository.create(ReservationMapper.toMongoReservation(reservation));
-//        assertEquals(1, getTestCollection().find().into(new ArrayList<>()).size());
-//
-//        reservationRepository.update(testCourt1, testTimeEnd);
-//        assertThrows(ReservationException.class, () -> reservationRepository.update(testCourt1, testTimeEnd));
-//    }
+    @Test
+    void testEndUpdatingDocumentsInDBPositive() {
+        Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
+        assertNotNull(reservation);
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+        reservationRepository.create(reservation);
+        assertEquals(1, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(1, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+
+        Reservation readReservation = reservationRepository.read(reservation.getId());
+        assertNull(readReservation.getEndTime());
+        assertEquals(0, readReservation.getReservationCost());
+
+        reservation.endReservation(testTimeEnd);
+        reservationRepository.update(reservation);
+
+        readReservation = reservationRepository.read(reservation.getId());
+        assertEquals(testTimeEnd, readReservation.getEndTime());
+        assertEquals(300, readReservation.getReservationCost());
+    }
+
+    @Test
+    void testEndUpdatingDocumentsInDBNegative() {
+        Reservation reservation = new Reservation(testClient1, testCourt1, testTimeStart);
+        assertNotNull(reservation);
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(0, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+        reservationRepository.create(reservation);
+        assertEquals(1, session.execute("SELECT * FROM " + RESERVATIONS_BY_CLIENT_TABLE).all().size());
+        assertEquals(1, session.execute("SELECT * FROM " + RESERVATIONS_BY_COURT_TABLE).all().size());
+
+        Reservation readReservation = reservationRepository.read(reservation.getId());
+        assertNull(readReservation.getEndTime());
+        assertEquals(0, readReservation.getReservationCost());
+
+        reservation.endReservation(testTimeEnd);
+        reservationRepository.update(reservation);
+
+        readReservation = reservationRepository.read(reservation.getId());
+        assertEquals(testTimeEnd, readReservation.getEndTime());
+        assertEquals(300, readReservation.getReservationCost());
+
+
+        reservation.endReservation(testTimeEnd.plusHours(3));
+        reservationRepository.update(reservation);
+
+        readReservation = reservationRepository.read(reservation.getId());
+        assertEquals(testTimeEnd, readReservation.getEndTime());
+        assertEquals(300, readReservation.getReservationCost());
+    }
 }
