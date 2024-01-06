@@ -115,7 +115,7 @@ public class ReservationCassandraRepository extends AbstractCassandraRepository 
          return readReservation;
     }
 
-    public List<Reservation> readAll() {
-        Reservation
-    }
+//    public List<Reservation> readAll() {
+//        Reservation
+//    }
 }
