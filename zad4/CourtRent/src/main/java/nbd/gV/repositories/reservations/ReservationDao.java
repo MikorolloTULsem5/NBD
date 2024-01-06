@@ -1,6 +1,7 @@
 package nbd.gV.repositories.reservations;
 
 import com.datastax.oss.driver.api.core.PagingIterable;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import com.datastax.oss.driver.api.mapper.annotations.Dao;
 import com.datastax.oss.driver.api.mapper.annotations.Delete;
 import com.datastax.oss.driver.api.mapper.annotations.Insert;
@@ -14,8 +15,8 @@ import nbd.gV.reservations.Reservation;
 import nbd.gV.reservations.ReservationClientsDTO;
 import nbd.gV.reservations.ReservationCourtsDTO;
 import nbd.gV.reservations.ReservationDTO;
-//import nbd.gV.reservations.ReservationCourtsDTO;
 
+import java.sql.Statement;
 import java.util.UUID;
 
 @Dao
@@ -30,7 +31,7 @@ public interface ReservationDao {
 
     @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
     @QueryProvider(providerClass = ReservationProvider.class,
-            entityHelpers = {ReservationClientsDTO.class},
+            entityHelpers = {ReservationClientsDTO.class, ReservationCourtsDTO.class},
             providerMethod = "findReservationByUUID")
     ReservationDTO findReservationByUUID(UUID reservationId);
 
@@ -39,8 +40,20 @@ public interface ReservationDao {
     PagingIterable<ReservationClientsDTO> findAllReservationsByClients();
 
     @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
+    @QueryProvider(providerClass = ReservationProvider.class,
+            entityHelpers = {ReservationClientsDTO.class, ReservationCourtsDTO.class},
+            providerMethod = "findAllReservationsByClientsFilter")
+    PagingIterable<ReservationClientsDTO> findAllReservationsByClientsFilter(SimpleStatement statement);
+
+    @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
     @Select
     PagingIterable<ReservationCourtsDTO> findAllReservationsByCourts();
+
+    @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
+    @QueryProvider(providerClass = ReservationProvider.class,
+            entityHelpers = {ReservationClientsDTO.class, ReservationCourtsDTO.class},
+            providerMethod = "findAllReservationsByCourtsFilter")
+    PagingIterable<ReservationCourtsDTO> findAllReservationsByCourtsFilter(SimpleStatement statement);
 
 //    @StatementAttributes(consistencyLevel = "QUORUM", pageSize = 100)
 //    @Select

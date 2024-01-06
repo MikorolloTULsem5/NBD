@@ -53,7 +53,7 @@ public class ReservationCourtsDTO implements ReservationDTO {
                 reservation.getReservationCost());
     }
 
-    public static Reservation fromDTO(ReservationClientsDTO reservationDto, Client client, Court court) {
+    public static Reservation fromDTO(ReservationCourtsDTO reservationDto, Client client, Court court) {
         Reservation reservation = new Reservation(reservationDto.getReservationId(), client, court, LocalDateTime.ofInstant(reservationDto.getBeginTime(), ZoneId.systemDefault()));
 
         if (reservationDto.getEndTime() != null) {
