@@ -48,7 +48,6 @@ public class ClientCassandraRepository extends AbstractCassandraRepository {
         getDao().create(client);
     }
 
-    //TODO ewentualnie dodac opcje wyszukiwania po query
     public Client read(String personalId) {
         return getDao().findClient(personalId);
     }

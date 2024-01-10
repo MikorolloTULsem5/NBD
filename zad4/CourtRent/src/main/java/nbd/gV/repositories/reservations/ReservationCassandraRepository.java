@@ -87,7 +87,6 @@ public class ReservationCassandraRepository extends AbstractCassandraRepository 
         }
 
         if (!court.isRented() && !client.isArchive() && !court.isArchive()) {
-            ///TODO dodac kurna transakcje xD
             court.setRented(true);
             new CourtMapperBuilder(session).build().courtDao().updateCourtRented(court);
             getDao().createClientReservation(ReservationClientsDTO.toDTO(reservation));
@@ -178,7 +177,6 @@ public class ReservationCassandraRepository extends AbstractCassandraRepository 
             throw new ReservationException("Brak podanego boiska w bazie!");
         }
 
-        ///TODO ???
         court.setRented(false);
         new CourtMapperBuilder(session).build().courtDao().updateCourtRented(court);
         getDao().updateReservation(reservation);
