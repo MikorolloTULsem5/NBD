@@ -94,7 +94,6 @@ public class ReservationManager {
         return reservationRepository.readAllByCourts(statement).get(0);
     }
 
-    ///TODO test
     public List<Reservation> getCourtEndedReservations(Court court) {
         if (court == null) {
             throw new MainException("Nie istniejace boisko nie moze posiadac rezerwacji!");

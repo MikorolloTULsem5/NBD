@@ -180,6 +180,21 @@ public class ReservationManagerTest {
 
     @Test
     void testGetAllClientReservations() {
+        rm.makeReservation(testClient1,testCourt1,testTimeStart);
+        rm.makeReservation(testClient1, testCourt2, testTimeStart);
+        rm.makeReservation(testClient3, testCourt3, testTimeStart);
 
+        assertEquals(2, rm.getAllClientReservations(testClient1).size());
+    }
+
+    @Test
+    void testGetCourtEndedReservations() {
+        rm.makeReservation(testClient1,testCourt1,testTimeStart);
+        rm.returnCourt(testCourt1);
+        rm.makeReservation(testClient2, testCourt1, testTimeStart);
+        rm.returnCourt(testCourt1);
+        rm.makeReservation(testClient3, testCourt1, testTimeStart);
+
+        assertEquals(2, rm.getCourtEndedReservations(testCourt1).size());
     }
 }
