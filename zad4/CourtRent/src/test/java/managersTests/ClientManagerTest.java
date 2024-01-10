@@ -23,6 +23,8 @@ public class ClientManagerTest {
     static final ClientCassandraRepository clientRepository = new ClientCassandraRepository();
     final String testClientType = "normal";
 
+    static final ClientManager cm = new ClientManager();
+
     @BeforeAll
     @AfterAll
     static void cleanDatabaseFirstAndLastTime() {
@@ -36,17 +38,12 @@ public class ClientManagerTest {
 
     @Test
     void testCreatingClientManager() {
-        ClientManager clientManager = new ClientManager();
-        assertNotNull(clientManager);
-        assertEquals(0, clientManager.getAllClients().size());
+        assertNotNull(cm);
+        assertEquals(0, cm.getAllClients().size());
     }
 
     @Test
     void testRegisteringNewCourt() {
-        ClientManager cm = new ClientManager();
-        assertNotNull(cm);
-        assertEquals(0, cm.getAllClients().size());
-
         Client newClient =
                 cm.registerClient("Adam", "Smith", "12345678901", testClientType);
         assertNotNull(newClient);
@@ -65,9 +62,6 @@ public class ClientManagerTest {
 
     @Test
     void testGettingClient() {
-        ClientManager cm = new ClientManager();
-        assertNotNull(cm);
-
         Client testClient1 =
                 cm.registerClient("Adam", "Smith", "12345678901", testClientType);
         assertNotNull(testClient1);
@@ -85,9 +79,6 @@ public class ClientManagerTest {
 
     @Test
     void testUnregisteringClient() {
-        ClientManager cm = new ClientManager();
-        assertNotNull(cm);
-
         Client testClient1 =
                 cm.registerClient("Adam", "Smith", "12345678901", testClientType);
         assertNotNull(testClient1);
@@ -123,9 +114,6 @@ public class ClientManagerTest {
 
     @Test
     public void testGetCourtByPersonalId() {
-        ClientManager cm = new ClientManager();
-        assertNotNull(cm);
-
         Client testClient1 =
                 cm.registerClient("Adam", "Smith", "12345678901", testClientType);
         assertNotNull(testClient1);

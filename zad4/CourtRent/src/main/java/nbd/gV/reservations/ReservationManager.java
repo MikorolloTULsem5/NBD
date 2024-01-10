@@ -29,7 +29,7 @@ public class ReservationManager {
         reservationRepository = new ReservationCassandraRepository();
     }
 
-    //    //Rezerwacji mozna dokonac tylko obiektami ktore juz znajduja sie w bazie danych
+    //Rezerwacji mozna dokonac tylko obiektami ktore juz znajduja sie w bazie danych
     public Reservation makeReservation(Client client, Court court, LocalDateTime beginTime) {
         if (client == null || court == null) {
             throw new MainException("Jeden z podanych parametrow [client/court] prowadzi do nieistniejacego obiektu!");
@@ -58,7 +58,6 @@ public class ReservationManager {
         returnCourt(court, LocalDateTime.now());
     }
 
-    //TODO test
     public List<Reservation> getAllClientReservations(Client client) {
         if (client == null) {
             throw new MainException("Nie istniejacy klient nie moze posiadac rezerwacji!");

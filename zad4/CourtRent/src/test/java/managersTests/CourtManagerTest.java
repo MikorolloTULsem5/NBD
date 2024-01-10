@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class CourtManagerTest {
 
     static CourtCassandraRepository courtRepository = new CourtCassandraRepository();
+    static final CourtManager cm = new CourtManager();
 
     @BeforeAll
     @AfterAll
@@ -34,17 +35,12 @@ public class CourtManagerTest {
 
     @Test
     void testCreatingCourtManager() {
-        CourtManager courtManager = new CourtManager();
-        assertNotNull(courtManager);
-        assertEquals(0, courtManager.getAllCourts().size());
+        assertNotNull(cm);
+        assertEquals(0, cm.getAllCourts().size());
     }
 
     @Test
     void testRegisteringNewCourt() {
-        CourtManager cm = new CourtManager();
-        assertNotNull(cm);
-        assertEquals(0, cm.getAllCourts().size());
-
         Court newCourt = cm.registerCourt(200, 200, 5);
         assertNotNull(newCourt);
         assertEquals(1, cm.getAllCourts().size());
@@ -60,9 +56,6 @@ public class CourtManagerTest {
 
     @Test
     void testGettingCourt() {
-        CourtManager cm = new CourtManager();
-        assertNotNull(cm);
-
         Court testCourt1 = cm.registerCourt(10,50,1);
         assertNotNull(testCourt1);
         assertEquals(1, cm.getAllCourts().size());
@@ -78,9 +71,6 @@ public class CourtManagerTest {
 
     @Test
     void testUnregisteringCourt() {
-        CourtManager cm = new CourtManager();
-        assertNotNull(cm);
-
         Court testCourt1 = cm.registerCourt(10,50,1);
         assertNotNull(testCourt1);
         assertEquals(1, cm.getAllCourts().size());
@@ -111,9 +101,6 @@ public class CourtManagerTest {
 
     @Test
     public void testGetByCourtNumber(){
-        CourtManager cm = new CourtManager();
-        assertNotNull(cm);
-
         Court testCourt1 = cm.registerCourt(10,50,1);
         assertNotNull(testCourt1);
         assertEquals(1, cm.getAllCourts().size());
