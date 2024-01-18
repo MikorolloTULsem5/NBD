@@ -18,24 +18,24 @@ public class ReservationMongoRepository extends AbstractMongoRepository<Reservat
         super(dbName);
         boolean collectionExists = getDatabase().listCollectionNames().into(new ArrayList<>()).contains(COLLECTION_NAME);
         if (!collectionExists) {
-//            ValidationOptions validationOptions = new ValidationOptions().validator(
-//                    Document.parse("""
-//                            {
-//                                "$jsonSchema": {
-//                                    "bsonType": "object",
-//                                    "required": [
-//                                        "clientid",
-//                                        "courtid",
-//                                        "begintime"
-//                                    ],
-//                                }
-//                            }
-//                            """));
-//            CreateCollectionOptions createCollectionOptions = new CreateCollectionOptions()
-//                    .validationOptions(validationOptions);
-//            getDatabase().createCollection(COLLECTION_NAME, createCollectionOptions);
+            ValidationOptions validationOptions = new ValidationOptions().validator(
+                    Document.parse("""
+                            {
+                                "$jsonSchema": {
+                                    "bsonType": "object",
+                                    "required": [
+                                        "clientid",
+                                        "courtid",
+                                        "begintime"
+                                    ],
+                                }
+                            }
+                            """));
+            CreateCollectionOptions createCollectionOptions = new CreateCollectionOptions()
+                    .validationOptions(validationOptions);
+            getDatabase().createCollection(COLLECTION_NAME, createCollectionOptions);
 
-            getDatabase().createCollection(COLLECTION_NAME);
+//            getDatabase().createCollection(COLLECTION_NAME);
         }
     }
 
