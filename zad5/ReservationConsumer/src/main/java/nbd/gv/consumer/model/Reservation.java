@@ -1,6 +1,8 @@
 package nbd.gv.consumer.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import org.bson.codecs.pojo.annotations.BsonCreator;
@@ -9,8 +11,8 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Getter
-@FieldDefaults(makeFinal = true)
+@Getter @Setter
+@NoArgsConstructor
 public class Reservation {
     @BsonProperty("_id")
     private String id;

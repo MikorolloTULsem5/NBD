@@ -40,6 +40,9 @@ public class ReservationProducer {
         short repFactor = 2;
 
         try (Admin admin = Admin.create(properties)) {
+            if (admin.listTopics().names().get().stream().anyMatch((s) -> s.equals(TOPIC))) {
+                return;
+            }
             NewTopic newTopic = new NewTopic(TOPIC, numOfPartitions, repFactor);
             CreateTopicsOptions options = new CreateTopicsOptions()
                     .timeoutMs(10000)
@@ -60,6 +63,9 @@ public class ReservationProducer {
         producerConfig.put(ProducerConfig.CLIENT_ID_CONFIG, "local");
         producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka1:9192,kafka2:9292,kafka3:9392");
         producerConfig.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "536bba71-4884-4bc8-b1ad-1eb3f3e54bb5");
+        if (producer != null) {
+            producer.close();
+        }
         producer = new KafkaProducer<>(producerConfig);
     }
 

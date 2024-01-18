@@ -9,10 +9,6 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
-import com.mongodb.client.result.InsertOneResult;
-import com.mongodb.client.result.UpdateResult;
-import nbd.gv.consumer.exceptions.MyMongoException;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -69,14 +65,12 @@ public abstract class AbstractMongoRepository<T> implements AutoCloseable {
 
     /*----------------------------------------------CRUD-------------------------------------------------------*/
 
-    public boolean create(T mapper) {
-        InsertOneResult result;
+    public void create(T mapper) {
         try {
-            result = this.getCollection().insertOne(mapper);
+            this.getCollection().insertOne(mapper);
         } catch (MongoWriteException e) {
-            throw new MyMongoException(e.getMessage());
+            e.getMessage();
         }
-        return result.wasAcknowledged();
     }
 
     public List<T> read(Bson filter) {

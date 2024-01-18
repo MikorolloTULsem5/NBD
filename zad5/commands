@@ -6,3 +6,9 @@ Producers:
 
 Consumers:
     kafka-console-consumer.sh --topic court_reservations --from-beginning --bootstrap-server kafka2:19292
+
+
+Groups:
+    kafka-consumer-groups.sh --bootstrap-server kafka1:19192 --describe --group reservation_client_group
+
+    {"beginTime":"2023-06-04T12:00:00","clientId":"d9538b39-54df-433f-94b0-6b9b28bdee18","courtId":"251528a8-7cb3-43cc-958d-c60dbfa611e8","id":"d22df0a7-8ed8-4af9-b653-21dc376580f3","reservationCost":0.0}

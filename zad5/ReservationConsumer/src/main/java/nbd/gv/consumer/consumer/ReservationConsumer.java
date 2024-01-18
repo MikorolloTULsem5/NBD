@@ -9,6 +9,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.UUIDDeserializer;
@@ -19,6 +20,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,19 +53,21 @@ public class ReservationConsumer {
 
     public void receiveClients(KafkaConsumer<UUID, String> consumer, ReservationMongoRepository repository) {
         try {
-            Duration timeout = Duration.of(10, ChronoUnit.MILLIS);
+            consumer.poll(0);
+            Set<TopicPartition> consumerAssigment = consumer.assignment();
+            consumer.seekToBeginning(consumerAssigment);
+            Duration timeout = Duration.of(100, ChronoUnit.MILLIS);
 
             while (true) {
                 ConsumerRecords<UUID, String> records = consumer.poll(timeout);
                 for (ConsumerRecord<UUID, String> record : records) {
                     String json = record.value().substring(record.value().indexOf("~") + 1).trim();
                     Reservation reservation = JsonbBuilder.create().fromJson(json, Reservation.class);
-
                     repository.create(reservation);
                 }
             }
         } catch (WakeupException exception) {
-            System.out.println(exception.getMessage());
+            exception.getMessage();
         }
     }
 
