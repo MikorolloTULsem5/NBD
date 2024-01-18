@@ -4,14 +4,8 @@ import nbd.gV.clients.Client;
 import nbd.gV.clients.clienttype.Normal;
 import nbd.gV.courts.Court;
 import nbd.gV.reservations.Reservation;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.KafkaException;
-import org.apache.kafka.common.errors.ProducerFencedException;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
-import java.util.concurrent.Future;
 
 public class App {
     public static void main(String[] args) {
