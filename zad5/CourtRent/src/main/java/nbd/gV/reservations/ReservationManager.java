@@ -8,6 +8,7 @@ import nbd.gV.courts.Court;
 import nbd.gV.exceptions.MyMongoException;
 import nbd.gV.exceptions.ReservationException;
 import nbd.gV.mappers.ReservationMapper;
+import nbd.gV.producer.ReservationProducer;
 import nbd.gV.repositories.ClientMongoRepository;
 import nbd.gV.repositories.CourtMongoRepository;
 import nbd.gV.repositories.ReservationMongoRepository;
@@ -17,12 +18,22 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 public class ReservationManager {
     private final ReservationMongoRepository reservationRepository;
+    private final ReservationProducer reservationProducer;
 
     public ReservationManager() {
         reservationRepository = new ReservationMongoRepository();
+        reservationProducer = new ReservationProducer();
+
+        try {
+            reservationProducer.createTopic();
+            ReservationProducer.initProducer();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     //Rezerwacji mozna dokonac tylko obiektami ktore juz znajduja sie w bazie danych
@@ -37,9 +48,15 @@ public class ReservationManager {
                 throw new ReservationException("Nie udalo sie utworzyc transkacji!");
             }
             court.setRented(true);
+
+            ///TODO
+            reservationProducer.sendMessage(ReservationMapper.toMongoReservation(newReservation));
+
             return newReservation;
         } catch (MyMongoException exception) {
             throw new ReservationException("Blad transakcji.");
+        } catch (Exception e) {
+            throw new MainException(e.getMessage());
         }
     }
 
