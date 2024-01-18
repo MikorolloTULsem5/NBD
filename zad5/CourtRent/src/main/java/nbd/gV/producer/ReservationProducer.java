@@ -5,7 +5,6 @@ import jakarta.json.bind.JsonbBuilder;
 
 import nbd.gV.exceptions.MainException;
 import nbd.gV.mappers.ReservationMapper;
-import nbd.gV.reservations.Reservation;
 
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -17,7 +16,6 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.errors.ProducerFencedException;
