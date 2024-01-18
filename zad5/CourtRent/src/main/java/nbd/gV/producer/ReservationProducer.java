@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class ReservationProducer {
     public static final String TOPIC = "court_reservations";
