@@ -3,6 +3,7 @@ package nbd.gV.producer;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 
+import nbd.gV.exceptions.MainException;
 import nbd.gV.mappers.ReservationMapper;
 import nbd.gV.reservations.Reservation;
 
@@ -16,6 +17,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.errors.ProducerFencedException;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class ReservationProducer {
     public static final String TOPIC = "court_reservations";
@@ -63,7 +66,8 @@ public class ReservationProducer {
         producer = new KafkaProducer<>(producerConfig);
     }
 
-    public void sendMessage(ReservationMapper reservation) throws Exception {
+    public void sendMessage(ReservationMapper reservation) throws ExecutionException, InterruptedException {
+        initProducer();
         producer.initTransactions();
         try(Jsonb jsonb = JsonbBuilder.create()) {
             producer.beginTransaction();
@@ -79,6 +83,8 @@ public class ReservationProducer {
             producer.close();
         } catch (KafkaException exception) {
             producer.abortTransaction();
+        } catch (Exception e) {
+            throw new MainException("Serialization problem");
         }
     }
 }

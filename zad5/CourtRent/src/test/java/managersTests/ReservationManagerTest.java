@@ -39,6 +39,8 @@ public class ReservationManagerTest {
     static final CourtMongoRepository courtRepository = new CourtMongoRepository();
     ClientType testClientType;
 
+    static final ReservationManager rm = new ReservationManager();
+
     Client testClient1;
     Client testClient2;
     Client testClient3;
@@ -86,14 +88,11 @@ public class ReservationManagerTest {
 
     @Test
     void testCreatingReservationManager() {
-        ReservationManager rm = new ReservationManager();
         assertNotNull(rm);
     }
 
     @Test
     void testMakingReservation() {
-        ReservationManager rm = new ReservationManager();
-        assertNotNull(rm);
         assertEquals(rm.getAllCurrentReservations().size(), 0);
         assertFalse(testCourt1.isRented());
 
@@ -137,9 +136,6 @@ public class ReservationManagerTest {
 
     @Test
     void testCreatingReservationManagerWithNullDate() {
-        ReservationManager rm = new ReservationManager();
-        assertNotNull(rm);
-
         assertEquals(0, rm.getAllCurrentReservations().size());
         Reservation newReservation = rm.makeReservation(testClient1, testCourt1);
         var reservations = rm.getAllCurrentReservations();
@@ -149,9 +145,6 @@ public class ReservationManagerTest {
 
     @Test
     void testEndReservation() {
-        ReservationManager rm = new ReservationManager();
-        assertNotNull(rm);
-
         rm.makeReservation(testClient1,testCourt1,testTimeStart);
         rm.makeReservation(testClient2,testCourt2,testTimeStart);
 
@@ -176,8 +169,6 @@ public class ReservationManagerTest {
     void testCheckingClientBalance() {
         var testSuperTimeEnd = LocalDateTime.of(2023, Month.JUNE, 5, 12, 0);
         var testSuperTimeEnd2 = LocalDateTime.of(2023, Month.JUNE, 6, 12, 0);
-        ReservationManager rm = new ReservationManager();
-        assertNotNull(rm);
 
         rm.makeReservation(testClient1,testCourt1,testTimeStart);
         rm.makeReservation(testClient1, testCourt2, testTimeStart);

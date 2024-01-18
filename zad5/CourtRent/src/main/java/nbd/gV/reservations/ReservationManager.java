@@ -30,8 +30,7 @@ public class ReservationManager {
 
         try {
             reservationProducer.createTopic();
-            ReservationProducer.initProducer();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -49,14 +48,13 @@ public class ReservationManager {
             }
             court.setRented(true);
 
-            ///TODO
             reservationProducer.sendMessage(ReservationMapper.toMongoReservation(newReservation));
 
             return newReservation;
         } catch (MyMongoException exception) {
             throw new ReservationException("Blad transakcji.");
-        } catch (Exception e) {
-            throw new MainException(e.getMessage());
+        } catch (ExecutionException | InterruptedException e) {
+            throw new MainException("Inicjalizacja Producenta nie powiodla sie!");
         }
     }
 
