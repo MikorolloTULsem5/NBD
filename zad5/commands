@@ -1,0 +1,8 @@
+Topics:
+    kafka-topics.sh --describe --topic court_reservations --bootstrap-server kafka1:19192
+
+Producers:
+    kafka-console-producer.sh --topic court_reservations --bootstrap-server kafka1:19192
+
+Consumers:
+    kafka-console-consumer.sh --topic court_reservations --from-beginning --bootstrap-server kafka2:19292
