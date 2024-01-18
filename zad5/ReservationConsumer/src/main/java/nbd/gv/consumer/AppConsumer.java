@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class AppConsumer {
     public static void main(String[] args) {
-        AbstractMongoRepository<Reservation> repository = new ReservationMongoRepository();
+        AbstractMongoRepository<Reservation> repository = new ReservationMongoRepository("test_kafka");
         repository.create(new Reservation(UUID.randomUUID().toString(), UUID.randomUUID().toString(), UUID.randomUUID().toString(),
                 LocalDateTime.now().minusHours(2), LocalDateTime.now(), 200));
     }

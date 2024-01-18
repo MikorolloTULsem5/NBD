@@ -1,4 +1,4 @@
-package nbd.gV.repositories;
+package nbd.gv.consumer.repository;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -12,7 +12,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
-import nbd.gV.exceptions.MyMongoException;
+import nbd.gv.consumer.exceptions.MyMongoException;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -39,7 +39,7 @@ public abstract class AbstractMongoRepository<T> implements AutoCloseable {
     private final MongoClient mongoClient;
     private final MongoDatabase mongoDatabase;
 
-    public AbstractMongoRepository() {
+    public AbstractMongoRepository(String dbName) {
         MongoClientSettings settings = MongoClientSettings.builder()
                 .credential(credential)
                 .applyConnectionString(connectionString)
@@ -51,7 +51,7 @@ public abstract class AbstractMongoRepository<T> implements AutoCloseable {
                 .build();
 
         mongoClient = MongoClients.create(settings);
-        mongoDatabase = mongoClient.getDatabase("reserveACourt");
+        mongoDatabase = mongoClient.getDatabase(dbName);
     }
 
     protected MongoClient getMongoClient() {
@@ -91,22 +91,6 @@ public abstract class AbstractMongoRepository<T> implements AutoCloseable {
         Bson filter = Filters.eq("_id", uuid.toString());
         var list = this.read(filter);
         return !list.isEmpty() ? list.get(0) : null;
-    }
-
-    public boolean update(UUID uuid, String fieldName, Object value) {
-        if (fieldName.equals("_id")) {
-            throw new MyMongoException("Proba zmiany UUID!");
-        }
-        Bson filter = Filters.eq("_id", uuid.toString());
-        Bson setUpdate = Updates.set(fieldName, value);
-        UpdateResult result = this.getCollection().updateOne(filter, setUpdate);
-        return result.getModifiedCount() != 0;
-    }
-
-    public boolean delete(UUID uuid) {
-        Bson filter = Filters.eq("_id", uuid.toString());
-        var deletedObj = this.getCollection().findOneAndDelete(filter);
-        return deletedObj != null;
     }
 
     protected MongoCollection<T> getCollection() {
